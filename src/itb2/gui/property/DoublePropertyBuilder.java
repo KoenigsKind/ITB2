@@ -15,6 +15,7 @@ class DoublePropertyBuilder extends PropertyBuilder {
 		DoubleProperty doubleProperty = (DoubleProperty) property;
 		
 		JTextField value = new JTextField(Double.toString(doubleProperty.value));
+		value.setFont(VALUE_FONT);
 		//TODO https://stackoverflow.com/questions/11093326/restricting-jtextfield-input-to-integers
 		value.getDocument().addDocumentListener(new DocumentListener() {
 			@Override

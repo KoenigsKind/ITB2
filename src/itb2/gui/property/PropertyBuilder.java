@@ -18,12 +18,13 @@ import itb2.filter.property.StringProperty;
 
 public abstract class PropertyBuilder {
 	private static final Map<Class<? extends FilterProperty>, PropertyBuilder> builders;
-	protected static final Font TITLE_FONT;
+	protected static final Font TITLE_FONT, VALUE_FONT;
 	protected static final int SPACING;
 	
 	static {
 		builders = new HashMap<>();
 		TITLE_FONT = new Font(Font.DIALOG, Font.BOLD, 12);
+		VALUE_FONT = new Font(Font.DIALOG, Font.PLAIN, 12);
 		SPACING = 5;
 		
 		builders.put(BooleanProperty.class, new BooleanPropertyBuilder());

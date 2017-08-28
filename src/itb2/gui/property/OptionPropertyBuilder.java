@@ -15,6 +15,7 @@ class OptionPropertyBuilder extends PropertyBuilder {
 		OptionProperty optionProperty = (OptionProperty) property;
 		
 		JComboBox<Object> value = new JComboBox<>(optionProperty.options);
+		value.setFont(VALUE_FONT);
 		value.setSelectedItem(optionProperty.value);
 		value.addItemListener(e -> {
 			if(e.getStateChange() == ItemEvent.SELECTED)

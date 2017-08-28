@@ -15,6 +15,7 @@ class StringPropertyBuilder extends PropertyBuilder {
 		StringProperty stringProperty = (StringProperty) property;
 		
 		JTextField value = new JTextField(stringProperty.value);
+		value.setFont(VALUE_FONT);
 		value.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent e) {

@@ -1,9 +1,16 @@
 package itb2.gui;
 import java.awt.BorderLayout;
+import java.io.File;
+import java.io.IOException;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.filechooser.FileFilter;
+
+import itb2.engine.Controller;
+import itb2.filter.Filter;
 
 public class EditorGui extends JFrame {
 	private static final long serialVersionUID = -1574070976560997812L;
@@ -13,6 +20,7 @@ public class EditorGui extends JFrame {
 	private final ImageList imageList;
 	private final FilterList filterList;
 	private final FilterProperties filterProperties;
+	private JFileChooser filterChooser;
 	
 	public EditorGui() {
 		super(TITLE);
@@ -20,7 +28,7 @@ public class EditorGui extends JFrame {
 		// Initialize objects
 		workbench = new Workbench();
 		imageList = new ImageList();
-		filterList = new FilterList();
+		filterList = new FilterList(this);
 		filterProperties = new FilterProperties(filterList);
 		
 		// Add objects to contentPane
@@ -36,24 +44,7 @@ public class EditorGui extends JFrame {
 		splitPane.setDividerLocation(DEFAULT_WIDTH - 200);
 		getContentPane().add(splitPane);
 		
-		/* TODO Find a way to keep right side of splitpane same size, when resizing window
-		addComponentListener(new ComponentListener() {
-			private int oldWidth = -1;
-			
-			@Override
-			public void componentResized(ComponentEvent e) {
-				if(oldWidth > 0) {
-					int divider = splitPane.getDividerLocation();
-					divider += getWidth() - oldWidth;
-					splitPane.setDividerLocation(divider);
-				}
-				oldWidth = getWidth();
-			}
-			
-			@Override public void componentShown(ComponentEvent e) {}
-			@Override public void componentMoved(ComponentEvent e) {}
-			@Override public void componentHidden(ComponentEvent e) {}
-		});*/
+		// TODO Find a way to keep right side of splitpane same size, when resizing window
 		
 		pack();
 		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -66,6 +57,41 @@ public class EditorGui extends JFrame {
 			super.setTitle(TITLE);
 		else
 			super.setTitle(TITLE + " - " + title);
+	}
+	
+	public void openFilter() {
+		if(filterChooser == null) {
+			filterChooser = new JFileChooser(".");
+			filterChooser.setDialogTitle("Open Filter");
+			filterChooser.setMultiSelectionEnabled(true);
+			filterChooser.setFileFilter(new FileFilter() {
+				@Override
+				public String getDescription() {
+					return "Filter";
+				}
+				
+				@Override
+				public boolean accept(File f) {
+					String name = f.getName();
+					return name.endsWith(".class") || name.endsWith(".java") || f.isDirectory(); 
+				}
+			});
+		}
+		if(filterChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+			File[] files = filterChooser.getSelectedFiles(); 
+			int index = 0;
+			try {
+				for(; index < files.length; index++)
+					Controller.getFilterManager().loadFilter(files[index]);
+			} catch(IOException e) {
+				Controller.getCommunicationManager().warning("Could not open file:\n%s", files[index].getAbsolutePath());
+			}
+		}
+	}
+	
+	public void closeFilter() {
+		Filter filter = filterList.getSelectedFilter();
+		Controller.getFilterManager().getFilters().remove(filter);
 	}
 
 }

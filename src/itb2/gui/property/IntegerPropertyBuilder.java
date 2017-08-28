@@ -15,6 +15,7 @@ class IntegerPropertyBuilder extends PropertyBuilder {
 		IntegerProperty integerProperty = (IntegerProperty) property;
 		
 		JTextField value = new JTextField(Integer.toString(integerProperty.value));
+		value.setFont(VALUE_FONT);
 		//TODO https://stackoverflow.com/questions/11093326/restricting-jtextfield-input-to-integers
 		value.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
