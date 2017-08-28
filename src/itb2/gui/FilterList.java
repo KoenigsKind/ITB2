@@ -73,7 +73,6 @@ public class FilterList extends JPanel {
 	private class FilterRenderer extends JLabel implements ListCellRenderer<Filter> {
 		private static final long serialVersionUID = 1442148494574959747L;
 		
-		
 		public FilterRenderer() {
 			setBackground(Color.LIGHT_GRAY);
 			Font font = getFont();
