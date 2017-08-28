@@ -8,7 +8,7 @@ public class RangeProperty extends FilterProperty {
 		this.value = value;
 		this.min = min;
 		this.step = step;
-		this.max = step;
+		this.max = max;
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import javax.swing.JSplitPane;
 
 public class EditorGui extends JFrame {
 	private static final long serialVersionUID = -1574070976560997812L;
+	private static final int DEFAULT_WIDTH = 800, DEFAULT_HEIGHT = 600;
 	private static final String TITLE = "ImageToolBox²";
 	private final Workbench workbench;
 	private final ImageList imageList;
@@ -32,11 +33,30 @@ public class EditorGui extends JFrame {
 		filterBoard.add(filterProperties, BorderLayout.SOUTH);
 		
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, imageBoard, filterBoard);
-		splitPane.setDividerLocation(0.5);
+		splitPane.setDividerLocation(DEFAULT_WIDTH - 200);
 		getContentPane().add(splitPane);
 		
+		/* TODO Find a way to keep right side of splitpane same size, when resizing window
+		addComponentListener(new ComponentListener() {
+			private int oldWidth = -1;
+			
+			@Override
+			public void componentResized(ComponentEvent e) {
+				if(oldWidth > 0) {
+					int divider = splitPane.getDividerLocation();
+					divider += getWidth() - oldWidth;
+					splitPane.setDividerLocation(divider);
+				}
+				oldWidth = getWidth();
+			}
+			
+			@Override public void componentShown(ComponentEvent e) {}
+			@Override public void componentMoved(ComponentEvent e) {}
+			@Override public void componentHidden(ComponentEvent e) {}
+		});*/
+		
 		pack();
-		setSize(800, 600);
+		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		setLocationRelativeTo(null);
 	}
 	

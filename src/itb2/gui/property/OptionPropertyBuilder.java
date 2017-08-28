@@ -11,7 +11,7 @@ import itb2.filter.property.OptionProperty;
 class OptionPropertyBuilder extends PropertyBuilder {
 
 	@Override
-	public JPanel build(FilterProperty property) {
+	public void build(FilterProperty property, JPanel panel) {
 		OptionProperty optionProperty = (OptionProperty) property;
 		
 		JComboBox<Object> value = new JComboBox<>(optionProperty.options);
@@ -21,7 +21,8 @@ class OptionPropertyBuilder extends PropertyBuilder {
 				optionProperty.value = e.getItem();
 		});
 		
-		return build(property, value);
+		panel.add(getTitel(property));
+		panel.add(value);
 	}
 
 }

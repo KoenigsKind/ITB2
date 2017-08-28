@@ -11,7 +11,7 @@ import itb2.filter.property.IntegerProperty;
 class IntegerPropertyBuilder extends PropertyBuilder {
 
 	@Override
-	public JPanel build(FilterProperty property) {
+	public void build(FilterProperty property, JPanel panel) {
 		IntegerProperty integerProperty = (IntegerProperty) property;
 		
 		JTextField value = new JTextField(Integer.toString(integerProperty.value));
@@ -37,7 +37,8 @@ class IntegerPropertyBuilder extends PropertyBuilder {
 			}
 		});
 		
-		return build(property, value);
+		panel.add(getTitel(property));
+		panel.add(value);
 	}
 
 }

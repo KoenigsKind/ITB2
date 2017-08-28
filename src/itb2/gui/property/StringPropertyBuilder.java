@@ -11,7 +11,7 @@ import itb2.filter.property.StringProperty;
 class StringPropertyBuilder extends PropertyBuilder {
 
 	@Override
-	public JPanel build(FilterProperty property) {
+	public void build(FilterProperty property, JPanel panel) {
 		StringProperty stringProperty = (StringProperty) property;
 		
 		JTextField value = new JTextField(stringProperty.value);
@@ -36,7 +36,8 @@ class StringPropertyBuilder extends PropertyBuilder {
 			}
 		});
 		
-		return build(property, value);
+		panel.add(getTitel(property));
+		panel.add(value);
 	}
 
 }

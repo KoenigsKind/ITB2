@@ -11,7 +11,7 @@ import itb2.filter.property.FilterProperty;
 class DoublePropertyBuilder extends PropertyBuilder {
 
 	@Override
-	public JPanel build(FilterProperty property) {
+	public void build(FilterProperty property, JPanel panel) {
 		DoubleProperty doubleProperty = (DoubleProperty) property;
 		
 		JTextField value = new JTextField(Double.toString(doubleProperty.value));
@@ -37,7 +37,8 @@ class DoublePropertyBuilder extends PropertyBuilder {
 			}
 		});
 		
-		return build(property, value);
+		panel.add(getTitel(doubleProperty));
+		panel.add(value);
 	}
 
 }

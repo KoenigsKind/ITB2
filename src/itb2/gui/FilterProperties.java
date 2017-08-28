@@ -1,10 +1,13 @@
 package itb2.gui;
 
-import java.awt.Color;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 
@@ -18,9 +21,7 @@ public class FilterProperties extends JPanel {
 	public FilterProperties(FilterList filterList) {
 		filterList.addSelectionListener(e -> filterChanged(e, filterList));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		
-		
-		setBackground(Color.YELLOW);
+		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 	}
 	
 	private void filterChanged(ListSelectionEvent e, FilterList list) {
@@ -31,17 +32,26 @@ public class FilterProperties extends JPanel {
 		
 		ArrayList<FilterProperty> properties = new ArrayList<>();
 		properties.addAll(filter.getProperties().getProperties());
-		properties.sort((a, b) -> b.index - a.index);
+		properties.sort((a, b) -> a.index - b.index);
 		buildPanel(properties);
 	}
 	
 	public void buildPanel(List<FilterProperty> properties) {
 		removeAll();
 		for(FilterProperty property : properties) {
-			JPanel propertyPanel = PropertyBuilder.buildProperty(property);
-			add(propertyPanel, 0);
+			PropertyBuilder.buildProperty(property, this);
+			add(Box.createVerticalStrut(5));
 		}
 		revalidate();
+	}
+	
+	@Override
+	public Component add(Component comp) {
+		if(comp instanceof JComponent)
+			((JComponent) comp).setAlignmentX(0);
+		
+		super.add(comp, 0.0);
+		return comp;
 	}
 
 }

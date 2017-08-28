@@ -7,8 +7,6 @@ import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.Spring;
-import javax.swing.SpringLayout;
 
 import itb2.filter.property.BooleanProperty;
 import itb2.filter.property.DoubleProperty;
@@ -36,68 +34,21 @@ public abstract class PropertyBuilder {
 		builders.put(StringProperty.class, new StringPropertyBuilder());
 	}
 	
-	public static JPanel buildProperty(FilterProperty property) {
+	public static void buildProperty(FilterProperty property, JPanel panel) {
 		PropertyBuilder builder = builders.get(property.getClass());
 		if(builder == null)
 			throw new RuntimeException("Unknown FilterProperty: " + property.getClass().getSimpleName());
-		return builder.build(property);
+		builder.build(property, panel);
 	}
 	
 	PropertyBuilder() {}
 	
-	public abstract JPanel build(FilterProperty property);
+	public abstract void build(FilterProperty property, JPanel panel);
 	
-	protected JPanel build(FilterProperty property, JComponent value) {
+	protected JComponent getTitel(FilterProperty property) {
 		JLabel title = new JLabel(property.name);
 		title.setFont(TITLE_FONT);
-		
-		SpringLayout layout = new SpringLayout();
-		JPanel panel = new JPanel(layout);
-		panel.add(title);
-		panel.add(value);
-		
-		layout.putConstraint(SpringLayout.NORTH, title, SPACING, SpringLayout.NORTH, panel);
-		layout.putConstraint(SpringLayout.WEST, title, SPACING, SpringLayout.WEST, panel);
-		layout.putConstraint(SpringLayout.EAST, title, 0, SpringLayout.EAST, value);
-		layout.putConstraint(SpringLayout.NORTH, value, SPACING, SpringLayout.SOUTH, title);
-		layout.putConstraint(SpringLayout.WEST, value, 2 * SPACING, SpringLayout.WEST, panel);
-		layout.putConstraint(SpringLayout.SOUTH, panel, SPACING, SpringLayout.SOUTH, value);
-		layout.putConstraint(SpringLayout.EAST, panel, new Spring() {
-			int val;
-			
-			@Override
-			public void setValue(int value) {
-				this.val = value;
-			}
-			
-			@Override
-			public int getValue() {
-				return val;
-			}
-			
-			@Override
-			public int getPreferredValue() {
-				double titleWidth = title.getPreferredSize().getWidth();
-				double valueWidth = value.getPreferredSize().getWidth();
-				return SPACING + (int)(titleWidth > valueWidth ? 0 : valueWidth - titleWidth);
-			}
-			
-			@Override
-			public int getMinimumValue() {
-				double titleWidth = title.getMinimumSize().getWidth();
-				double valueWidth = value.getMinimumSize().getWidth();
-				return SPACING + (int)(titleWidth > valueWidth ? 0 : valueWidth - titleWidth);
-			}
-			
-			@Override
-			public int getMaximumValue() {
-				double titleWidth = title.getMaximumSize().getWidth();
-				double valueWidth = value.getMaximumSize().getWidth();
-				return SPACING + (int)(titleWidth > valueWidth ? 0 : valueWidth - titleWidth);
-			}
-		}, SpringLayout.EAST, title);
-		
-		return panel;
+		return title;
 	}
 
 }
