@@ -3,7 +3,6 @@ package itb2.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,6 +15,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionListener;
 
 import itb2.data.ObservableTreeSet;
 import itb2.engine.Controller;
@@ -23,9 +23,10 @@ import itb2.filter.Filter;
 
 public class FilterList extends JPanel {
 	private static final long serialVersionUID = 977279295491172369L;
+	private final JList<Filter> filterList;
 	
-	public FilterList(EditorGui editorGui) {
-		JList<Filter> filterList = new JList<>();
+	public FilterList() {
+		filterList = new JList<>();
 		filterList.setModel(new FilterModel());
 		filterList.setCellRenderer(new FilterRenderer());
 		
@@ -33,9 +34,17 @@ public class FilterList extends JPanel {
 		scrollPane.setViewportView(filterList);
 		
 		setLayout(new BorderLayout());
-		add(scrollPane, BorderLayout.WEST);
+		add(scrollPane, BorderLayout.CENTER);
 		
 		setBackground(Color.BLUE);
+	}
+	
+	public Filter getSelectedFilter() {
+		return filterList.getSelectedValue();
+	}
+	
+	public void addSelectionListener(ListSelectionListener listener) {
+		filterList.addListSelectionListener(listener);
 	}
 	
 	private class FilterRenderer extends JLabel implements ListCellRenderer<Filter> {
