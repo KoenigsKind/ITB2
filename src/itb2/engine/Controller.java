@@ -1,5 +1,7 @@
 package itb2.engine;
 
+import javax.swing.UIManager;
+
 import itb2.gui.EditorGui;
 
 public final class Controller {
@@ -26,6 +28,13 @@ public final class Controller {
 	}
 	
 	public static void startApplication() {
+		try {
+			String systemLookAndFeel = UIManager.getSystemLookAndFeelClassName();
+			UIManager.setLookAndFeel(systemLookAndFeel);
+		} catch(Exception e) {
+			// Not important, just for visuals
+		}
+		
 		EditorGui gui = new EditorGui();
 		gui.setDefaultCloseOperation(EditorGui.EXIT_ON_CLOSE);
 		gui.setVisible(true);

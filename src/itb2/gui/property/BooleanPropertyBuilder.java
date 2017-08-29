@@ -13,6 +13,7 @@ class BooleanPropertyBuilder extends PropertyBuilder {
 		BooleanProperty booleanProperty = (BooleanProperty) property;
 		
 		JCheckBox checkBox = new JCheckBox(booleanProperty.name, booleanProperty.value);
+		checkBox.setFont(TITLE_FONT);
 		checkBox.addChangeListener(e -> booleanProperty.value = checkBox.isSelected());
 		
 		panel.add(checkBox);

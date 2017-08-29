@@ -8,19 +8,23 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import itb2.engine.Controller;
 import itb2.filter.Filter;
+import itb2.image.Image;
 
 public class EditorGui extends JFrame {
 	private static final long serialVersionUID = -1574070976560997812L;
 	private static final int DEFAULT_WIDTH = 800, DEFAULT_HEIGHT = 600;
 	private static final String TITLE = "ImageToolBox²";
+	private static final int OPEN = 1, SAVE = 2;
 	private final Workbench workbench;
 	private final ImageList imageList;
 	private final FilterList filterList;
 	private final FilterProperties filterProperties;
-	private JFileChooser filterChooser;
+	private final EditorMenuBar menubar;
+	private JFileChooser filterChooser, imageChooser;
 	
 	public EditorGui() {
 		super(TITLE);
@@ -30,6 +34,10 @@ public class EditorGui extends JFrame {
 		imageList = new ImageList();
 		filterList = new FilterList(this);
 		filterProperties = new FilterProperties(filterList);
+		menubar = new EditorMenuBar(this);
+		
+		// Add menu to window
+		setJMenuBar(menubar);
 		
 		// Add objects to contentPane
 		JPanel imageBoard = new JPanel(new BorderLayout());
@@ -60,6 +68,20 @@ public class EditorGui extends JFrame {
 	}
 	
 	public void openFilter() {
+		JFileChooser fileChooser = getFilterChooser();
+		if(fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+			File[] files = fileChooser.getSelectedFiles(); 
+			int index = 0;
+			try {
+				for(; index < files.length; index++)
+					Controller.getFilterManager().loadFilter(files[index]);
+			} catch(IOException e) {
+				Controller.getCommunicationManager().warning("Could not open file:\n%s", files[index].getAbsolutePath());
+			}
+		}
+	}
+	
+	private JFileChooser getFilterChooser() {
 		if(filterChooser == null) {
 			filterChooser = new JFileChooser(".");
 			filterChooser.setDialogTitle("Open Filter");
@@ -77,21 +99,53 @@ public class EditorGui extends JFrame {
 				}
 			});
 		}
-		if(filterChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-			File[] files = filterChooser.getSelectedFiles(); 
-			int index = 0;
-			try {
-				for(; index < files.length; index++)
-					Controller.getFilterManager().loadFilter(files[index]);
-			} catch(IOException e) {
-				Controller.getCommunicationManager().warning("Could not open file:\n%s", files[index].getAbsolutePath());
-			}
-		}
+		return filterChooser;
 	}
 	
 	public void closeFilter() {
 		Filter filter = filterList.getSelectedFilter();
-		Controller.getFilterManager().getFilters().remove(filter);
+		if(filter != null)
+			Controller.getFilterManager().getFilters().remove(filter);
+	}
+	
+	public void openImage() {
+		JFileChooser fileChooser = getImageChooser(OPEN);
+		
+		//TODO Open image
+	}
+	
+	public void saveImage() {
+		JFileChooser fileChooser = getImageChooser(SAVE);
+		
+		//TODO Save image
+	}
+	
+	private JFileChooser getImageChooser(int mode) {
+		if(imageChooser == null)
+			imageChooser = new JFileChooser(".");
+		
+		switch(mode) {
+			case OPEN:
+				imageChooser.setDialogTitle("Open Image");
+				imageChooser.setMultiSelectionEnabled(true);
+				imageChooser.setFileFilter(new FileNameExtensionFilter("Image", "jpg", "jpeg", "png", "bmp", "ppm"));
+				break;
+			case SAVE:
+				imageChooser.setDialogTitle("Save Image");
+				imageChooser.setMultiSelectionEnabled(false);
+				//TODO Set file filter
+				break;
+			default:
+				throw new RuntimeException("Unknown mode");
+		}
+		
+		return imageChooser;
+	}
+	
+	public void closeImage() {
+		Image image = null; //TODO Get selected image
+		if(image != null)
+			Controller.getImageManager().getImageList().remove(image);
 	}
 
 }

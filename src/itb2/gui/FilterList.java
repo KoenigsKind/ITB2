@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,7 +13,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionListener;
@@ -27,31 +24,11 @@ import itb2.filter.Filter;
 public class FilterList extends JPanel {
 	private static final long serialVersionUID = 977279295491172369L;
 	private final JList<Filter> filterList;
-	private final FilterContext context;
 	
 	public FilterList(EditorGui gui) {
-		context = new FilterContext(gui);
-		
 		filterList = new JList<>();
 		filterList.setModel(new FilterModel());
 		filterList.setCellRenderer(new FilterRenderer());
-		
-		filterList.addMouseListener(new MouseListener() {
-			@Override public void mouseReleased(MouseEvent e) {}
-			@Override public void mousePressed(MouseEvent e) {}
-			@Override public void mouseExited(MouseEvent e) {}
-			@Override public void mouseEntered(MouseEvent e) {}
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if(SwingUtilities.isRightMouseButton(e)) {
-					int index = filterList.locationToIndex(e.getPoint());
-					if(index >= 0)
-						filterList.setSelectedIndex(index);
-					context.show(FilterList.this, e.getX(), e.getY());
-				}
-			}
-		});
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(filterList);
@@ -117,7 +94,11 @@ public class FilterList extends JPanel {
 
 		@Override
 		public Filter getElementAt(int index) {
-			return (Filter)filters.toArray()[index];
+			try {
+				return (Filter)filters.toArray()[index];
+			} catch(ArrayIndexOutOfBoundsException e) {
+				return null;
+			}
 		}
 
 		@Override
