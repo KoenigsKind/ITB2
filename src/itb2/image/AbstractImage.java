@@ -16,8 +16,8 @@ public abstract class AbstractImage implements Image {
 		this.filename = filename;
 		this.data = data;
 		this.channelCount = data.length;
-		this.height = channelCount == 0 ? 0 : data[0].length;
-		this.width = height == 0 ? 0 : data[0][0].length;
+		this.width = channelCount == 0 ? 0 : data[0].length;
+		this.height = width == 0 ? 0 : data[0][0].length;
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public abstract class AbstractImage implements Image {
 			}
 		}
 		
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		WritableRaster raster = image.getRaster();
 		
 		for(int k = 0; k < 3; k++)

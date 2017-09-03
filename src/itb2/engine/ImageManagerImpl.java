@@ -10,7 +10,9 @@ import itb2.image.Image;
 public class ImageManagerImpl implements ImageManager {
 	private ObservableLinkedList<Image> imageList;
 	
-	ImageManagerImpl() {}
+	ImageManagerImpl() {
+		imageList = new ObservableLinkedList<>();
+	}
 	
 	@Override
 	public ObservableLinkedList<Image> getImageList() {

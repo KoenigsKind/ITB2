@@ -35,8 +35,6 @@ public class FilterList extends JPanel {
 		
 		setLayout(new BorderLayout());
 		add(scrollPane, BorderLayout.CENTER);
-		
-		setBackground(Color.BLUE);
 	}
 	
 	public Filter getSelectedFilter() {
@@ -88,8 +86,8 @@ public class FilterList extends JPanel {
 		}
 
 		@Override
-		public void addListDataListener(ListDataListener l) {
-			listeners.add(l);
+		public void addListDataListener(ListDataListener listener) {
+			listeners.add(listener);
 		}
 
 		@Override

@@ -30,8 +30,8 @@ public class EditorGui extends JFrame {
 		super(TITLE);
 		
 		// Initialize objects
-		workbench = new Workbench();
 		imageList = new ImageList();
+		workbench = new Workbench(imageList);
 		filterList = new FilterList(this);
 		filterProperties = new FilterProperties(filterList);
 		menubar = new EditorMenuBar(this);
@@ -110,14 +110,29 @@ public class EditorGui extends JFrame {
 	
 	public void openImage() {
 		JFileChooser fileChooser = getImageChooser(OPEN);
-		
-		//TODO Open image
+		if(fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+			File[] files = fileChooser.getSelectedFiles(); 
+			int index = 0;
+			try {
+				for(; index < files.length; index++)
+					Controller.getImageManager().loadImage(files[index]);
+			} catch(IOException e) {
+				Controller.getCommunicationManager().warning("Could not open file:\n%s", files[index].getAbsolutePath());
+			}
+		}
 	}
 	
 	public void saveImage() {
 		JFileChooser fileChooser = getImageChooser(SAVE);
-		
-		//TODO Save image
+		if(fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+			File file = fileChooser.getSelectedFile();
+			try {
+				// TODO Save image
+				throw new IOException();
+			} catch(IOException e) {
+				Controller.getCommunicationManager().warning("Could not open file:\n%s", file.getAbsolutePath());
+			}
+		}
 	}
 	
 	private JFileChooser getImageChooser(int mode) {
@@ -143,7 +158,7 @@ public class EditorGui extends JFrame {
 	}
 	
 	public void closeImage() {
-		Image image = null; //TODO Get selected image
+		Image image = imageList.getSelectedImage();
 		if(image != null)
 			Controller.getImageManager().getImageList().remove(image);
 	}
