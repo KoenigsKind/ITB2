@@ -2,6 +2,8 @@ package itb2.gui;
 import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -24,6 +26,7 @@ public class EditorGui extends JFrame {
 	private final FilterList filterList;
 	private final FilterProperties filterProperties;
 	private final EditorMenuBar menubar;
+	private final EditorToolBar toolbar;
 	private JFileChooser filterChooser, imageChooser;
 	
 	public EditorGui() {
@@ -35,6 +38,7 @@ public class EditorGui extends JFrame {
 		filterList = new FilterList(this);
 		filterProperties = new FilterProperties(filterList);
 		menubar = new EditorMenuBar(this);
+		toolbar = new EditorToolBar(this);
 		
 		// Add menu to window
 		setJMenuBar(menubar);
@@ -50,7 +54,10 @@ public class EditorGui extends JFrame {
 		
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, imageBoard, filterBoard);
 		splitPane.setDividerLocation(DEFAULT_WIDTH - 200);
-		getContentPane().add(splitPane);
+		
+		getContentPane().setLayout(new BorderLayout());
+		getContentPane().add(toolbar, BorderLayout.NORTH);
+		getContentPane().add(splitPane, BorderLayout.CENTER);
 		
 		// TODO Find a way to keep right side of splitpane same size, when resizing window
 		
@@ -76,6 +83,7 @@ public class EditorGui extends JFrame {
 				for(; index < files.length; index++)
 					Controller.getFilterManager().loadFilter(files[index]);
 			} catch(IOException e) {
+				e.printStackTrace();
 				Controller.getCommunicationManager().warning("Could not open file:\n%s", files[index].getAbsolutePath());
 			}
 		}
@@ -158,9 +166,29 @@ public class EditorGui extends JFrame {
 	}
 	
 	public void closeImage() {
-		Image image = imageList.getSelectedImage();
-		if(image != null)
+		List<Image> selectedImages = imageList.getSelectedImages();
+		for(Image image : selectedImages)
 			Controller.getImageManager().getImageList().remove(image);
+	}
+	
+	public void runFilter() {
+		Filter filter = filterList.getSelectedFilter();
+		if(filter == null)
+			return;
+		
+		List<Image> selectedImages = imageList.getSelectedImages();
+		Image[] images = selectedImages.toArray(new Image[selectedImages.size()]);
+		
+		images = Controller.getFilterManager().callFilter(filter, images);
+		Controller.getImageManager().getImageList().addAll(Arrays.asList(images));
+	}
+	
+	public void resetZoom() {
+		workbench.resetZoom();
+	}
+	
+	public void fitToScreen() {
+		workbench.fitToScreen();
 	}
 
 }

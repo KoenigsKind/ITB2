@@ -9,6 +9,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -34,10 +35,32 @@ public class Workbench extends JPanel {
 		imageList.addSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				Image image = imageList.getSelectedImage();
-				painter.setImage(image);
+				List<Image> selected = imageList.getSelectedImages();
+				if(selected.size() == 1)
+					painter.setImage(selected.get(0));
+				else
+					; //TODO
 			}
 		});
+	}
+	
+	public void resetZoom() {
+		painter.setZoom(1);
+	}
+	
+	public void fitToScreen() {
+		if(painter.image != null) {
+			int imgWidth = painter.image.getWidth();
+			int imgHeight = painter.image.getHeight();
+			
+			double border = scrollPane.getVerticalScrollBar().getWidth();
+
+			double zoomHor = (getWidth() - border) / imgWidth;
+			double zoomVert = (getHeight() - border) / imgHeight;
+			double zoom = zoomHor < zoomVert ? zoomHor : zoomVert;
+			painter.setZoom(zoom);
+		} else
+			painter.setZoom(1);
 	}
 	
 	private class ImagePainter extends JPanel {
@@ -78,6 +101,11 @@ public class Workbench extends JPanel {
 			p.x /= zoom;
 			p.y /= zoom;
 			return p;
+		}
+		
+		void setZoom(double zoom) {
+			this.zoom = zoom;
+			updateSize();
 		}
 		
 		void setImage(Image image) {

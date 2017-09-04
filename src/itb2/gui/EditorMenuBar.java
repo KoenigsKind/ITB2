@@ -28,7 +28,7 @@ public class EditorMenuBar extends JMenuBar {
 		filterClose.addActionListener(e -> gui.closeFilter());
 		
 		// Build image menu
-		imageMenu = new JMenu("Images");
+		imageMenu = new JMenu("Image");
 		imageMenu.add(imageOpen);
 		imageMenu.add(imageSave);
 		imageMenu.add(imageClose);
@@ -39,6 +39,7 @@ public class EditorMenuBar extends JMenuBar {
 		filterMenu.add(filterOpen);
 		filterMenu.add(filterClose);
 		add(filterMenu);
+		
 	}
 
 }

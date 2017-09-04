@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -58,8 +59,8 @@ public class ImageList extends JPanel {
 		return preferredSize;
 	}
 	
-	public Image getSelectedImage() {
-		return imageList.getSelectedValue();
+	public List<Image> getSelectedImages() {
+		return imageList.getSelectedValuesList();
 	}
 	
 	public void addSelectionListener(ListSelectionListener listener) {
@@ -133,7 +134,7 @@ public class ImageList extends JPanel {
 		public Image getElementAt(int index) {
 			try {
 				return images.get(index);
-			} catch(ArrayIndexOutOfBoundsException e) {
+			} catch(IndexOutOfBoundsException e) {
 				return null;
 			}
 		}
