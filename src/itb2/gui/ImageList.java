@@ -37,6 +37,7 @@ public class ImageList extends JPanel {
 		imageList = new JList<>();
 		imageList.setModel(new ImageModel());
 		imageList.setCellRenderer(new ImageRenderer());
+		imageList.setBackground(GuiConstants.DEFAULT_BACKGROUND);
 		
 		scrollPane = new JScrollPane();
 		scrollPane.setViewportView(imageList);

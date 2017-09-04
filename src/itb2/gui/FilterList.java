@@ -29,6 +29,7 @@ public class FilterList extends JPanel {
 		filterList = new JList<>();
 		filterList.setModel(new FilterModel());
 		filterList.setCellRenderer(new FilterRenderer());
+		filterList.setBackground(GuiConstants.DEFAULT_BACKGROUND);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(filterList);
