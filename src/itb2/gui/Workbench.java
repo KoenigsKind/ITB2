@@ -3,10 +3,15 @@ package itb2.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -31,8 +36,6 @@ public class Workbench extends JPanel {
 			public void valueChanged(ListSelectionEvent e) {
 				Image image = imageList.getSelectedImage();
 				painter.setImage(image);
-				painter.revalidate();
-				painter.repaint();
 			}
 		});
 	}
@@ -51,13 +54,30 @@ public class Workbench extends JPanel {
 			addMouseWheelListener(new MouseWheelListener() {
 				@Override
 				public void mouseWheelMoved(MouseWheelEvent e) {
-					double factor = Math.pow(1.1, e.getWheelRotation());
+					Point preZoom = getMouseOnImage();
+					
+					double factor = Math.pow(0.9, e.getWheelRotation());
 					zoom *= factor;
 					updateSize();
-					revalidate();
-					repaint();
+					
+					Point postZoom = getMouseOnImage();
+					
+					double dx = (preZoom.x - postZoom.x) * zoom;
+					double dy = (preZoom.y - postZoom.y) * zoom;
+					
+					Rectangle rect = getVisibleRect();
+					rect.translate((int)dx, (int)dy);
+					scrollRectToVisible(rect);
 				}
 			});
+		}
+		
+		Point getMouseOnImage() {
+			Point p = MouseInfo.getPointerInfo().getLocation();
+			SwingUtilities.convertPointFromScreen(p, this);
+			p.x /= zoom;
+			p.y /= zoom;
+			return p;
 		}
 		
 		void setImage(Image image) {
@@ -66,27 +86,42 @@ public class Workbench extends JPanel {
 		}
 		
 		void updateSize() {
-			dimension.height = (int)(image.getHeight() * zoom);
-			dimension.width = (int)(image.getWidth() * zoom);
+			dimension.height = (int)(image == null ? 0 : image.getHeight() * zoom);
+			dimension.width = (int)(image == null ? 0 : image.getWidth() * zoom);
 			
 			setPreferredSize(dimension);
+			revalidate();
+			repaint();
 		}
 		
 		@Override
 		protected void paintComponent(Graphics g) {
 			super.paintComponent(g);
 			
-			int width = getWidth();
-			int height = getHeight();
+			if(image == null)
+				return;
 			
-			int imgWidth = (int)(image != null ? image.getWidth() * zoom : 0);
-			int imgHeight = (int)(image != null ? image.getHeight() * zoom : 0);
+			Graphics2D g2d = g instanceof Graphics2D ? (Graphics2D) g : null;
 			
-			int x = imgWidth > 0 && imgWidth < width ? (width - imgWidth) / 2 : 0;
-			int y = imgHeight > 0 && imgHeight < height ? (height - imgHeight) / 2 : 0;
+			int paneWidth = getWidth();
+			int paneHeight = getHeight();
 			
-			if(image != null)
-				g.drawImage(image.asBufferedImage(), x, y, imgWidth, imgHeight, null);
+			double imgWidth = image.getWidth() * zoom;
+			double imgHeight = image.getHeight() * zoom;
+			
+			double x = imgWidth < paneWidth ? (paneWidth - imgWidth) / 2 : 0;
+			double y = imgHeight < paneHeight ? (paneHeight - imgHeight) / 2 : 0;
+			
+			x /= zoom;
+			y /= zoom;
+			
+			if(g2d != null)
+				g2d.scale(zoom, zoom);
+			
+			g.drawImage(image.asBufferedImage(), (int)x, (int)y, null);
+			
+			if(g2d != null)
+				g2d.scale(1/zoom, 1/zoom);
 		}
 	}
 }
