@@ -19,7 +19,7 @@ import itb2.image.Image;
 public class EditorGui extends JFrame {
 	private static final long serialVersionUID = -1574070976560997812L;
 	private static final int DEFAULT_WIDTH = 800, DEFAULT_HEIGHT = 600;
-	private static final String TITLE = "ImageToolBox²";
+	protected static final String TITLE = "ImageToolBox²";
 	private static final int OPEN = 1, SAVE = 2;
 	private final Workbench workbench;
 	private final ImageList imageList;
@@ -48,11 +48,14 @@ public class EditorGui extends JFrame {
 		imageBoard.add(imageList, BorderLayout.WEST);
 		imageBoard.add(workbench, BorderLayout.CENTER);
 		
-		JPanel filterBoard = new JPanel(new BorderLayout());
-		filterBoard.add(filterList, BorderLayout.CENTER);
-		filterBoard.add(filterProperties, BorderLayout.SOUTH);
+		JSplitPane filterPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, filterList, filterProperties);
+		filterPane.setResizeWeight(0.5);
 		
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, imageBoard, filterBoard);
+//		JPanel filterBoard = new JPanel(new BorderLayout());
+//		filterBoard.add(filterList, BorderLayout.CENTER);
+//		filterBoard.add(filterProperties, BorderLayout.SOUTH);
+		
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, imageBoard, filterPane);
 		splitPane.setDividerLocation(DEFAULT_WIDTH - 200);
 		splitPane.setResizeWeight(1);
 		
@@ -83,7 +86,7 @@ public class EditorGui extends JFrame {
 					Controller.getFilterManager().loadFilter(files[index]);
 			} catch(IOException e) {
 				e.printStackTrace();
-				Controller.getCommunicationManager().warning("Could not open file:\n%s", files[index].getAbsolutePath());
+				Controller.getCommunicationManager().error("Could not open file:\n%s", files[index].getAbsolutePath());
 			}
 		}
 	}
@@ -124,7 +127,7 @@ public class EditorGui extends JFrame {
 				for(; index < files.length; index++)
 					Controller.getImageManager().loadImage(files[index]);
 			} catch(IOException e) {
-				Controller.getCommunicationManager().warning("Could not open file:\n%s", files[index].getAbsolutePath());
+				Controller.getCommunicationManager().error("Could not open file:\n%s", files[index].getAbsolutePath());
 			}
 		}
 	}
@@ -137,7 +140,7 @@ public class EditorGui extends JFrame {
 				// TODO Save image
 				throw new IOException();
 			} catch(IOException e) {
-				Controller.getCommunicationManager().warning("Could not open file:\n%s", file.getAbsolutePath());
+				Controller.getCommunicationManager().error("Could not open file:\n%s", file.getAbsolutePath());
 			}
 		}
 	}

@@ -2,6 +2,7 @@ package itb2.engine;
 
 import javax.swing.UIManager;
 
+import itb2.gui.CommunicationManagerImpl;
 import itb2.gui.EditorGui;
 
 public final class Controller {
@@ -27,6 +28,10 @@ public final class Controller {
 		return communicationManager;
 	}
 	
+	public static void setCommunicationManager(CommunicationManager communicationManager) {
+		Controller.communicationManager = communicationManager;
+	}
+	
 	public static void startApplication() {
 		try {
 			String systemLookAndFeel = UIManager.getSystemLookAndFeelClassName();
@@ -37,6 +42,9 @@ public final class Controller {
 		
 		EditorGui gui = new EditorGui();
 		gui.setDefaultCloseOperation(EditorGui.EXIT_ON_CLOSE);
+		
+		setCommunicationManager(new CommunicationManagerImpl(gui));
+		
 		gui.setVisible(true);
 	}
 	

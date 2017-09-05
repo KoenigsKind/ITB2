@@ -26,7 +26,8 @@ public class FilterManagerImpl implements FilterManager {
 	@Override
 	public Filter loadFilter(File file) throws IOException {
 		Filter filter = FilterIO.load(file);
-		filterSet.add(filter);
+		if(filter != null)
+			filterSet.add(filter);
 		return filter;
 	}
 	

@@ -47,6 +47,10 @@ public class FilterList extends JPanel {
 		filterList.addListSelectionListener(listener);
 	}
 	
+	public void addListDataListener(ListDataListener listener) {
+		filterList.getModel().addListDataListener(listener);
+	}
+	
 	private class FilterRenderer extends JLabel implements ListCellRenderer<Filter> {
 		private static final long serialVersionUID = 1442148494574959747L;
 		
