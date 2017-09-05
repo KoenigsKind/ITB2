@@ -1,18 +1,9 @@
 package itb2.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import java.awt.CardLayout;
 import java.util.List;
 
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -20,136 +11,58 @@ import itb2.image.Image;
 
 public class Workbench extends JPanel {
 	private static final long serialVersionUID = 1991777977948041657L;
-	private final ImagePainter painter;
+	private static final String SINGLE_IMAGE = "SingleImage", MULTIPLE_IMAGE = "MultipleImage";
+	private final SingleImagePainter singleImagePainter;
+	private final MultiImagePainter multiImagePainter;
 	private final DraggableScrollPane scrollPane;
+	private final CardLayout layout;
 	
 	public Workbench(ImageList imageList) {
-		painter = new ImagePainter();
 		
-		scrollPane = new DraggableScrollPane(painter);
+		// Single image
+		singleImagePainter = new SingleImagePainter();
+		scrollPane = new DraggableScrollPane(singleImagePainter);
 		
+		// Multiple image
+		multiImagePainter = new MultiImagePainter();
 		
-		setLayout(new BorderLayout());
-		add(scrollPane, BorderLayout.CENTER);
+		layout = new CardLayout();
+		setLayout(layout);
+		add(scrollPane, SINGLE_IMAGE);
+		add(multiImagePainter, MULTIPLE_IMAGE);
 		
 		imageList.addSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				List<Image> selected = imageList.getSelectedImages();
-				if(selected.size() == 1)
-					painter.setImage(selected.get(0));
-				else
-					; //TODO
+				if(selected.size() == 1) {
+					singleImagePainter.setImage(selected.get(0));
+					layout.show(Workbench.this, SINGLE_IMAGE);
+				} else {
+					multiImagePainter.setImages(selected);
+					layout.show(Workbench.this, MULTIPLE_IMAGE);
+				}
 			}
 		});
 	}
 	
 	public void resetZoom() {
-		painter.setZoom(1);
+		singleImagePainter.setZoom(1);
 	}
 	
 	public void fitToScreen() {
-		if(painter.image != null) {
-			int imgWidth = painter.image.getWidth();
-			int imgHeight = painter.image.getHeight();
+		Image image = singleImagePainter.getImage();
+		if(image != null) {
+			int imgWidth = image.getWidth();
+			int imgHeight = image.getHeight();
 			
 			double border = scrollPane.getVerticalScrollBar().getWidth();
 
 			double zoomHor = (getWidth() - border) / imgWidth;
 			double zoomVert = (getHeight() - border) / imgHeight;
 			double zoom = zoomHor < zoomVert ? zoomHor : zoomVert;
-			painter.setZoom(zoom);
+			singleImagePainter.setZoom(zoom);
 		} else
-			painter.setZoom(1);
-	}
-	
-	private class ImagePainter extends JPanel {
-		private static final long serialVersionUID = 642660245893976850L;
-		private final Dimension dimension;
-		private Image image;
-		private double zoom;
-		
-		ImagePainter() {
-			dimension = new Dimension();
-			zoom = 1;
-			setBackground(GuiConstants.WORKBENCH_BACKGROUND);
-			
-			addMouseWheelListener(new MouseWheelListener() {
-				@Override
-				public void mouseWheelMoved(MouseWheelEvent e) {
-					Point preZoom = getMouseOnImage();
-					
-					double factor = Math.pow(0.9, e.getWheelRotation());
-					zoom *= factor;
-					updateSize();
-					
-					Point postZoom = getMouseOnImage();
-					
-					double dx = (preZoom.x - postZoom.x) * zoom;
-					double dy = (preZoom.y - postZoom.y) * zoom;
-					
-					Rectangle rect = getVisibleRect();
-					rect.translate((int)dx, (int)dy);
-					scrollRectToVisible(rect);
-				}
-			});
-		}
-		
-		Point getMouseOnImage() {
-			Point p = MouseInfo.getPointerInfo().getLocation();
-			SwingUtilities.convertPointFromScreen(p, this);
-			p.x /= zoom;
-			p.y /= zoom;
-			return p;
-		}
-		
-		void setZoom(double zoom) {
-			this.zoom = zoom;
-			updateSize();
-		}
-		
-		void setImage(Image image) {
-			this.image = image;
-			updateSize();
-		}
-		
-		void updateSize() {
-			dimension.height = (int)(image == null ? 0 : image.getHeight() * zoom);
-			dimension.width = (int)(image == null ? 0 : image.getWidth() * zoom);
-			
-			setPreferredSize(dimension);
-			revalidate();
-			repaint();
-		}
-		
-		@Override
-		protected void paintComponent(Graphics g) {
-			super.paintComponent(g);
-			
-			if(image == null)
-				return;
-			
-			Graphics2D g2d = g instanceof Graphics2D ? (Graphics2D) g : null;
-			
-			int paneWidth = getWidth();
-			int paneHeight = getHeight();
-			
-			double imgWidth = image.getWidth() * zoom;
-			double imgHeight = image.getHeight() * zoom;
-			
-			double x = imgWidth < paneWidth ? (paneWidth - imgWidth) / 2 : 0;
-			double y = imgHeight < paneHeight ? (paneHeight - imgHeight) / 2 : 0;
-			
-			x /= zoom;
-			y /= zoom;
-			
-			if(g2d != null)
-				g2d.scale(zoom, zoom);
-			
-			g.drawImage(image.asBufferedImage(), (int)x, (int)y, null);
-			
-			if(g2d != null)
-				g2d.scale(1/zoom, 1/zoom);
-		}
+			singleImagePainter.setZoom(1);
 	}
 }

@@ -54,12 +54,11 @@ public class EditorGui extends JFrame {
 		
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, imageBoard, filterBoard);
 		splitPane.setDividerLocation(DEFAULT_WIDTH - 200);
+		splitPane.setResizeWeight(1);
 		
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(toolbar, BorderLayout.NORTH);
 		getContentPane().add(splitPane, BorderLayout.CENTER);
-		
-		// TODO Find a way to keep right side of splitpane same size, when resizing window
 		
 		pack();
 		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
