@@ -7,6 +7,9 @@ import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+
 import itb2.filter.Filter;
 
 public class FilterIO {
@@ -14,8 +17,21 @@ public class FilterIO {
 	
 	public static Filter load(File file) throws IOException {
 		if(file.getName().toLowerCase().endsWith(".java"))
-			return null; //TODO
+			return loadJava(file);
 		return loadClass(file);
+	}
+	
+	public static Filter loadJava(File file) throws IOException {
+		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+		
+		if(compiler == null)
+			throw new IOException("No compiler found");
+		
+		if(compiler.run(null, null, null, file.getPath()) != 0)
+			throw new IOException("Could not compile the file");
+		
+		String className = file.getName().replaceFirst(".java$", "");
+		return loadClass(file.getParentFile(), className);
 	}
 	
 	public static Filter loadClass(File file) throws IOException {
@@ -25,14 +41,13 @@ public class FilterIO {
 	
 	public static Filter loadClass(File file, String className) throws IOException {
 		Class<?> clazz;
-		String clazzName = file.getName().replaceFirst(".class$", "");
 		try {
-			clazz = Class.forName(clazzName);
+			clazz = Class.forName(className);
 		} catch(ClassNotFoundException e) {
 			try {
 				clazz = getLoader(file).loadClass(className);
 			} catch(ClassNotFoundException ee) {
-				throw new IOException("Could not find class '" + clazzName + "'");
+				throw new IOException("Could not find class '" + className + "'");
 			}
 		}
 		
