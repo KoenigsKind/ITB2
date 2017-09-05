@@ -19,6 +19,7 @@ import javax.swing.event.ListSelectionListener;
 
 import itb2.data.ObservableTreeSet;
 import itb2.engine.Controller;
+import itb2.engine.io.FilterWrapper;
 import itb2.filter.Filter;
 
 public class FilterList extends JPanel {
@@ -59,7 +60,10 @@ public class FilterList extends JPanel {
 
 		@Override
 		public Component getListCellRendererComponent(JList<? extends Filter> list, Filter value, int index, boolean isSelected, boolean cellHasFocus) {
-			setText(value.getClass().getSimpleName());
+			if(value instanceof FilterWrapper)
+				setText(((FilterWrapper) value).getWrappedClass().getSimpleName());
+			else
+				setText(value.getClass().getSimpleName());
 			setOpaque(isSelected);
 			return this;
 		}

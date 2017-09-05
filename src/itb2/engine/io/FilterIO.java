@@ -59,7 +59,7 @@ public class FilterIO {
 	}
 	
 	private static Filter wrapFilter(Object oldFilter) throws IOException {
-		return null;
+		return new FilterWrapper(oldFilter);
 	}
 	
 }
