@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionListener;
@@ -31,6 +32,7 @@ public class FilterList extends JPanel {
 		filterList.setModel(new FilterModel());
 		filterList.setCellRenderer(new FilterRenderer());
 		filterList.setBackground(GuiConstants.DEFAULT_BACKGROUND);
+		filterList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(filterList);

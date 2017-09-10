@@ -40,6 +40,8 @@ public class ImageList extends JPanel {
 		imageList.setCellRenderer(new ImageRenderer());
 		imageList.setBackground(GuiConstants.DEFAULT_BACKGROUND);
 		
+		//TODO Keep order of selection
+		
 		scrollPane = new JScrollPane();
 		scrollPane.setViewportView(imageList);
 		scrollPane.setBorder(null);

@@ -37,12 +37,12 @@ public class CommunicationManagerImpl implements CommunicationManager {
 
 	@Override
 	public void inProgress(double percent) {
-		// TODO Auto-generated method stub
+		// TODO Display filter progress
 	}
 
 	@Override
 	public void inProgress(double percent, String message, Object... param) {
-		// TODO Auto-generated method stub
+		// TODO Display filter progress
 	}
 
 }
