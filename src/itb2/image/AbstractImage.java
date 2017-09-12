@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -86,7 +87,7 @@ public abstract class AbstractImage implements Image {
 	
 	@Override
 	public Channel getChannel(int channel) {
-		return new ChannelImpl(channel);
+		return new SimpleChannel(this, channel);
 	}
 
 	@Override
@@ -129,45 +130,23 @@ public abstract class AbstractImage implements Image {
 		return image;
 	}
 	
-	protected abstract double[] getRGB(int x, int y);
-	
-	class ChannelImpl implements Channel {
-		final int channel;
-		
-		ChannelImpl(int channel) {
-			this.channel = channel;
-		}
-
-		@Override
-		public Image getImage() {
-			return AbstractImage.this;
-		}
-
-		@Override
-		public int getChannelID() {
-			return channel;
-		}
-
-		@Override
-		public int getWidth() {
-			return size.width;
-		}
-
-		@Override
-		public int getHeight() {
-			return size.height;
-		}
-
-		@Override
-		public double getValue(int row, int column) {
-			return AbstractImage.this.getValue(row, column, channel);
-		}
-
-		@Override
-		public void setValue(int row, int column, double value) {
-			AbstractImage.this.setValue(row, column, channel, value);
-		}
-		
+	@Override
+	public Iterator<Channel> iterator() {
+		return new Iterator<Channel>() {
+			int channel = 0;
+			
+			@Override
+			public boolean hasNext() {
+				return channel < channelCount;
+			}
+			
+			@Override
+			public Channel next() {
+				return getChannel(channel++);
+			}
+		};
 	}
+	
+	protected abstract double[] getRGB(int x, int y);
 
 }

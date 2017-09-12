@@ -5,7 +5,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
-public interface Image {
+public interface Image extends Iterable<Channel> {
 	
 	public int getWidth();
 	
@@ -17,13 +17,13 @@ public interface Image {
 	
 	
 	
-	public double[] getValue(int x, int y);
+	public double[] getValue(int row, int column);
 	
-	public double getValue(int x, int y, int channel);
+	public double getValue(int row, int column, int channel);
 	
-	public void setValue(int x, int y, double... values);
+	public void setValue(int row, int column, double... values);
 	
-	public void setValue(int x, int y, int channel, double value);
+	public void setValue(int row, int column, int channel, double value);
 	
 	
 	
