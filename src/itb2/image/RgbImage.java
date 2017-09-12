@@ -1,27 +1,30 @@
 package itb2.image;
 
-import itb2.utils.Utils;
+import java.awt.Dimension;
 
 public class RgbImage extends AbstractImage {
 	public static final int RED = 0, GREEN = 1, BLUE = 2;
 	
-	public RgbImage(double[][][] data) {
-		this(Utils.getCaller(0).getClassName(), data);
+	public RgbImage(int width, int height) {
+		super(width, height, 3);
 	}
 	
-	public RgbImage(String filename, double[][][] data) {
-		super(filename, data);
-		if(data.length != 3)
+	public RgbImage(Dimension size) {
+		super(size, 3);
+	}
+	
+	public RgbImage(double[][][] data) {
+		super(data);
+		
+		if(channelCount != 3)
 			throw new RuntimeException("data must have three channels (red, green and blue)");
 	}
 
 	@Override
 	protected double[] getRGB(int x, int y) {
-		double[][][] data = getData();
-		
-		double r = data[RED  ][x][y];
-		double g = data[GREEN][x][y];
-		double b = data[BLUE ][x][y];
+		double r = data[x][y][RED];
+		double g = data[x][y][GREEN];
+		double b = data[x][y][BLUE];
 		
 		return new double[]{r, g, b};
 	}

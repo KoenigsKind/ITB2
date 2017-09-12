@@ -1,42 +1,53 @@
 package itb2.utils;
 
+import itb2.image.Image;
+
 public class ImageUtils {
 	
 	private ImageUtils(){}
 	
-	public static void scaleLinearly(double[][]... data) {
-		double min = min(data);
-		double max = max(data);
+	public static void scaleLinearly(Image image) { //TODO Use streams
+		double min = min(image);
+		double max = max(image);
 		
-		for(int k = 0; k < data.length; k++) {
-			for(int x = 0; x < data[k].length; x++) {
-				for(int y = 0; y < data[k][x].length; y++) {
-					data[k][x][y] -= min;
-					data[k][x][y] *= 255 / max;
+		for(int x = 0; x < image.getWidth(); x++) {
+			for(int y = 0; y < image.getHeight(); y++) {
+				for(int c = 0; c < image.getChannelCount(); c++) {
+					double value = image.getValue(x, y, c);
+					value = (value - min) * 255 / max;
+					image.setValue(x, y, c, value);
 				}
 			}
 		}
 	}
 	
-	public static double max(double[][]... data) {
+	public static double max(Image image) { //TODO Use streams
 		double max = Double.MIN_VALUE;
 		
-		for(double[][] mat : data)
-			for(double[] row : mat)
-				for(double val : row)
+		for(int x = 0; x < image.getWidth(); x++) {
+			for(int y = 0; y < image.getHeight(); y++) {
+				for(int c = 0; c < image.getChannelCount(); c++) {
+					double val = image.getValue(x, y, c);
 					max = val > max ? val : max;
-		
+				}
+			}
+		}
+	
 		return max;
 	}
 	
-	public static double min(double[][]... data) {
+	public static double min(Image image) { //TODO Use streams
 		double min = Double.MAX_VALUE;
 		
-		for(double[][] mat : data)
-			for(double[] row : mat)
-				for(double val : row)
+		for(int x = 0; x < image.getWidth(); x++) {
+			for(int y = 0; y < image.getHeight(); y++) {
+				for(int c = 0; c < image.getChannelCount(); c++) {
+					double val = image.getValue(x, y, c);
 					min = val < min ? val : min;
-		
+				}
+			}
+		}
+	
 		return min;
 	}
 

@@ -9,8 +9,8 @@ import itb2.engine.Controller;
 import itb2.filter.Filter;
 import itb2.filter.FilterProperties;
 import itb2.image.Image;
+import itb2.image.ImageConverter;
 import itb2.image.RgbImage;
-import itb2.image.Selection;
 
 public class FilterWrapper implements Filter {
 	private final Object oldFilter;
@@ -54,6 +54,28 @@ public class FilterWrapper implements Filter {
 			return null;
 		}
 	}
+
+	@Override
+	public Image[] filter(Image[] input) {
+		if(input.length >= 1 && input.length <= 2) {
+			int width = input[0].getWidth(), height = input[0].getHeight();
+			double[][][] dst = new double[3][width][height];
+			
+			callMethod(setDimensions, input[0].getWidth(), input[0].getHeight());
+			
+			for(Image image : input)
+				for(Point selection : image.getSelections())
+					callMethod(handleMouseClick, selection);
+			
+			if(input.length == 1)
+				callMethod(filter1, toDoubleMatrix(input[0]), dst);
+			else
+				callMethod(filter2, toDoubleMatrix(input[0]), toDoubleMatrix(input[1]), dst);
+			
+			return new Image[]{toImage(dst, width, height)};
+		}
+		return new Image[0];
+	}
 	
 	private <T> T callMethod(Method method, Object... parameter) {
 		if(method != null) try {
@@ -65,30 +87,30 @@ public class FilterWrapper implements Filter {
 		}
 		return null;
 	}
-
-	@Override
-	public Image[] filter(Image[] input) {
-		if(input.length >= 1 && input.length <= 2) {
-			int width = input[0].getWidth(), height = input[0].getHeight();
-			double[][][] dst = new double[3][width][height];
-			
-			callMethod(setDimensions, input[0].getWidth(), input[0].getHeight());
-			
-			for(Image image : input)
-				for(Selection selection : image.getSelections())
-					callMethod(handleMouseClick, new Point(selection.x, selection.y));
-			
-			if(input.length == 1)
-				callMethod(filter1, input[0].getData(), dst);
-			else
-				callMethod(filter2, input[0].getData(), input[1].getData(), dst);
-			
-			return new Image[]{new RgbImage(dst)};
-		}
-		return new Image[0];
+	
+	private double[][][] toDoubleMatrix(Image image) {
+		image = ImageConverter.convert(image, RgbImage.class);
+		
+		int width = image.getWidth();
+		int height = image.getHeight();
+		
+		double[][][] matrix = new double[3][width][height];
+		for(int x = 0; x < width; x++)
+			for(int y = 0; y < height; y++)
+				for(int c = 0; c < 3; c++)
+					matrix[c][x][y] = image.getValue(x, y, c);
+		
+		return matrix;
 	}
 	
-	
+	private Image toImage(double[][][] matrix, int width, int height) {
+		Image image = new RgbImage(width, height);
+		for(int x = 0; x < width; x++)
+			for(int y = 0; y < height; y++)
+				for(int c = 0; c < 3; c++)
+					image.setValue(x, y, c, matrix[c][x][y]);
+		return image;
+	}
 
 	@Override
 	public FilterProperties getProperties() {

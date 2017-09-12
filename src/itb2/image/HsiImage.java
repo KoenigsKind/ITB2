@@ -1,36 +1,40 @@
 package itb2.image;
 
-import itb2.utils.Utils;
+import java.awt.Dimension;
 
 public class HsiImage extends AbstractImage {
+	public static final double MAX_HUE = 360, MAX_SATURATION = 100, MAX_INTENSITY = 255;
 	public static final int HUE = 0, SATURATION = 1, INTENSITY = 2;
 	
-	public HsiImage(double[][][] data) {
-		this(Utils.getCaller(0).getClassName(), data);
+	public HsiImage(int width, int height) {
+		super(width, height, 3);
 	}
 	
-	public HsiImage(String filename, double[][][] data) {
-		super(filename, data);
-		if(data.length != 3)
+	public HsiImage(Dimension size) {
+		super(size, 3);
+	}
+	
+	public HsiImage(double[][][] data) {
+		super(data);
+		
+		if(channelCount != 3)
 			throw new RuntimeException("data must have three channels (hue , saturation and intensity)");
 	}
 	
 	@Override
 	protected double[] getRGB(int x, int y) {
-		double[][][] data = getData();
-		
-		double h = data[HUE       ][x][y];
-		double s = data[SATURATION][x][y];
-		double i = data[INTENSITY ][x][y];
+		double h = data[x][y][HUE];
+		double s = data[x][y][SATURATION];
+		double i = data[x][y][INTENSITY];
 		
 		return hsi2rgb(h, s, i);
 	}
 	
 	private double[] hsi2rgb(double h, double s, double i) {
 		// normalisierte HSI-Werte:
-		h *= Math.PI / 180;
-		s /= 100;
-		i /= 255;
+		h *= 2 * Math.PI / MAX_HUE;
+		s /= MAX_SATURATION;
+		i /= MAX_INTENSITY;
 		double x = i * (1 - s);
 		double y = i * (1 + ((s * Math.cos(h)) / (Math.cos(Math.PI / 3 - h))));
 		double z = 3 * i - (x + y);

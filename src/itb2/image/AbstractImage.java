@@ -1,61 +1,118 @@
 package itb2.image;
 
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.LinkedList;
 import java.util.List;
 
 public abstract class AbstractImage implements Image {
-	private final List<Selection> selections;
-	private final String filename;
-	private final double[][][] data;
-	private final int width, height, channelCount;
+	protected final List<Point> selections;
+	protected final Dimension size;
+	protected final int channelCount;
+	protected final double[][][] data;
+	protected Object name;
+	private BufferedImage image;
 	
-	public AbstractImage(String filename, double[][]... data) {
+	public AbstractImage(int width, int height, int channelCount) {
+		this(new Dimension(width, height), channelCount);
+	}
+	
+	public AbstractImage(Dimension size, int channelCount) {
 		this.selections = new LinkedList<>();
-		this.filename = filename;
+		this.channelCount = channelCount;
+		this.size = size;
+		this.data = new double[size.width][size.height][channelCount];
+	}
+	
+	public AbstractImage(double[][][] data) {
+		this.selections = new LinkedList<Point>();
 		this.data = data;
-		this.channelCount = data.length;
-		this.width = channelCount == 0 ? 0 : data[0].length;
-		this.height = width == 0 ? 0 : data[0][0].length;
+		
+		this.size = new Dimension(data.length, data[0].length);
+		this.channelCount = data[0][0].length;
+		
+		for(int x = 0; x < size.width; x++)
+			for(int y = 0; y < size.height; y++)
+				if(data[x][y].length != channelCount)
+					throw new ArrayIndexOutOfBoundsException(); // fail fast
 	}
 
 	@Override
 	public int getWidth() {
-		return width;
+		return size.width;
 	}
 
 	@Override
 	public int getHeight() {
-		return height;
+		return size.height;
 	}
-
+	
+	@Override
+	public Dimension getSize() {
+		return (Dimension)size.clone();
+	}
+	
 	@Override
 	public int getChannelCount() {
 		return channelCount;
 	}
-
+	
 	@Override
-	public double[][][] getData() {
-		return data;
+	public double[] getValue(int x, int y) {
+		return data[x][y];
+	}
+	
+	@Override
+	public double getValue(int x, int y, int channel) {
+		return data[x][y][channel];
+	}
+	
+	@Override
+	public void setValue(int x, int y, double... values) {
+		if(values.length != channelCount)
+			throw new ArrayIndexOutOfBoundsException();
+		
+		data[x][y] = values;
+		image = null;
+	}
+	
+	@Override
+	public void setValue(int x, int y, int channel, double value) {
+		data[x][y][channel] = value;
+		image = null;
+	}
+	
+	@Override
+	public Channel getChannel(int channel) {
+		return new ChannelImpl(channel);
 	}
 
 	@Override
-	public List<Selection> getSelections() {
+	public List<Point> getSelections() {
 		return selections;
 	}
-
+	
 	@Override
-	public String getFileName() {
-		return filename;
+	public Object getName() {
+		return name;
+	}
+	
+	@Override
+	public void setName(Object name) {
+		this.name = name;
 	}
 
 	@Override
 	public BufferedImage asBufferedImage() {
-		double[][] samples = new double[3][width * height]; 
-		for(int x = 0; x < width; x++) {
-			for(int y = 0; y < height; y++) {
-				int index = x + width * y;
+		if(image != null)
+			return image;
+		
+		double[][] samples = new double[3][size.width * size.height]; 
+		for(int x = 0; x < size.width; x++) {
+			for(int y = 0; y < size.height; y++) {
+				int index = x + size.width * y;
 				
 				double[] rgb = getRGB(x, y);
 				for(int k = 0; k < 3; k++)
@@ -63,15 +120,54 @@ public abstract class AbstractImage implements Image {
 			}
 		}
 		
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		image = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
 		WritableRaster raster = image.getRaster();
 		
 		for(int k = 0; k < 3; k++)
-			raster.setSamples(0, 0, width, height, k, samples[k]);
+			raster.setSamples(0, 0, size.width, size.height, k, samples[k]);
 		
 		return image;
 	}
 	
 	protected abstract double[] getRGB(int x, int y);
+	
+	class ChannelImpl implements Channel {
+		final int channel;
+		
+		ChannelImpl(int channel) {
+			this.channel = channel;
+		}
+
+		@Override
+		public Image getImage() {
+			return AbstractImage.this;
+		}
+
+		@Override
+		public int getChannelID() {
+			return channel;
+		}
+
+		@Override
+		public int getWidth() {
+			return size.width;
+		}
+
+		@Override
+		public int getHeight() {
+			return size.height;
+		}
+
+		@Override
+		public double getValue(int row, int column) {
+			return AbstractImage.this.getValue(row, column, channel);
+		}
+
+		@Override
+		public void setValue(int row, int column, double value) {
+			AbstractImage.this.setValue(row, column, channel, value);
+		}
+		
+	}
 
 }

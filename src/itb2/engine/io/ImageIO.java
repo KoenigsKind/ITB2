@@ -14,16 +14,18 @@ public class ImageIO {
 		BufferedImage bufferedImage = javax.imageio.ImageIO.read(file);
 		Raster raster = bufferedImage.getData();
 		int width = raster.getWidth(), height = raster.getHeight();
-		double[][][] data = new double[3][width][height];
+		double[][][] data = new double[width][height][3];
 		double[] rgb = new double[3];
 		for(int x = raster.getMinX(); x < width; x++) {
 			for(int y = raster.getMinY(); y < height; y++) {
 				raster.getPixel(x, y, rgb);
-				for(int k = 0; k < 3; k++)
-					data[k][x][y] = rgb[k];
+				for(int c = 0; c < 3; c++)
+					data[x][y][c] = rgb[c];
 			}
 		}
-		return new RgbImage(file.getPath(), data);
+		Image image = new RgbImage(data);
+		image.setName(file);
+		return image;
 	}
 	
 	public static void save(Image image, String format, File file) throws IOException {

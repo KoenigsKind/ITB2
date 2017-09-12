@@ -1,7 +1,7 @@
 package itb2.image;
 
 public final class ImageFactory {
-	public static final Class<?> RGB = RgbImage.class, HSV = HsiImage.class, GRAYSCALE = GreyscaleImage.class;
+	public static final Class<?> RGB = RgbImage.class, HSV = HsiImage.class, GRAYSCALE = GrayscaleImage.class;
 	private ImageFactory() {}
 	
 	public static Image create(Class<?> type, double[][]... data) {
@@ -10,7 +10,7 @@ public final class ImageFactory {
 		if(type == HSV)
 			return new HsiImage(data);
 		if(type == GRAYSCALE)
-			return new GreyscaleImage(data[0]);
+			return new GrayscaleImage(data[0]);
 		
 		throw new RuntimeException("Unknown type: " + type.getName());
 	}

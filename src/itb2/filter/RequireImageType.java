@@ -12,6 +12,6 @@ import itb2.image.Image;
 @Target(TYPE)
 public @interface RequireImageType {
 	
-	Class<? extends Image>[] value();
+	Class<? extends Image> value();
 
 }
