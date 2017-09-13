@@ -22,11 +22,11 @@ public class GroupedImage extends HsiImage {
 			throw new RuntimeException("Group count must be at least 2!");
 	}
 	
-	public void setGroup(int x, int y, int groupID) {
+	public void setGroup(int row, int column, int groupID) {
 		Group group = groups[groupID];
 		
 		for(int c = 0; c < 3; c++)
-			data[x][y][c] = group.hsi[c];
+			data[row][column][c] = group.hsi[c];
 	}
 	
 	class Group {

@@ -10,38 +10,41 @@ import java.util.List;
 
 //TODO !! IMPORTANT !! Make sure height, width, row, column (coordinate system) is consistent
 
-public abstract class AbstractImage implements Image {
+public abstract class AbstractByteImage implements Image {
 	protected final List<Point> selections;
 	protected final Dimension size;
 	protected final int channelCount;
-	protected final double[][][] data;
+	protected final int[][] data;
 	protected Object name;
 	private BufferedImage image;
 	
-	public AbstractImage(int width, int height, int channelCount) {
+	public AbstractByteImage(int width, int height, int channelCount) {
 		this(new Dimension(width, height), channelCount);
 	}
 	
-	public AbstractImage(Dimension size, int channelCount) {
+	public AbstractByteImage(Dimension size, int channelCount) {
+		if(channelCount > 4)
+			throw new IndexOutOfBoundsException("channelCount must be at max 4");
+		
 		this.selections = new LinkedList<>();
 		this.channelCount = channelCount;
 		this.size = size;
-		this.data = new double[size.height][size.width][channelCount];
+		this.data = new int[size.height][size.width];
 	}
 	
-	public AbstractImage(double[][][] data) {
-		this.selections = new LinkedList<Point>();
-		this.data = data;
-		
-		this.size = new Dimension(data[0].length, data.length);
-		this.channelCount = data[0][0].length;
-		
-		for(int x = 0; x < size.height; x++)
-			for(int y = 0; y < size.width; y++)
-				if(data[x][y].length != channelCount)
-					throw new ArrayIndexOutOfBoundsException(); // fail fast
+	protected int encode(int value, int channel) {
+		return (value & 0xFF) << (8 * channel);
 	}
-
+	
+	protected int encode(int iValue, int value, int channel) {
+		int mask = 0xFF << (8 * channel);
+		return (iValue & ~mask) | encode(value, channel);
+	}
+	
+	protected int decode(int iValue, int channel) {
+		return (iValue >>> (8 * channel)) & 0xFF;
+	}
+	
 	@Override
 	public int getWidth() {
 		return size.width;
@@ -64,12 +67,16 @@ public abstract class AbstractImage implements Image {
 	
 	@Override
 	public double[] getValue(int row, int column) {
-		return data[row][column];
+		int iValue = data[row][column];
+		double[] values = new double[channelCount];
+		for(int channel = 0; channel < channelCount; channel++)
+			values[channel] = decode(iValue, channel);
+		return values;
 	}
 	
 	@Override
 	public double getValue(int row, int column, int channel) {
-		return data[row][column][channel];
+		return decode(data[row][column], channel);
 	}
 	
 	@Override
@@ -77,14 +84,23 @@ public abstract class AbstractImage implements Image {
 		if(values.length != channelCount)
 			throw new ArrayIndexOutOfBoundsException();
 		
-		for(int channel = 0; channel < channelCount; channel++)
-			data[row][column][channel] = values[channel];
-		image = null;
+		int iValue = 0;
+		for(int channel = 0; channel < channelCount; channel++) {
+			int value = (int)values[channel];
+			value = value < 0 ? 0 : value > 255 ? 255 : value;			
+			iValue |= encode(value, channel);
+		}
+		data[row][column] = iValue;
 	}
 	
 	@Override
 	public void setValue(int row, int column, int channel, double value) {
-		data[row][column][channel] = value;
+		int val = value < 0 ? 0 : value > 255 ? 255 : (int)value;
+		
+		int iValue = data[row][column];
+		iValue = encode(iValue, val, channel);
+		data[row][column] = iValue;
+		
 		image = null;
 	}
 	

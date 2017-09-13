@@ -22,10 +22,10 @@ public class HsiImage extends AbstractImage {
 	}
 	
 	@Override
-	protected double[] getRGB(int x, int y) {
-		double h = data[x][y][HUE];
-		double s = data[x][y][SATURATION];
-		double i = data[x][y][INTENSITY];
+	protected double[] getRGB(int row, int column) {
+		double h = data[row][column][HUE];
+		double s = data[row][column][SATURATION];
+		double i = data[row][column][INTENSITY];
 		
 		return hsi2rgb(h, s, i);
 	}

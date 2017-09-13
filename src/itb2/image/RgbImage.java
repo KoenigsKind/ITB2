@@ -21,10 +21,10 @@ public class RgbImage extends AbstractImage {
 	}
 
 	@Override
-	protected double[] getRGB(int x, int y) {
-		double r = data[x][y][RED];
-		double g = data[x][y][GREEN];
-		double b = data[x][y][BLUE];
+	protected double[] getRGB(int row, int column) {
+		double r = data[row][column][RED];
+		double g = data[row][column][GREEN];
+		double b = data[row][column][BLUE];
 		
 		return new double[]{r, g, b};
 	}

@@ -16,22 +16,22 @@ public class GrayscaleImage extends AbstractImage {
 	public GrayscaleImage(double[][] data) {
 		this(data.length, data[0].length);
 		
-		for(int x = 0; x < size.width; x++)
-			for(int y = 0; y < size.height; y++)
-				this.data[x][y][0] = data[x][y];
+		for(int row = 0; row < size.height; row++)
+			for(int col = 0; col < size.width; col++)
+				this.data[row][col][0] = data[row][col];
 	}
 	
 	public GrayscaleImage(Channel channel) {
 		super(channel.getWidth(), channel.getHeight(), 1);
 		
-		for(int x = 0; x < size.width; x++)
-			for(int y = 0; y < size.height; y++)
-				this.data[x][y][0] = channel.getValue(x, y);
+		for(int row = 0; row < size.height; row++)
+			for(int col = 0; col < size.width; col++)
+				this.data[row][col][0] = channel.getValue(row, col);
 	}
 
 	@Override
-	protected double[] getRGB(int x, int y) {
-		double value = data[x][y][GREYSCALE];
+	protected double[] getRGB(int row, int column) {
+		double value = data[row][column][GREYSCALE];
 		
 		return new double[]{value, value, value};
 	}
