@@ -2,6 +2,7 @@ package itb2.gui.property;
 
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -16,25 +17,35 @@ class IntegerPropertyBuilder extends PropertyBuilder {
 		
 		JTextField value = new JTextField(Integer.toString(integerProperty.value));
 		value.setFont(VALUE_FONT);
-		//TODO Allow only [-0-9] https://stackoverflow.com/questions/11093326/restricting-jtextfield-input-to-integers
 		value.getDocument().addDocumentListener(new DocumentListener() {
+			private String oldVal = value.getText();
+			
 			@Override
 			public void removeUpdate(DocumentEvent e) {
+				System.out.println("Remove");
 				update();
 			}
 			
 			@Override
 			public void insertUpdate(DocumentEvent e) {
+				System.out.println("Insert");
 				update();
 			}
 			
 			@Override
 			public void changedUpdate(DocumentEvent e) {
+				System.out.println("Change");
 				update();
 			}
 			
 			private void update() {
-				integerProperty.value = Integer.parseInt(value.getText());
+				try {
+					int val = value.getText().isEmpty() ? 0 : Integer.parseInt(value.getText());
+					integerProperty.value = val;
+					oldVal = value.getText();
+				} catch(NumberFormatException e) {
+					SwingUtilities.invokeLater(() -> value.setText(oldVal));
+				}
 			}
 		});
 		
