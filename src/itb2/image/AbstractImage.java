@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,7 +65,7 @@ public abstract class AbstractImage implements Image {
 	
 	@Override
 	public double[] getValue(int row, int column) {
-		return data[row][column];
+		return Arrays.copyOf(data[row][column], channelCount);
 	}
 	
 	@Override
