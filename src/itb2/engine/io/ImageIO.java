@@ -14,13 +14,15 @@ public class ImageIO {
 		BufferedImage bufferedImage = javax.imageio.ImageIO.read(file);
 		Raster raster = bufferedImage.getData();
 		int width = raster.getWidth(), height = raster.getHeight();
+		int minCol = raster.getMinX(), minRow = raster.getMinY();
+		
 		Image image = new RgbImage(width, height);
 		image.setName(file);
 		
 		double[] rgb = new double[3];
-		for(int col = raster.getMinX(); col < width; col++) {
-			for(int row = raster.getMinY(); row < height; row++) {
-				raster.getPixel(col, row, rgb);
+		for(int col = 0; col < width; col++) {
+			for(int row = 0; row < height; row++) {
+				raster.getPixel(minCol + col, minRow + row, rgb);
 				image.setValue(row, col, rgb);
 			}
 		}

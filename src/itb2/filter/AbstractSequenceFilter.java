@@ -8,12 +8,16 @@ import itb2.data.LimitedList;
 import itb2.image.Image;
 
 public abstract class AbstractSequenceFilter extends AbstractFilter {
-	private static final int MEMORY_SIZE = 20;
+	private static final int MEMORY_SIZE = 1;
 	private final LimitedList<Image> lastImages;
 	private Image[] skippedImages;
 	
 	public AbstractSequenceFilter() {
-		lastImages = new LimitedList<>(MEMORY_SIZE);
+		this(MEMORY_SIZE);
+	}
+	
+	public AbstractSequenceFilter(int memorySize) {
+		lastImages = new LimitedList<>(memorySize);
 		skippedImages = new Image[0];
 	}
 	
