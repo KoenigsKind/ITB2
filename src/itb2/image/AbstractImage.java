@@ -56,7 +56,7 @@ public abstract class AbstractImage implements Image {
 		this.selections = new LinkedList<>();
 		this.channelCount = channelCount;
 		this.size = new Dimension(width, height);
-		this.data = new double[width][height][channelCount];
+		this.data = new double[height][width][channelCount];
 	}
 	
 	/**
