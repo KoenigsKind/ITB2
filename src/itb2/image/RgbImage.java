@@ -4,17 +4,43 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 
+/**
+ * Represents an image with red, green and blue channel
+ *  
+ * @author Micha Strauch
+ */
 public class RgbImage extends AbstractImage {
+	
+	/** IDs for each channel */
 	public static final int RED = 0, GREEN = 1, BLUE = 2;
 	
+	/**
+	 * Constructs an image with given size.
+	 * 
+	 * @param width  Width of this image
+	 * @param height Height of this image
+	 */
 	public RgbImage(int width, int height) {
 		super(width, height, 3);
 	}
 	
+	/**
+	 * Constructs an image with given size.
+	 * 
+	 * @param width  Width of this image
+	 * @param height Height of this image
+	 */
 	public RgbImage(Dimension size) {
 		super(size, 3);
 	}
 	
+	/**
+	 * Constructs an image from the given data matrix.
+	 * The matrix must be off the size: double[width][height][3]
+	 * With the last Array being the RGB-Channel.
+	 * 
+	 * @param data Original data
+	 */
 	public RgbImage(double[][][] data) {
 		super(data);
 		
@@ -22,6 +48,11 @@ public class RgbImage extends AbstractImage {
 			throw new RuntimeException("data must have three channels (red, green and blue)");
 	}
 	
+	/**
+	 * Constructs an image from the given {@link BufferedImage}
+	 * 
+	 * @param image Original image
+	 */
 	public RgbImage(BufferedImage image) {
 		super(image.getWidth(), image.getHeight(), 3);
 		

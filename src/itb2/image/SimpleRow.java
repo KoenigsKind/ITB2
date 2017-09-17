@@ -29,7 +29,7 @@ class SimpleRow implements Row {
 	}
 
 	@Override
-	public int getSize() {
+	public int getWidth() {
 		return image.getWidth();
 	}
 

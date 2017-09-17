@@ -9,27 +9,61 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-//TODO !! IMPORTANT !! Make sure height, width, row, column (coordinate system) is consistent
-
+/**
+ * Abstract image, for image implementations that can store
+ * a double value for each channel of each pixel.
+ * 
+ * @author Micha Strauch
+ */
 public abstract class AbstractImage implements Image {
+	
+	/** List of selections */
 	protected final List<Point> selections;
+	
+	/** Size of this image */
 	protected final Dimension size;
+	
+	/** Number of channels */
 	protected final int channelCount;
+	
+	/** Data of this image <i>double[width][height][3]</i> */
 	protected final double[][][] data;
+	
+	/** Name of this image */
 	protected Object name;
+	
+	/** Last rendered state of this image */
 	private BufferedImage image;
 	
-	public AbstractImage(int width, int height, int channelCount) {
-		this(new Dimension(width, height), channelCount);
+	/**
+	 * Constructs an image with given size and channel count
+	 * 
+	 * @param size         Size of this image
+	 * @param channelCount Number of channels
+	 */
+	public AbstractImage(Dimension size, int channelCount) {
+		this(size.width, size.height, channelCount);
 	}
 	
-	public AbstractImage(Dimension size, int channelCount) {
+	/**
+	 * Constructs an image with given size and channel count
+	 * 
+	 * @param width        Width of this image
+	 * @param height       Height of this image
+	 * @param channelCount Number of channels
+	 */
+	public AbstractImage(int width, int height, int channelCount) {
 		this.selections = new LinkedList<>();
 		this.channelCount = channelCount;
-		this.size = size;
-		this.data = new double[size.height][size.width][channelCount];
+		this.size = new Dimension(width, height);
+		this.data = new double[width][height][channelCount];
 	}
 	
+	/**
+	 * Constructs an image using the given data
+	 * 
+	 * @param data Data of this image
+	 */
 	public AbstractImage(double[][][] data) {
 		this.selections = new LinkedList<Point>();
 		this.data = data;
@@ -151,6 +185,14 @@ public abstract class AbstractImage implements Image {
 		};
 	}
 	
+	/**
+	 * Used for {@link #asBufferedImage()}. The implementing image
+	 * should return the RGB value for the given pixel.
+	 * 
+	 * @param row    Row of the pixel
+	 * @param column Column of the pixel
+	 * @return RBB value for pixel
+	 */
 	protected abstract double[] getRGB(int row, int column);
 
 }

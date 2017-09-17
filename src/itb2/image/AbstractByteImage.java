@@ -8,39 +8,93 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-//TODO !! IMPORTANT !! Make sure height, width, row, column (coordinate system) is consistent
-
+/**
+ * Abstract image, for image implementations that can store
+ * a byte value for each channel of each pixel.
+ * Implementations can have up to four channels.
+ * 
+ * @author Micha Strauch
+ */
 public abstract class AbstractByteImage implements Image {
+	
+	/** List of selections */
 	protected final List<Point> selections;
+
+	/** Size of this image */
 	protected final Dimension size;
+
+	/** Number of channels */
 	protected final int channelCount;
+
+	/** Data of this image */
 	protected final int[][] data;
+
+	/** Name of this image */
 	protected Object name;
+
+	/** Last rendered state of this image */
 	private BufferedImage image;
 	
-	public AbstractByteImage(int width, int height, int channelCount) {
-		this(new Dimension(width, height), channelCount);
+	/**
+	 * Constructs an image with given size and channel count
+	 * 
+	 * @param size         Size of this image
+	 * @param channelCount Number of channels
+	 */
+	public AbstractByteImage(Dimension size, int channelCount) {
+		this(size.width, size.height, channelCount);
 	}
 	
-	public AbstractByteImage(Dimension size, int channelCount) {
+	/**
+	 * Constructs an image with given size and channel count
+	 * 
+	 * @param width        Width of this image
+	 * @param height       Height of this image
+	 * @param channelCount Number of channels
+	 */
+	public AbstractByteImage(int width, int height, int channelCount) {
 		if(channelCount > 4)
 			throw new IndexOutOfBoundsException("channelCount must be at max 4");
 		
 		this.selections = new LinkedList<>();
 		this.channelCount = channelCount;
-		this.size = size;
+		this.size = new Dimension(width, height);
 		this.data = new int[size.height][size.width];
 	}
 	
+	/**
+	 * Encodes the given value and channel for storing,
+	 * while settings the other channels to 0.
+	 * 
+	 * @param value   Value to encode
+	 * @param channel Channel ID of value
+	 * @return Encoded value
+	 */
 	protected int encode(int value, int channel) {
 		return (value & 0xFF) << (8 * channel);
 	}
 	
+	/**
+	 * Encodes the given value and channel for storing,
+	 * while using values from iValue for other channels.
+	 * 
+	 * @param iValue  Default values for other channels
+	 * @param value   Value to encode
+	 * @param channel Channel ID of value
+	 * @return Encoded value
+	 */
 	protected int encode(int iValue, int value, int channel) {
 		int mask = 0xFF << (8 * channel);
 		return (iValue & ~mask) | encode(value, channel);
 	}
 	
+	/**
+	 * Decodes the value for the given channel.
+	 * 
+	 * @param iValue  Encoded values
+	 * @param channel Channel ID to retrieve value for
+	 * @return Decoded channel value
+	 */
 	protected int decode(int iValue, int channel) {
 		return (iValue >>> (8 * channel)) & 0xFF;
 	}
@@ -166,6 +220,14 @@ public abstract class AbstractByteImage implements Image {
 		};
 	}
 	
+	/**
+	 * Used for {@link #asBufferedImage()}. The implementing image
+	 * should return the RGB value for the given pixel.
+	 * 
+	 * @param row    Row of the pixel
+	 * @param column Column of the pixel
+	 * @return RBB value for pixel
+	 */
 	protected abstract double[] getRGB(int row, int column);
 
 }

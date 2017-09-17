@@ -29,7 +29,7 @@ class SimpleColumn implements Column {
 	}
 
 	@Override
-	public int getSize() {
+	public int getHeight() {
 		return image.getHeight();
 	}
 

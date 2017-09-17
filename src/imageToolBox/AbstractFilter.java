@@ -10,7 +10,7 @@ import itb2.image.Image;
 import itb2.image.RgbImage;
 
 /**
- * This class only exists for backwards compatibility and should not be used!<br>
+ * This class only exists for backwards compatibility and <u>should not be used!</u><br>
  * <br>
  * <strong>Use instead: {@link itb2.filter.AbstractFilter}</strong>
  */
