@@ -10,7 +10,7 @@ public class GrayscaleFilter extends AbstractFilter {
 	public static final RgbConverter DEFAULT, CCIR_601, BT_709, SMPTE_240M;
 	
 	static {
-		DEFAULT       = new RgbConverter(" - Default - ",     (r,g,b) -> (r + g + b) / 3);
+		DEFAULT    = new RgbConverter(" - Default - ",     (r,g,b) -> (r + g + b) / 3);
 		CCIR_601   = new RgbConverter("CCIR 601",   (r,g,b) -> 0.2990*r + 0.5870*g + 0.1140*b);
 		BT_709     = new RgbConverter("BT.709",     (r,g,b) -> 0.2126*r + 0.7152*g + 0.0722*b);
 		SMPTE_240M = new RgbConverter("SMPTE 240M", (r,g,b) -> 0.2120*r + 0.7010*g + 0.0870*b);

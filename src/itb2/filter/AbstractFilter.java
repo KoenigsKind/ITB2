@@ -43,4 +43,34 @@ public abstract class AbstractFilter implements Filter {
 		return filter.filter(image);
 	}
 	
+	/**
+	 * Auxiliary function. Returns:<br>
+	 *  - val, if min <= val <= max<br>
+	 *  - min, if val < min<br>
+	 *  - max, if val > max<br>
+	 * 
+	 * @param min Minimum value
+	 * @param val Given value
+	 * @param max Maximum value
+	 * @return Value, bounded to min and max
+	 */
+	protected static int bound(int min, int val, int max) {
+		return min >= val ? min : max <= val ? max : val;
+	}
+	
+	/**
+	 * Auxiliary function. Returns:<br>
+	 *  - val, if min <= val <= max<br>
+	 *  - min, if val < min<br>
+	 *  - max, if val > max<br>
+	 * 
+	 * @param min Minimum value
+	 * @param val Given value
+	 * @param max Maximum value
+	 * @return Value, bounded to min and max
+	 */
+	protected static double bound(double min, double val, double max) {
+		return min >= val ? min : max <= val ? max : val;
+	}
+	
 }

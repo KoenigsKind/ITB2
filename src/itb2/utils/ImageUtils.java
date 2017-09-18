@@ -10,12 +10,12 @@ public class ImageUtils {
 		double min = min(image);
 		double max = max(image);
 		
-		for(int x = 0; x < image.getWidth(); x++) {
-			for(int y = 0; y < image.getHeight(); y++) {
+		for(int row = 0; row < image.getHeight(); row++) {
+			for(int col = 0; col < image.getWidth(); col++) {
 				for(int c = 0; c < image.getChannelCount(); c++) {
-					double value = image.getValue(x, y, c);
+					double value = image.getValue(row, col, c);
 					value = (value - min) * 255 / max;
-					image.setValue(x, y, c, value);
+					image.setValue(row, col, c, value);
 				}
 			}
 		}
@@ -24,10 +24,10 @@ public class ImageUtils {
 	public static double max(Image image) { //TODO Use streams
 		double max = Double.MIN_VALUE;
 		
-		for(int x = 0; x < image.getWidth(); x++) {
-			for(int y = 0; y < image.getHeight(); y++) {
+		for(int row = 0; row < image.getHeight(); row++) {
+			for(int col = 0; col < image.getWidth(); col++) {
 				for(int c = 0; c < image.getChannelCount(); c++) {
-					double val = image.getValue(x, y, c);
+					double val = image.getValue(row, col, c);
 					max = val > max ? val : max;
 				}
 			}
@@ -39,10 +39,10 @@ public class ImageUtils {
 	public static double min(Image image) { //TODO Use streams
 		double min = Double.MAX_VALUE;
 		
-		for(int x = 0; x < image.getWidth(); x++) {
-			for(int y = 0; y < image.getHeight(); y++) {
+		for(int row = 0; row < image.getHeight(); row++) {
+			for(int col = 0; col < image.getWidth(); col++) {
 				for(int c = 0; c < image.getChannelCount(); c++) {
-					double val = image.getValue(x, y, c);
+					double val = image.getValue(row, col, c);
 					min = val < min ? val : min;
 				}
 			}
