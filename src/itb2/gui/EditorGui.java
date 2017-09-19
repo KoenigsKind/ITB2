@@ -56,6 +56,7 @@ public class EditorGui extends JFrame {
 	/** FileChooser for Filter and Images */
 	private JFileChooser filterChooser, imageChooser;
 	
+	/** Constructs the Main-GUI */
 	public EditorGui() {
 		super(TITLE);
 		

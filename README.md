@@ -1,11 +1,11 @@
-#ImageToolBox²
+# ImageToolBox²
 
 ## Basic concept
 ### Image
 An image has multiple channels, a width and a height. The coordinate origin is in the
 top left corner; the rows are counting top to bottom, and the columns are counting left
 to right. There are a few basic image types, but users can create there own types, if
-they provide Filter for converting images from basic types to their own type.
+they provide filter for converting images from basic types to their own type.
 
 The basic image types are:
 * RGB-Image
@@ -38,12 +38,12 @@ The `AbstractFilter` gives two options for implementation:
 * `filter(Image input):Image`
 * `filter(Image[] input):Image[]`
 
-In most cases the first is sufficient, the second method must only be used, if the filter
+In most cases the first is sufficient, the second method may only be used, if the filter
 requires multiple images *(e.g. difference between two images)* or returns multiple images
 *(e.g. image pyramid)*.  
 Filter can register properties in there constructor using `getProperties().add...`
-and later read the value using `getProperties().get...`  
-If a filter needs to convert between image types at runtime, it can use `ImageConverter.convert(...)`
+and later read the value using `getProperties().get...`.  
+If a filter needs to convert an image to another types at runtime, it can use `ImageConverter.convert(...)`.
 
 ## Image types
 **RGB-Image**  
@@ -57,7 +57,7 @@ Image containing three channels for hue, saturation and intensity. The last chan
 equivalent to a grayscale-image.
 
 **Grouped-Image**  
-Extension of the HSI-Image, that let's you set a group for each pixel. Pixel of the same
+Extension of the HSI-Image, that let's you set the group for each pixel. Pixel of the same
 group will be colored the same.
 
 **"Drawable"-Image**  
