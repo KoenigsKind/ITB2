@@ -1,2 +1,64 @@
-# ITB2
-ImageToolBox 2
+#ImageToolBox²
+
+## Basic concept
+### Image
+An image has multiple channels, a width and a height. The coordinate origin is in the
+top left corner; the rows are counting top to bottom, and the columns are counting left
+to right. There are a few basic image types, but users can create there own types, if
+they provide Filter for converting images from basic types to their own type.
+
+The basic image types are:
+* RGB-Image
+* Grayscale-Image
+* HSI-Image
+* Grouped-Image
+* "Drawable"-Image
+
+### Automatic Image Conversion
+To make the use of different image types easier, ITB² supplies an automatic image
+conversion system: A filter may add an `@RequireImageType` annotation. When the
+filter is called, all incoming images will automatically be converted into the required
+image type. There are some basic image conversions implemented, but any filter can
+register itself as a converter using `ImageConverter.register(...)`.
+
+The basic image converters are:
+* Grayscale to RGB
+* Grayscale to HSI
+* HSI to Grayscale
+
+### Filter
+The basic filter only needs to implement the `Filter` interface, and thus having two
+functions: One to return the `FilterProperties` and the other to execute on an array
+of images and returning an array of filtered images.  
+To make the life even easier, there is an `AbstractFilter` that gives the basic
+functionality:
+
+**AbstractFilter**  
+The `AbstractFilter` gives two options for implementation:
+* `filter(Image input):Image`
+* `filter(Image[] input):Image[]`
+
+In most cases the first is sufficient, the second method must only be used, if the filter
+requires multiple images *(e.g. difference between two images)* or returns multiple images
+*(e.g. image pyramid)*.  
+Filter can register properties in there constructor using `getProperties().add...`
+and later read the value using `getProperties().get...`  
+If a filter needs to convert between image types at runtime, it can use `ImageConverter.convert(...)`
+
+## Image types
+**RGB-Image**  
+The most basic image type, containing three channels for red, green and blue.
+
+**Grayscale-Image**  
+Image containing only one channel for intensity.
+
+**HSI-Image**  
+Image containing three channels for hue, saturation and intensity. The last channel is
+equivalent to a grayscale-image.
+
+**Grouped-Image**  
+Extension of the HSI-Image, that let's you set a group for each pixel. Pixel of the same
+group will be colored the same.
+
+**"Drawable"-Image**  
+Wraps a BufferedImage and gives the option to draw on a Graphics object.
