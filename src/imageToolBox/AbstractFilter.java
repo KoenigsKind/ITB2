@@ -26,9 +26,8 @@ public class AbstractFilter {
 
 	public final boolean saveImage(double[][][] img, String filename) {
 		Image image = new RgbImage(img);
-		String format = filename.replaceFirst("^.*(\\..*)$", "$1");
 		try {
-			ImageIO.save(image, format, new File(filename));
+			ImageIO.save(image, new File(filename));
 			return true;
 		} catch (IOException e) {
 			return false;
