@@ -16,7 +16,7 @@ The basic image types are:
 
 ### Automatic Image Conversion
 To make the use of different image types easier, ITB² supplies an automatic image
-conversion system: A filter may add an `@RequireImageType` annotation. When the
+conversion system: A filter may add an `@RequireImageType` annotation. Once the
 filter is called, all incoming images will automatically be converted into the required
 image type. There are some basic image conversions implemented, but any filter can
 register itself as a converter using `ImageConverter.register(...)`.
@@ -43,7 +43,14 @@ requires multiple images *(e.g. difference between two images)* or returns multi
 *(e.g. image pyramid)*.  
 Filter can register properties in there constructor using `getProperties().add...`
 and later read the value using `getProperties().get...`.  
-If a filter needs to convert an image to another types at runtime, it can use `ImageConverter.convert(...)`.
+If a filter needs to convert an image to another type at runtime, it can use
+`ImageConverter.convert(...)`.
+
+### Controller
+The controller gives the filter access to some basic functionality of the ITB². Most
+important is the `CommunicationManager`. Using it, the filter can send messages to
+the user as well as give an update of the current progress; this is especially useful if
+the filter takes a bit longer.
 
 ## Image types
 **RGB-Image**  
