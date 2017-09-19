@@ -269,15 +269,29 @@ public final class ImageConverter {
 		 * @throws ConversionException If conversion unsuccessful
 		 */
 		public Image convert(Image image, Class<? extends Image> destination) throws ConversionException {
-			//TODO Check for subtypes
 			
+			// First check for exact conversion
 			int convSrc = order.indexOf(image.getClass());
 			int convDst = order.indexOf(destination);
 			
-			if(convSrc < 0 || convDst < 0 || map[convSrc][convDst] == null)
-				throw new ConversionException("No conversion found");
+			if(convSrc >= 0 && convDst >= 0 && map[convSrc][convDst] != null)
+				return map[convSrc][convDst].convert(image);
 			
-			return map[convSrc][convDst].convert(image);
+			// Check for conversion using sub and super types
+			for(int src = 0; src < order.size(); src++) {
+				if( !order.get(src).isInstance(image) )
+					continue;
+				
+				for(int dst = 0; dst < order.size(); dst++) {
+					if( !destination.isAssignableFrom(order.get(dst)) )
+						continue;
+					
+					if(map[src][dst] != null)
+						return map[src][dst].convert(image);
+				}
+			}
+			
+			throw new ConversionException("No conversion found");
 		}
 		
 		/**

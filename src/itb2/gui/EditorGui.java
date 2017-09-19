@@ -51,10 +51,6 @@ public class EditorGui extends JFrame {
 		JSplitPane filterPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, filterList, filterProperties);
 		filterPane.setResizeWeight(0.5);
 		
-//		JPanel filterBoard = new JPanel(new BorderLayout());
-//		filterBoard.add(filterList, BorderLayout.CENTER);
-//		filterBoard.add(filterProperties, BorderLayout.SOUTH);
-		
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, imageBoard, filterPane);
 		splitPane.setDividerLocation(DEFAULT_WIDTH - 200);
 		splitPane.setResizeWeight(1);
@@ -178,11 +174,17 @@ public class EditorGui extends JFrame {
 		if(filter == null)
 			return;
 		
-		List<Image> selectedImages = imageList.getSelectedImages();
-		Image[] images = selectedImages.toArray(new Image[selectedImages.size()]);
-		
-		images = Controller.getFilterManager().callFilter(filter, images);
-		Controller.getImageManager().getImageList().addAll(Arrays.asList(images));
+		try {
+			List<Image> selectedImages = imageList.getSelectedImages();
+			Image[] images = selectedImages.toArray(new Image[selectedImages.size()]);
+			
+			images = Controller.getFilterManager().callFilter(filter, images);
+			Controller.getImageManager().getImageList().addAll(Arrays.asList(images));
+		} catch(Exception e) {
+			e.printStackTrace();
+			Controller.getCommunicationManager().error("Error occured while running '%s': %s",
+					filter.getClass().getName(), e.getMessage());
+		}
 	}
 	
 	public void resetZoom() {

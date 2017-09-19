@@ -16,6 +16,7 @@ public class CommunicationManagerImpl implements CommunicationManager {
 		if(param.length > 0)
 			message = String.format(message, param);
 		
+		//TODO Use a log-window
 		JOptionPane.showMessageDialog(gui, message, EditorGui.TITLE + " - Info", JOptionPane.INFORMATION_MESSAGE);
 	}
 
@@ -24,6 +25,7 @@ public class CommunicationManagerImpl implements CommunicationManager {
 		if(param.length > 0)
 			message = String.format(message, param);
 		
+		//TODO Use a log-window
 		JOptionPane.showMessageDialog(gui, message, EditorGui.TITLE + " - Warning", JOptionPane.WARNING_MESSAGE);
 	}
 

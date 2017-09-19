@@ -8,6 +8,7 @@ import itb2.image.Image;
 import itb2.image.RgbImage;
 
 public class ImageIO {
+	//TODO Add support for Portable Anymap
 	
 	public static Image load(File file) throws IOException {
 		BufferedImage bufferedImage = javax.imageio.ImageIO.read(file);
