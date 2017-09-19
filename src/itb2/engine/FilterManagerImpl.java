@@ -8,7 +8,9 @@ import java.util.Comparator;
 import itb2.data.ObservableTreeSet;
 import itb2.engine.io.FilterIO;
 import itb2.filter.Filter;
+import itb2.filter.RequireImageType;
 import itb2.image.Image;
+import itb2.image.ImageConverter;
 
 public class FilterManagerImpl implements FilterManager {
 	private ObservableTreeSet<Filter> filterSet;
@@ -46,8 +48,18 @@ public class FilterManagerImpl implements FilterManager {
 	
 	@Override
 	public Image[] callFilter(Filter filter, Image... images) {
-		//TODO Check input (@RequireImageType)
+		Class<? extends Image> requiredImageType = getRequiredImageType(filter);
+		if(requiredImageType != null) {
+			for(int i = 0; i < images.length; i++)
+				images[i] = ImageConverter.convert(images[i], requiredImageType);
+		}
+		
 		return filter.filter(images);
+	}
+	
+	private Class<? extends Image> getRequiredImageType(Filter filter) {
+		RequireImageType require = filter.getClass().getAnnotation(RequireImageType.class);
+		return require == null ? null : require.value();
 	}
 
 }
