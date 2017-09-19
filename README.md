@@ -16,7 +16,7 @@ The basic image types are:
 
 ### Automatic Image Conversion
 To make the use of different image types easier, ITB² supplies an automatic image
-conversion system: A filter may add an `@RequireImageType` annotation. Once the
+conversion system: A filter may add an `@RequireImageType` annotation; once the
 filter is called, all incoming images will automatically be converted into the required
 image type. There are some basic image conversions implemented, but any filter can
 register itself as a converter using `ImageConverter.register(...)`.
@@ -25,6 +25,9 @@ The basic image converters are:
 * Grayscale to RGB
 * Grayscale to HSI
 * HSI to Grayscale
+
+If a filter needs to convert an image to another type at runtime, it can use
+`ImageConverter.convert(...)`.
 
 ### Filter
 The basic filter only needs to implement the `Filter` interface, and thus having two
@@ -43,8 +46,6 @@ requires multiple images *(e.g. difference between two images)* or returns multi
 *(e.g. image pyramid)*.  
 Filter can register properties in there constructor using `getProperties().add...`
 and later read the value using `getProperties().get...`.  
-If a filter needs to convert an image to another type at runtime, it can use
-`ImageConverter.convert(...)`.
 
 ### Controller
 The controller gives the filter access to some basic functionality of the ITB². Most
