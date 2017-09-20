@@ -61,7 +61,7 @@ public class EditorGui extends JFrame {
 		super(TITLE);
 		
 		// Initialize objects
-		imageList = new ImageList();
+		imageList = new ImageList(this);
 		workbench = new Workbench(imageList);
 		filterList = new FilterList(this);
 		filterProperties = new FilterProperties(filterList);

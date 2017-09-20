@@ -3,6 +3,7 @@ package itb2.gui;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -10,27 +11,46 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
+/**
+ * A scroll pane that can be dragged, instead of being scrolled
+ * 
+ * @author Micha Strauch
+ */
 public class DraggableScrollPane extends JScrollPane {
 	private static final long serialVersionUID = 7574613713592839284L;
+	
+	/** Listener for mouse dragging */
 	private final MouseMotionListener dragListener;
+	
+	/** Listener for mouse down - to initalize dragging */
 	private final MouseListener clickListener;
+	
+	/** Previous point since last drag-update */
 	private Point prev;
 	
+	/**
+	 * Creates a draggable scroll pane displaying the given component.
+	 * Dragging occurs using the left mouse button.
+	 * 
+	 * @param comp Component to display
+	 */
 	public DraggableScrollPane(Component comp) {
 		this(comp, MouseEvent.BUTTON1_DOWN_MASK);
 	}
 	
+	/**
+	 * Creates a draggable scroll pane displaying the given component.
+	 * Dragging occurs using the given mask.
+	 * 
+	 * @param comp     Component to display
+	 * @param dragMask Mask of mouse buttons for dragging
+	 */
 	public DraggableScrollPane(Component comp, int dragMask) {
 		super(comp);
 		
 		setWheelScrollingEnabled(false);
 		
-		clickListener = new MouseListener() {
-			@Override public void mouseReleased(MouseEvent e) {}
-			@Override public void mouseExited(MouseEvent e) {}
-			@Override public void mouseEntered(MouseEvent e) {}
-			@Override public void mouseClicked(MouseEvent e) {}
-			
+		clickListener = new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				if( (e.getModifiersEx() & dragMask) == dragMask)
@@ -72,11 +92,13 @@ public class DraggableScrollPane extends JScrollPane {
 		registerEventListener(view);
 	}
 	
+	/** Registers drag-listeners for the given component */
 	private void registerEventListener(Component comp) {
 		comp.addMouseListener(clickListener);
 		comp.addMouseMotionListener(dragListener);
 	}
 	
+	/** Unregisters drag-listeners for the given component */
 	private void removeEventListener(Component comp) {
 		comp.removeMouseListener(clickListener);
 		comp.removeMouseMotionListener(dragListener);

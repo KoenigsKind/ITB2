@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,14 +27,32 @@ import itb2.data.ObservableLinkedList;
 import itb2.engine.Controller;
 import itb2.image.Image;
 
+/**
+ * List of all opened images
+ * 
+ * @author Micha Strauch
+ */
 public class ImageList extends JPanel {
 	private static final long serialVersionUID = -7831547959723130632L;
+	
+	/** Size of thumbnails */
 	private static final int SIZE = 100;
+	
+	/** Preferred size, used in {@link #getPreferredSize()} */
 	private final Dimension preferredSize;
+	
+	/** List with all images */
 	private final JList<Image> imageList;
+	
+	/** Scrollpane for the list */
 	private final JScrollPane scrollPane;
 	
-	public ImageList() {
+	/**
+	 * Constructor
+	 * 
+	 * @param gui EditorGui, used to center ImageFrames
+	 */
+	public ImageList(EditorGui gui) {
 		preferredSize = new Dimension(SIZE, 0);
 		
 		imageList = new JList<>();
@@ -48,6 +68,18 @@ public class ImageList extends JPanel {
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
+		imageList.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(e.getClickCount() > 1) {
+					int index = imageList.locationToIndex(e.getPoint());
+					Image image = imageList.getModel().getElementAt(index);
+					if(image != null)
+						new ImageFrame(gui, image).setVisible(true);
+				}
+			}
+		});
+		
 		setLayout(new BorderLayout());
 		add(scrollPane, BorderLayout.CENTER);
 	}
@@ -61,19 +93,39 @@ public class ImageList extends JPanel {
 		return preferredSize;
 	}
 	
+	/**
+	 * Returns a list of selected images
+	 * 
+	 * @return List of selected images
+	 */
 	public List<Image> getSelectedImages() {
 		return imageList.getSelectedValuesList();
 	}
 	
+	/**
+	 * Adds a selection listener
+	 * 
+	 * @param listener Selection listener to add
+	 */
 	public void addSelectionListener(ListSelectionListener listener) {
 		imageList.addListSelectionListener(listener);
 	}
 	
+	/**
+	 * Renders the thumbnail for each image
+	 * 
+	 * @author Micha Strauch
+	 */
 	private class ImageRenderer extends JPanel implements ListCellRenderer<Image> {
 		private static final long serialVersionUID = 2837759279638881717L;
+		
+		/** Border for selected and not selected images */
 		private final Border selected, nonselected;
+		
+		/** Current image to render */
 		private Image image;
 
+		/** Constructor */
 		public ImageRenderer() {
 			setPreferredSize(new Dimension(SIZE, SIZE));
 			selected = BorderFactory.createBevelBorder(BevelBorder.LOWERED);
@@ -104,10 +156,20 @@ public class ImageList extends JPanel {
 		
 	}
 	
+	/**
+	 * ImageModel keeping track of currently opened images
+	 * 
+	 * @author Micha Strauch
+	 */
 	private class ImageModel implements ListModel<Image> {
+		
+		/** List of currently opened images */
 		private final ObservableLinkedList<Image> images;
+		
+		/** Listener on this model */
 		private final Set<ListDataListener> listeners;
 		
+		/** Constructor */
 		ImageModel() {
 			images = Controller.getImageManager().getImageList();
 			listeners = new HashSet<>();
