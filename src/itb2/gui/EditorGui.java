@@ -14,6 +14,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import itb2.engine.Controller;
+import itb2.engine.io.FilterIO;
 import itb2.engine.io.ImageIO;
 import itb2.filter.Filter;
 import itb2.image.Image;
@@ -53,8 +54,14 @@ public class EditorGui extends JFrame {
 	/** This GUI's toolbar */
 	private final EditorToolBar toolbar;
 	
+	/** The window displaying the log output */
+	private final Log logFrame;
+	
 	/** FileChooser for Filter and Images */
 	private JFileChooser filterChooser, imageChooser;
+	
+	/** Statusbar zur Anzeige von Informationen */
+	private StatusBar statusBar;
 	
 	/** Constructs the Main-GUI */
 	public EditorGui() {
@@ -62,11 +69,13 @@ public class EditorGui extends JFrame {
 		
 		// Initialize objects
 		imageList = new ImageList(this);
-		workbench = new Workbench(imageList);
+		workbench = new Workbench(this, imageList);
 		filterList = new FilterList(this);
 		filterProperties = new FilterProperties(filterList);
 		menubar = new EditorMenuBar(this);
 		toolbar = new EditorToolBar(this);
+		statusBar = new StatusBar(this);
+		logFrame = new Log(this);
 		
 		// Add menu to window
 		setJMenuBar(menubar);
@@ -86,10 +95,16 @@ public class EditorGui extends JFrame {
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(toolbar, BorderLayout.NORTH);
 		getContentPane().add(splitPane, BorderLayout.CENTER);
+		getContentPane().add(statusBar, BorderLayout.SOUTH);
 		
 		pack();
 		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		setLocationRelativeTo(null);
+	}
+	
+	/** Returns the status bar for notification */
+	StatusBar getStatusBar() {
+		return statusBar;
 	}
 	
 	@Override
@@ -122,18 +137,11 @@ public class EditorGui extends JFrame {
 			filterChooser = new JFileChooser(".");
 			filterChooser.setDialogTitle("Open Filter");
 			filterChooser.setMultiSelectionEnabled(true);
-			filterChooser.setFileFilter(new FileFilter() {
-				@Override
-				public String getDescription() {
-					return "Filter";
-				}
-				
-				@Override
-				public boolean accept(File f) {
-					String name = f.getName();
-					return name.endsWith(".class") || name.endsWith(".java") || f.isDirectory(); 
-				}
-			});
+			
+			if(FilterIO.isCompilerAvailable())
+				filterChooser.setFileFilter(new FileNameExtensionFilter("Filter", "class", "java"));
+			else
+				filterChooser.setFileFilter(new FileNameExtensionFilter("Filter", "class"));
 		}
 		return filterChooser;
 	}
@@ -267,20 +275,19 @@ public class EditorGui extends JFrame {
 	/** Runs the selected filter using the selected images */
 	public void runFilter() {
 		Filter filter = filterList.getSelectedFilter();
-		if(filter == null)
+		if(filter == null) {
+			Controller.getCommunicationManager().info("No filter selected");
 			return;
-		
-		try {
-			List<Image> selectedImages = imageList.getSelectedImages();
-			Image[] images = selectedImages.toArray(new Image[selectedImages.size()]);
-			
-			images = Controller.getFilterManager().callFilter(filter, images);
-			Controller.getImageManager().getImageList().addAll(Arrays.asList(images));
-		} catch(Exception e) {
-			e.printStackTrace();
-			Controller.getCommunicationManager().error("Error occured while running '%s': %s",
-					filter.getClass().getName(), e.getMessage());
 		}
+		
+		List<Image> selectedImages = imageList.getSelectedImages();
+		Image[] images = selectedImages.toArray(new Image[selectedImages.size()]);
+		
+		Controller.getCommunicationManager().inProgress(-1);
+		Controller.getFilterManager().callFilter(filter, images, img -> {
+			Controller.getImageManager().getImageList().addAll(Arrays.asList(img));
+			Controller.getCommunicationManager().inProgress(2);
+		});
 	}
 	
 	/** Resets the zoom on the workbench */
@@ -291,6 +298,11 @@ public class EditorGui extends JFrame {
 	/** Sets the zoom on the workbench to fit the image to the screen */
 	public void fitToScreen() {
 		workbench.fitToScreen();
+	}
+	
+	/** Opens/Hides the log window */
+	public void toggleLogFrame() {
+		logFrame.toggleDisplay();
 	}
 
 }

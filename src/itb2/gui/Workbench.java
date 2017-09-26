@@ -1,8 +1,10 @@
 package itb2.gui;
 
 import java.awt.CardLayout;
+import java.io.File;
 import java.util.List;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -16,8 +18,10 @@ public class Workbench extends JPanel {
 	private final MultiImagePainter multiImagePainter;
 	private final DraggableScrollPane scrollPane;
 	private final CardLayout layout;
+	private final JFrame gui;
 	
-	public Workbench(ImageList imageList) {
+	public Workbench(JFrame gui, ImageList imageList) {
+		this.gui = gui;
 		
 		// Single image
 		singleImagePainter = new SingleImagePainter();
@@ -35,15 +39,31 @@ public class Workbench extends JPanel {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				List<Image> selected = imageList.getSelectedImages();
-				if(selected.size() == 1) {
-					singleImagePainter.setImage(selected.get(0));
-					layout.show(Workbench.this, SINGLE_IMAGE);
-				} else {
-					multiImagePainter.setImages(selected);
-					layout.show(Workbench.this, MULTIPLE_IMAGE);
-				}
+				Image[] images = selected.toArray(new Image[selected.size()]);
+				show(images);
 			}
 		});
+	}
+	
+	public void show(Image... images) {
+		String name = "";
+		
+		if(images.length == 1) {
+			singleImagePainter.setImage(images[0]);
+			layout.show(this, SINGLE_IMAGE);
+			
+			if(images[0].getName() != null) {
+				if(images[0].getName() instanceof File)
+					name = ((File)images[0].getName()).getName();
+				else
+					name = images[0].getName().toString();
+			}
+		} else {
+			multiImagePainter.setImages(images);
+			layout.show(this, MULTIPLE_IMAGE);
+		}
+		
+		gui.setTitle(name);
 	}
 	
 	public void resetZoom() {

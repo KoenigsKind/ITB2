@@ -7,12 +7,27 @@ import javax.swing.JToolBar;
 
 import itb2.gui.icons.IconLoader;
 
+/**
+ * Toolbar for {@link EditorGui} 
+ * 
+ * @author Micha Strauch
+ */
 public class EditorToolBar extends JToolBar {
 	private static final long serialVersionUID = -3053195396175146234L;
+	
+	/** Buttons for image actions */
 	private final JButton openImage, saveImage, closeImage;
+	
+	/** Buttons for filter actions */
 	private final JButton openFilter, runFilter, closeFilter;
+	
+	/** Buttons for zoom actions */
 	private final JButton resetZoom, fitToScreen;
+	
+	/** Button for log */
+	private final JButton log;
 
+	/** Constructs toolbar for given {@link EditorGui} */
 	public EditorToolBar(EditorGui gui) {
 		super(HORIZONTAL);
 		setFloatable(false);
@@ -41,6 +56,11 @@ public class EditorToolBar extends JToolBar {
 		fitToScreen = getButton(IconLoader.FIT_TO_SCREEN, "Fit to screen");
 		fitToScreen.addActionListener(e -> gui.fitToScreen());
 		
+		log = getButton(IconLoader.LOG, "Open log");
+		log.addActionListener(e -> gui.toggleLogFrame());
+
+		add(log);
+		add(Box.createHorizontalGlue());
 		add(openImage);
 		add(saveImage);
 		add(closeImage);
@@ -54,12 +74,19 @@ public class EditorToolBar extends JToolBar {
 		add(fitToScreen);
 	}
 	
-	private JButton getButton(String file, String tooltip) {
+	/**
+	 * Creates a button with given icon and tooltip
+	 * 
+	 * @param iconName Name of the icon
+	 * @param tooltip  Tooltip to show when hovering above image
+	 * @return Created button
+	 */
+	private JButton getButton(String iconName, String tooltip) {
 		JButton button = new JButton();
 		button.setBorder(null);
 		button.setToolTipText(tooltip);
 		
-		Icon icon = IconLoader.getIcon(file, tooltip);
+		Icon icon = IconLoader.getIcon(iconName, tooltip);
 		if(icon != null)
 			button.setIcon(icon);
 		else

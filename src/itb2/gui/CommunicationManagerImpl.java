@@ -1,50 +1,65 @@
 package itb2.gui;
 
-import javax.swing.JOptionPane;
+import java.util.logging.Logger;
+
+import javax.swing.SwingUtilities;
 
 import itb2.engine.CommunicationManager;
 
+/**
+ * Implementation of the {@link CommunicationManager}
+ * 
+ * @author Micha Strauch
+ */
 public class CommunicationManagerImpl implements CommunicationManager {
-	private final EditorGui gui;
 	
+	/** Status bar with progress indicator */
+	private final StatusBar statusbar;
+	
+	/** Logger to print messages to */
+	private final Logger logger;
+	
+	/** Creates the CommunicationManager for {@link EditorGui} */
 	public CommunicationManagerImpl(EditorGui gui) {
-		this.gui = gui;
+		statusbar = gui.getStatusBar();
+		logger = Logger.getGlobal();
 	}
 
 	@Override
-	public void info(String message, Object... param) {
-		if(param.length > 0)
-			message = String.format(message, param);
+	public void info(String message, Object... params) {
+		if(params.length > 0)
+			message = String.format(message, params);
 		
-		//TODO Use a log-window
-		JOptionPane.showMessageDialog(gui, message, EditorGui.TITLE + " - Info", JOptionPane.INFORMATION_MESSAGE);
+		logger.log(MessageType.INFO.level, message);
 	}
 
 	@Override
-	public void warning(String message, Object... param) {
-		if(param.length > 0)
-			message = String.format(message, param);
+	public void debug(String message, Object... params) {
+		if(params.length > 0)
+			message = String.format(message, params);
 		
-		//TODO Use a log-window
-		JOptionPane.showMessageDialog(gui, message, EditorGui.TITLE + " - Warning", JOptionPane.WARNING_MESSAGE);
+		logger.log(MessageType.DEBUG.level, message);
 	}
 
 	@Override
-	public void error(String message, Object... param) {
-		if(param.length > 0)
-			message = String.format(message, param);
+	public void warning(String message, Object... params) {
+		if(params.length > 0)
+			message = String.format(message, params);
 		
-		JOptionPane.showMessageDialog(gui, message, EditorGui.TITLE + " - Error", JOptionPane.ERROR_MESSAGE);
+		logger.log(MessageType.WARNING.level, message);
+	}
+
+	@Override
+	public void error(String message, Object... params) {
+		if(params.length > 0)
+			message = String.format(message, params);
+		
+		logger.log(MessageType.ERROR.level, message);
 	}
 
 	@Override
 	public void inProgress(double percent) {
-		// TODO Display filter progress
-	}
-
-	@Override
-	public void inProgress(double percent, String message, Object... param) {
-		// TODO Display filter progress
+		SwingUtilities.invokeLater(() -> statusbar.setProgress(percent));
 	}
 
 }

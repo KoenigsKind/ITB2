@@ -49,6 +49,12 @@ class MultiImagePainter extends JPanel {
 			model.addElement(image);
 	}
 	
+	void setImages(Image... images) {
+		model.clear();
+		for(Image image : images)
+			model.addElement(image);
+	}
+	
 	class ImageRenderer extends JLabel implements ListCellRenderer<Image> {
 		private static final long serialVersionUID = -5400394083339787019L;
 		Image image;

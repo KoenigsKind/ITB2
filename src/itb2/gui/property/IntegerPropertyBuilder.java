@@ -22,19 +22,16 @@ class IntegerPropertyBuilder extends PropertyBuilder {
 			
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				System.out.println("Remove");
 				update();
 			}
 			
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				System.out.println("Insert");
 				update();
 			}
 			
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				System.out.println("Change");
 				update();
 			}
 			

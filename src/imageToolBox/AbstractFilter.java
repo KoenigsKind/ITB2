@@ -10,9 +10,9 @@ import itb2.image.Image;
 import itb2.image.RgbImage;
 
 /**
- * This class only exists for backwards compatibility and <u>should not be used!</u><br>
- * <br>
- * <strong>Use instead: {@link itb2.filter.AbstractFilter}</strong>
+ * This class only exists for backwards compatibility and <u>should not be used!</u>
+ * <p>
+ * <strong>Use instead:</strong> {@link itb2.filter.AbstractFilter}
  */
 @Deprecated
 public class AbstractFilter {

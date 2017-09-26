@@ -31,6 +31,8 @@ public final class ImageConverter {
 		map = new PathMap(5);
 		
 		// Add some basic conversion methods, may be overwritten by other filter
+		register(Image.class, DrawableImage.class, new Img2Draw());
+		register(DrawableImage.class, RgbImage.class, new Draw2Rgb());
 		register(GrayscaleImage.class, RgbImage.class, new Gray2Rgb());
 		register(GrayscaleImage.class, HsiImage.class, new Gray2Hsi());
 		register(HsiImage.class, GrayscaleImage.class, new Hsi2Gray());
@@ -66,6 +68,30 @@ public final class ImageConverter {
 	 */
 	public static void register(Class<? extends Image> source, Class<? extends Image> destination, Filter converter) {
 		map.add(source, destination, converter);
+	}
+	
+	/**
+	 * Converts any image to a drawable image 
+	 * 
+	 * @author Micha Strauch
+	 */
+	private static class Img2Draw extends AbstractFilter {
+		@Override
+		public Image filter(Image input) {
+			return new DrawableImage(input.asBufferedImage());
+		}
+	}
+	
+	/**
+	 * Converts a drawable image to an RGB-image
+	 * 
+	 * @author Micha Strauch
+	 */
+	private static class Draw2Rgb extends AbstractFilter {
+		@Override
+		public Image filter(Image draw) {
+			return new RgbImage(draw.asBufferedImage());
+		}
 	}
 	
 	/**
