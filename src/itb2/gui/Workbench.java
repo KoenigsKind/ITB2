@@ -49,14 +49,16 @@ public class Workbench extends JPanel {
 		String name = "";
 		
 		if(images.length == 1) {
+			name += images[0].getClass().getSimpleName();
+			
 			singleImagePainter.setImage(images[0]);
 			layout.show(this, SINGLE_IMAGE);
 			
 			if(images[0].getName() != null) {
 				if(images[0].getName() instanceof File)
-					name = ((File)images[0].getName()).getName();
+					name += " - " + ((File)images[0].getName()).getName();
 				else
-					name = images[0].getName().toString();
+					name += " - " + images[0].getName().toString();
 			}
 		} else {
 			multiImagePainter.setImages(images);

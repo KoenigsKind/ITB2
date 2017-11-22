@@ -73,4 +73,28 @@ public abstract class AbstractFilter implements Filter {
 		return min >= val ? min : max <= val ? max : val;
 	}
 	
+	/**
+	 * Auxiliary function. Throws an error if
+	 * the given condition is not true.
+	 * 
+	 * @param message   Message to show if condition is false
+	 * @param condition Condition that must be true 
+	 */
+	protected static void assertTrue(String message, boolean condition) {
+		if(!condition)
+			throw new RuntimeException(message);
+	}
+	
+	/**
+	 * Auxiliary function. Throws an error if
+	 * the given object is null.
+	 * 
+	 * @param message   Message to show if object is null
+	 * @param condition Object that must not be null 
+	 */
+	protected static void assertNotNull(String message, Object object) {
+		if(object == null)
+			throw new RuntimeException(message);
+	}
+	
 }

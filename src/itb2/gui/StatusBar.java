@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -109,10 +110,13 @@ public class StatusBar extends JPanel {
 		@Override
 		public void publish(LogRecord record) {
 			MessageType type = MessageType.fromLevel(record.getLevel());
-			addMessage(record.getMessage().replaceAll("<.*?>", ""), type);
 			
-			if(type == MessageType.ERROR)
-				JOptionPane.showMessageDialog(gui, record.getMessage(), EditorGui.TITLE + " - Error", JOptionPane.ERROR_MESSAGE);
+			SwingUtilities.invokeLater(() -> {
+				addMessage(record.getMessage().replaceAll("<.*?>", ""), type);
+				
+				if(type == MessageType.ERROR)
+					JOptionPane.showMessageDialog(gui, record.getMessage(), EditorGui.TITLE + " - Error", JOptionPane.ERROR_MESSAGE);
+			});
 		}
 		
 	}
