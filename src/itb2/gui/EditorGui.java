@@ -3,6 +3,7 @@ import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JFileChooser;
@@ -125,8 +126,7 @@ public class EditorGui extends JFrame {
 				for(; index < files.length; index++)
 					Controller.getFilterManager().loadFilter(files[index]);
 			} catch(IOException e) {
-				e.printStackTrace();
-				Controller.getCommunicationManager().error("Could not open file:\n%s", files[index].getAbsolutePath());
+				Controller.getCommunicationManager().error("Could not open file:\n%s\n\n> %s", files[index].getAbsolutePath(), e.getMessage());
 			}
 		}
 	}
@@ -163,7 +163,7 @@ public class EditorGui extends JFrame {
 				for(; index < files.length; index++)
 					Controller.getImageManager().loadImage(files[index]);
 			} catch(IOException e) {
-				Controller.getCommunicationManager().error("Could not open file:\n%s", files[index].getAbsolutePath());
+				Controller.getCommunicationManager().error("Could not open file:\n%s\n\n> %s", files[index].getAbsolutePath(), e.getMessage());
 			}
 		}
 	}
@@ -243,20 +243,29 @@ public class EditorGui extends JFrame {
 		
 		imageChooser.resetChoosableFileFilters();
 		
+		String[][] formats = ImageIO.acceptedFormats();
+		
 		switch(mode) {
 			case OPEN:
+				List<String> ext = new LinkedList<>();
+				for(String[] format : formats)
+					for(int i = 1; i < format.length; i++)
+						ext.add(format[i]);
+				
 				imageChooser.setDialogTitle("Open Image");
 				imageChooser.setMultiSelectionEnabled(true);
-				imageChooser.setFileFilter(new FileNameExtensionFilter("Image", "jpg", "jpeg", "png", "bmp"));
+				imageChooser.setFileFilter(new FileNameExtensionFilter("Image", ext.toArray(new String[0])));
 				break;
 			case SAVE:
 				imageChooser.setDialogTitle("Save Image");
 				imageChooser.setMultiSelectionEnabled(false);
 				
 				imageChooser.removeChoosableFileFilter(imageChooser.getAcceptAllFileFilter());
-				imageChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG", "png"));
-				imageChooser.addChoosableFileFilter(new FileNameExtensionFilter("JPG", "jpg", "jpeg"));
-				imageChooser.addChoosableFileFilter(new FileNameExtensionFilter("BMP", "bmp"));
+				for(String[] format : formats) {
+					String description = format[0];
+					String[] extensions = Arrays.copyOfRange(format, 1, format.length);
+					imageChooser.addChoosableFileFilter(new FileNameExtensionFilter(description, extensions));
+				}
 				break;
 			default:
 				throw new RuntimeException("Unknown mode");
@@ -285,7 +294,8 @@ public class EditorGui extends JFrame {
 		
 		Controller.getCommunicationManager().inProgress(-1);
 		Controller.getFilterManager().callFilter(filter, images, img -> {
-			Controller.getImageManager().getImageList().addAll(Arrays.asList(img));
+			if(img != null)
+				Controller.getImageManager().getImageList().addAll(Arrays.asList(img));
 			Controller.getCommunicationManager().inProgress(2);
 		});
 	}

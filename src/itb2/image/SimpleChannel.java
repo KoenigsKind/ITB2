@@ -3,7 +3,7 @@ package itb2.image;
 import java.awt.Dimension;
 import java.util.Iterator;
 
-class SimpleChannel implements Channel {
+public class SimpleChannel implements Channel {
 	private final Image image;
 	private final int channel;
 	

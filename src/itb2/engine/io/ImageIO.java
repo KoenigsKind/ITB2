@@ -5,15 +5,54 @@ import java.io.File;
 import java.io.IOException;
 
 import itb2.image.Image;
-import itb2.image.RgbImage;
+import itb2.image.ImageFactory;
 
 /**
  * Helper class for loading and saving images
  * 
  * @author Micha Strauch
  */
-public class ImageIO {
+public abstract class ImageIO {
 	//TODO Add support for Portable Anymap
+	
+	/** Accepted file formats */
+	private static String[][] acceptedFormats;
+	
+	/**
+	 * Returns an array of accepted formats for saving/loading images
+	 * <p>
+	 * String[*][2+] &rarr; Each format contains the name <i>String[*][0]</i>
+	 * and file extensions <i>String[*][1..*]</i>
+	 * 
+	 * @return Accepted image formats
+	 */
+	public static String[][] acceptedFormats() {
+		if(acceptedFormats == null) {
+			acceptedFormats = new String[][] {
+				{
+					"JPEG",
+					"jpg", "jpeg", "jpe", "jif", "jfif", "jfi"
+				},
+				{
+					"PNG",
+					"png"
+				},
+				{
+					"Bitmap",
+					"bmp", "dip"
+				},
+				{
+					"GIF",
+					"gif"
+				},
+				{
+					"Portable Anymap",
+					"ppm", "pgm", "pbm", "pnm"
+				}
+			};
+		}
+		return acceptedFormats;
+	}
 	
 	/**
 	 * Load image from file
@@ -24,10 +63,11 @@ public class ImageIO {
 	 * @throws IOException If something goes wrong
 	 */
 	public static Image load(File file) throws IOException {
-		BufferedImage bufferedImage = javax.imageio.ImageIO.read(file);
-		Image image = new RgbImage(bufferedImage);
-		image.setName(file);
-		return image;
+		if(file.getName().toLowerCase().matches("^.*\\.p[pgbn]m$"))
+			return AnymapIO.load(file);
+		
+		BufferedImage image = javax.imageio.ImageIO.read(file);
+		return ImageFactory.bytePrecision().rgb(image);
 	}
 	
 	/**
@@ -41,7 +81,6 @@ public class ImageIO {
 	 */
 	public static void save(Image image, File file) throws IOException {
 		String format = file.getName().replaceFirst("^.*(\\..*?)$", "$1");
-		
 		save(image, format, file);
 	}
 	
@@ -55,6 +94,10 @@ public class ImageIO {
 	 * @throws IOException If something goes wrong
 	 */
 	public static void save(Image image, String format, File file) throws IOException {
-		javax.imageio.ImageIO.write(image.asBufferedImage(), format, file);
+		if(format.equalsIgnoreCase("ppm"))
+			AnymapIO.save(image, file);
+		else
+			javax.imageio.ImageIO.write(image.asBufferedImage(), format, file);
 	}
+	
 }

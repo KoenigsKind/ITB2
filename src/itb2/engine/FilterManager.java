@@ -56,7 +56,9 @@ public interface FilterManager {
 	 * Similar to {@link #callFilter(Filter, Image...)}
 	 * <p>
 	 * Uses a different thread to first run the filter and afterwards
-	 * run the given receiver with filtered images.
+	 * run the given receiver with filtered images.<br>
+	 * If an error occurred the receiver will be called with <i>null</i>
+	 * as parameter. 
 	 * 
 	 * @param filter   Filter to call
 	 * @param images   Images to filter

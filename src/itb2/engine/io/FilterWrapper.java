@@ -10,6 +10,7 @@ import itb2.filter.Filter;
 import itb2.filter.FilterProperties;
 import itb2.image.Image;
 import itb2.image.ImageConverter;
+import itb2.image.ImageFactory;
 import itb2.image.RgbImage;
 
 public class FilterWrapper implements Filter {
@@ -104,7 +105,7 @@ public class FilterWrapper implements Filter {
 	}
 	
 	private Image toImage(double[][][] matrix, int width, int height) {
-		Image image = new RgbImage(width, height);
+		Image image = ImageFactory.doublePrecision().rgb(width, height);
 		for(int x = 0; x < width; x++)
 			for(int y = 0; y < height; y++)
 				for(int c = 0; c < 3; c++)

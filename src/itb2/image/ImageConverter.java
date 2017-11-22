@@ -90,7 +90,7 @@ public final class ImageConverter {
 	private static class Draw2Rgb extends AbstractFilter {
 		@Override
 		public Image filter(Image draw) {
-			return new RgbImage(draw.asBufferedImage());
+			return ImageFactory.bytePrecision().rgb(draw.asBufferedImage());
 		}
 	}
 	
@@ -102,7 +102,8 @@ public final class ImageConverter {
 	private static class Gray2Rgb extends AbstractFilter {
 		@Override
 		public Image filter(Image gray) {
-			RgbImage rgb = new RgbImage(gray.getSize());
+			ImageFactory factory = ImageFactory.getPrecision(gray);
+			RgbImage rgb =  factory.rgb(gray.getSize());
 			
 			for(int row = 0; row < gray.getHeight(); row++) {
 				for(int col = 0; col < gray.getWidth(); col++) {
@@ -123,7 +124,8 @@ public final class ImageConverter {
 	private static class Hsi2Gray extends AbstractFilter {
 		@Override
 		public Image filter(Image hsi) {
-			return new GrayscaleImage(hsi.getChannel(HsiImage.INTENSITY));
+			ImageFactory factory = ImageFactory.getPrecision(hsi);
+			return factory.gray(hsi.getChannel(HsiImage.INTENSITY));
 		}
 	}
 	
@@ -135,7 +137,8 @@ public final class ImageConverter {
 	private static class Gray2Hsi extends AbstractFilter {
 		@Override
 		public Image filter(Image gray) {
-			Image hsi = new HsiImage(gray.getSize());
+			ImageFactory factory = ImageFactory.getPrecision(gray);
+			Image hsi = factory.hsi(gray.getSize());
 			double hue = 0, saturation = 0;
 			
 			for(int col = 0; col < gray.getWidth(); col++) {

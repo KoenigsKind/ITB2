@@ -92,6 +92,7 @@ public class FilterManagerImpl implements FilterManager {
 				e.printStackTrace();
 				Controller.getCommunicationManager().error("Error occured while running '%s': %s",
 						filter.getClass().getName(), e.getMessage());
+				receiver.accept(null);
 			}
 		});
 	}

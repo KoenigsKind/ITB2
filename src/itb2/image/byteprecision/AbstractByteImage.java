@@ -1,4 +1,4 @@
-package itb2.image;
+package itb2.image.byteprecision;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -7,6 +7,10 @@ import java.awt.image.WritableRaster;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import itb2.image.Channel;
+import itb2.image.Image;
+import itb2.image.SimpleChannel;
 
 /**
  * Abstract image, for image implementations that can store
@@ -145,6 +149,8 @@ public abstract class AbstractByteImage implements Image {
 			iValue |= encode(value, channel);
 		}
 		data[row][column] = iValue;
+		
+		image = null;
 	}
 	
 	@Override

@@ -1,4 +1,4 @@
-package itb2.image;
+package itb2.image.doubleprecision;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -9,13 +9,17 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import itb2.image.Channel;
+import itb2.image.Image;
+import itb2.image.SimpleChannel;
+
 /**
  * Abstract image, for image implementations that can store
  * a double value for each channel of each pixel.
  * 
  * @author Micha Strauch
  */
-public abstract class AbstractImage implements Image {
+public abstract class AbstractDoubleImage implements Image {
 	
 	/** List of selections */
 	protected final List<Point> selections;
@@ -41,7 +45,7 @@ public abstract class AbstractImage implements Image {
 	 * @param size         Size of this image
 	 * @param channelCount Number of channels
 	 */
-	public AbstractImage(Dimension size, int channelCount) {
+	public AbstractDoubleImage(Dimension size, int channelCount) {
 		this(size.width, size.height, channelCount);
 	}
 	
@@ -52,7 +56,7 @@ public abstract class AbstractImage implements Image {
 	 * @param height       Height of this image
 	 * @param channelCount Number of channels
 	 */
-	public AbstractImage(int width, int height, int channelCount) {
+	public AbstractDoubleImage(int width, int height, int channelCount) {
 		this.selections = new LinkedList<>();
 		this.channelCount = channelCount;
 		this.size = new Dimension(width, height);
@@ -64,7 +68,7 @@ public abstract class AbstractImage implements Image {
 	 * 
 	 * @param data Data of this image
 	 */
-	public AbstractImage(double[][][] data) {
+	public AbstractDoubleImage(double[][][] data) {
 		this.selections = new LinkedList<Point>();
 		this.data = data;
 		

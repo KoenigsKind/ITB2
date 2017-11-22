@@ -7,7 +7,7 @@ import java.io.*;
 import itb2.engine.io.ImageIO;
 import itb2.filter.FilterProperties;
 import itb2.image.Image;
-import itb2.image.RgbImage;
+import itb2.image.doubleprecision.RgbDoubleImage;
 
 /**
  * This class only exists for backwards compatibility and <u>should not be used!</u>
@@ -25,7 +25,7 @@ public class AbstractFilter {
 	}
 
 	public final boolean saveImage(double[][][] img, String filename) {
-		Image image = new RgbImage(img);
+		Image image = new RgbDoubleImage(img);
 		try {
 			ImageIO.save(image, new File(filename));
 			return true;

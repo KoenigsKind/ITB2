@@ -1,4 +1,4 @@
-package itb2.image;
+package itb2.image.doubleprecision;
 
 import java.awt.Dimension;
 
@@ -8,7 +8,7 @@ import java.awt.Dimension;
  * 
  * @author Micha Strauch
  */
-public class GroupedImage extends HsiImage {
+public class GroupedDoubleImage extends HsiDoubleImage {
 	
 	/** Available groups */
 	private final Group[] groups;
@@ -20,7 +20,7 @@ public class GroupedImage extends HsiImage {
 	 * @param height     Height of the image
 	 * @param groupCount Number of groups
 	 */
-	public GroupedImage(int width, int height, int groupCount) {
+	public GroupedDoubleImage(int width, int height, int groupCount) {
 		this(new Dimension(width, height), groupCount);
 	}
 	
@@ -30,7 +30,7 @@ public class GroupedImage extends HsiImage {
 	 * @param size       Size of the image
 	 * @param groupCount Number of groups
 	 */
-	public GroupedImage(Dimension size, int groupCount) {
+	public GroupedDoubleImage(Dimension size, int groupCount) {
 		super(size);
 		
 		if(groupCount == 2)
@@ -38,7 +38,7 @@ public class GroupedImage extends HsiImage {
 		else if(groupCount > 2) {
 			groups = new Group[groupCount];
 			for(int i = 0; i < groupCount; i++)
-				groups[i] = new Group(i * MAX_HUE / groupCount);
+				groups[i] = new Group((double)(i * MAX_HUE) / groupCount);
 		} else
 			throw new RuntimeException("Group count must be at least 2!");
 	}

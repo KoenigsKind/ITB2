@@ -1,8 +1,10 @@
 import itb2.filter.AbstractFilter;
+import itb2.image.Channel;
 import itb2.image.GrayscaleImage;
 import itb2.image.HsiImage;
 import itb2.image.Image;
 import itb2.image.ImageConverter;
+import itb2.image.ImageFactory;
 import itb2.image.RgbImage;
 
 public class GrayscaleFilter extends AbstractFilter {
@@ -20,18 +22,21 @@ public class GrayscaleFilter extends AbstractFilter {
 		getProperties().addOptionProperty(CONVERSION_METHOD, DEFAULT, DEFAULT, CCIR_601, BT_709, SMPTE_240M);
 		
 		ImageConverter.register(HsiImage.class, GrayscaleImage.class, this);
-		ImageConverter.register(RgbImage.class, GrayscaleImage.class, this);
+		ImageConverter.register(RgbImage.class, ImageFactory.doublePrecision().gray(), this);
 	}
 	
 	@Override
 	public Image filter(Image input) {
 		
-		if(input instanceof HsiImage)
-			return new GrayscaleImage(input.getChannel(HsiImage.INTENSITY));
+		if(input instanceof HsiImage) {
+			ImageFactory factory = ImageFactory.getPrecision(input);
+			Channel intensity = input.getChannel(HsiImage.INTENSITY);
+			return factory.gray(intensity);
+		}
 		
 		if(input instanceof RgbImage) {
 			RgbConverter converter = getProperties().getOptionProperty(CONVERSION_METHOD);
-			GrayscaleImage output = new GrayscaleImage(input.getSize());
+			GrayscaleImage output = ImageFactory.doublePrecision().gray(input.getSize());
 			
 			for(int row = 0; row < input.getHeight(); row++) {
 				for(int col = 0; col < input.getWidth(); col++) {
