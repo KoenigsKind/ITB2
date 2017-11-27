@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 
 import itb2.image.Channel;
 import itb2.image.GrayscaleImage;
+import itb2.image.GroupedImage;
 import itb2.image.HsiImage;
 import itb2.image.ImageFactory;
 import itb2.image.RgbImage;
@@ -64,6 +65,16 @@ public class DoubleImageFactory extends ImageFactory {
 	@Override
 	public GrayscaleImage gray(Channel channel) {
 		return new GrayscaleDoubleImage(channel);
+	}
+
+	@Override
+	public GroupedImage group(int width, int height, int groupCount) {
+		return new GroupedDoubleImage(width, height, groupCount);
+	}
+
+	@Override
+	public GroupedImage group(Dimension size, int groupCount) {
+		return new GroupedDoubleImage(size, groupCount);
 	}
 
 }

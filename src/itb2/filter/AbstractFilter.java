@@ -6,7 +6,17 @@ import java.util.List;
 import itb2.engine.Controller;
 import itb2.image.Image;
 
+/**
+ * Simple implementation of the Filter, giving some additional auxiliary
+ * functions. Either {@link #filter(Image)} or {@link #filter(Image[])}
+ * have to be overwritten.
+ * 
+ * @author Micha Strauch
+ *
+ */
 public abstract class AbstractFilter implements Filter {
+	
+	/** Properties of this filter */
 	protected FilterProperties properties = new FilterProperties();
 
 	@Override
@@ -25,10 +35,28 @@ public abstract class AbstractFilter implements Filter {
 		return filteredImages.toArray(new Image[0]);
 	}
 	
+	/**
+	 * By default the {@link #filter(Image[])} function will call
+	 * this function once for every input image and returns all
+	 * of the produced filtered images.
+	 * 
+	 * @param input Image to filter
+	 * @return Filtered image or null
+	 */
 	public Image filter(Image input) {
 		return null;
 	}
 	
+	
+	/**
+	 * Tries to call the filter with the given class name, if the
+	 * filter is found it returns the (first) filtered image.
+	 * Otherwise it returns <i>null</i>.
+	 * 
+	 * @param name Name of the filter
+	 * @param image Image to filter
+	 * @return First filtered image if filter was found, otherwise <i>null</i>
+	 */
 	public Image callFilter(String name, Image image) {
 		Image[] filtered = callFilter(name, new Image[]{image});
 		if(filtered == null || filtered.length == 0)
@@ -36,11 +64,20 @@ public abstract class AbstractFilter implements Filter {
 		return filtered[0];
 	}
 	
+	/**
+	 * Tries to call the filter with the given class name,
+	 * if the filter is found it returns the filtered images.
+	 * Otherwise it returns <i>null</i>.
+	 * 
+	 * @param name Name of the filter
+	 * @param image Images to filter
+	 * @return Filtered images if filter was found, otherwise <i>null</i>
+	 */
 	public Image[] callFilter(String name, Image image[]) {
 		Filter filter = Controller.getFilterManager().getFilter(name);
 		if(filter == null)
 			return null;
-		return filter.filter(image);
+		return Controller.getFilterManager().callFilter(filter, image);
 	}
 	
 	/**

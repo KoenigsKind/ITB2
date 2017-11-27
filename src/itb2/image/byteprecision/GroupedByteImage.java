@@ -2,13 +2,15 @@ package itb2.image.byteprecision;
 
 import java.awt.Dimension;
 
+import itb2.image.GroupedImage;
+
 /**
  * Image, that lets user set group for each pixel.
  * Pixel of same group have the same color. 
  * 
  * @author Micha Strauch
  */
-public class GroupedByteImage extends HsiByteImage {
+public class GroupedByteImage extends HsiByteImage implements GroupedImage {
 	
 	/** Available groups */
 	private final Group[] groups;
@@ -43,13 +45,7 @@ public class GroupedByteImage extends HsiByteImage {
 			throw new RuntimeException("Group count must be at least 2!");
 	}
 	
-	/**
-	 * Sets the group of the given pixel.
-	 * 
-	 * @param row     Row of the pixel
-	 * @param column  Column of the pixel
-	 * @param groupID Group of the pixel
-	 */
+	@Override
 	public void setGroup(int row, int column, int groupID) {
 		Group group = groups[groupID];
 		data[row][column] = group.hsi;

@@ -26,9 +26,9 @@ public abstract class ImageFactory {
 	
 	public static ImageFactory getPrecision(Image image) {
 		if(image instanceof AbstractByteImage)
-			return bytePrecision;
+			return bytePrecision();
 		
-		return doublePrecision;
+		return doublePrecision();
 	}
 	
 	public abstract Class<? extends RgbImage> rgb();
@@ -45,5 +45,8 @@ public abstract class ImageFactory {
 	public abstract GrayscaleImage gray(int width, int height);
 	public abstract GrayscaleImage gray(Dimension size);
 	public abstract GrayscaleImage gray(Channel channel);
+	
+	public abstract GroupedImage group(int width, int height, int groupCount);
+	public abstract GroupedImage group(Dimension size, int groupCount);
 	
 }
