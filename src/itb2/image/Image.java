@@ -47,42 +47,42 @@ public interface Image extends Iterable<Channel> {
 	/**
 	 * Returns the values of the given pixel. 
 	 * 
-	 * @param row    Row of the pixel
 	 * @param column Column of the pixel
+	 * @param row    Row of the pixel
 	 * @return Array of values
 	 */
-	public double[] getValue(int row, int column);
+	public double[] getValue(int column, int row);
 	
 	/**
 	 * Returns the value of the pixel in the given channel.
 	 * 
-	 * @param row     Row of the pixel
 	 * @param column  Column of the pixel
+	 * @param row     Row of the pixel
 	 * @param channel Channel ID
 	 * @return Value
 	 */
-	public double getValue(int row, int column, int channel);
+	public double getValue(int column, int row, int channel);
 	
 	/**
 	 * Sets the values for the given pixel. The number of values must match the number of channels.
 	 * Keep in mind, that the underlaying image, might not store double values.
 	 *  
-	 * @param row    Row of the pixel
 	 * @param column Column of the pixel
+	 * @param row    Row of the pixel
 	 * @param values Value for each channel
 	 */
-	public void setValue(int row, int column, double... values);
+	public void setValue(int column, int row, double... values);
 	
 	/**
 	 * Sets the value of the given pixel in the given channel.
 	 * Keep in mind, that the underlaying image, might not store double values.
 	 * 
-	 * @param row     Row of the pixel
 	 * @param column  Column of the pixel
+	 * @param row     Row of the pixel
 	 * @param channel Channel to set value for
 	 * @param value   Value to set
 	 */
-	public void setValue(int row, int column, int channel, double value);
+	public void setValue(int column, int row, int channel, double value);
 	
 	/**
 	 * Returns the channel with the given ID.

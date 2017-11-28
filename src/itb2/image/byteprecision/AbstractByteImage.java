@@ -63,7 +63,7 @@ public abstract class AbstractByteImage implements Image {
 		this.selections = new LinkedList<>();
 		this.channelCount = channelCount;
 		this.size = new Dimension(width, height);
-		this.data = new int[size.height][size.width];
+		this.data = new int[size.width][size.height];
 	}
 	
 	/**
@@ -124,8 +124,8 @@ public abstract class AbstractByteImage implements Image {
 	}
 	
 	@Override
-	public double[] getValue(int row, int column) {
-		int iValue = data[row][column];
+	public double[] getValue(int column, int row) {
+		int iValue = data[column][row];
 		double[] values = new double[channelCount];
 		for(int channel = 0; channel < channelCount; channel++)
 			values[channel] = decode(iValue, channel);
@@ -133,12 +133,12 @@ public abstract class AbstractByteImage implements Image {
 	}
 	
 	@Override
-	public double getValue(int row, int column, int channel) {
-		return decode(data[row][column], channel);
+	public double getValue(int column, int row, int channel) {
+		return decode(data[column][row], channel);
 	}
 	
 	@Override
-	public void setValue(int row, int column, double... values) {
+	public void setValue(int column, int row, double... values) {
 		if(values.length != channelCount)
 			throw new ArrayIndexOutOfBoundsException();
 		
@@ -148,18 +148,18 @@ public abstract class AbstractByteImage implements Image {
 			value = value < 0 ? 0 : value > 255 ? 255 : value;			
 			iValue |= encode(value, channel);
 		}
-		data[row][column] = iValue;
+		data[column][row] = iValue;
 		
 		image = null;
 	}
 	
 	@Override
-	public void setValue(int row, int column, int channel, double value) {
+	public void setValue(int column, int row, int channel, double value) {
 		int val = value < 0 ? 0 : value > 255 ? 255 : (int)value;
 		
-		int iValue = data[row][column];
+		int iValue = data[column][row];
 		iValue = encode(iValue, val, channel);
-		data[row][column] = iValue;
+		data[column][row] = iValue;
 		
 		image = null;
 	}
@@ -190,11 +190,11 @@ public abstract class AbstractByteImage implements Image {
 			return image;
 		
 		double[][] samples = new double[3][size.width * size.height]; 
-		for(int row = 0; row < size.height; row++) {
-			for(int col = 0; col < size.width; col++) {
+		for(int col = 0; col < size.width; col++) {
+			for(int row = 0; row < size.height; row++) {
 				int index = row * size.width + col;
 				
-				double[] rgb = getRGB(row, col);
+				double[] rgb = getRGB(col, row);
 				for(int c = 0; c < 3; c++)
 					samples[c][index] = rgb[c];
 			}
@@ -227,13 +227,22 @@ public abstract class AbstractByteImage implements Image {
 	}
 	
 	/**
+	 * Calling the function indicates, that the image has changed and the
+	 * {@link BufferedImage} must be redrawn. Must be called by subclasses
+	 * after directly changing values in {@link #data}. 
+	 */
+	protected void updateImage() {
+		image = null;
+	}
+	
+	/**
 	 * Used for {@link #asBufferedImage()}. The implementing image
 	 * should return the RGB value for the given pixel.
 	 * 
-	 * @param row    Row of the pixel
 	 * @param column Column of the pixel
-	 * @return RBB value for pixel
+	 * @param row    Row of the pixel
+	 * @return RGB value for pixel
 	 */
-	protected abstract double[] getRGB(int row, int column);
+	protected abstract double[] getRGB(int column, int row);
 
 }

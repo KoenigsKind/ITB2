@@ -32,10 +32,10 @@ public class HsiByteImage extends AbstractByteImage implements HsiImage {
 	}
 	
 	@Override
-	protected double[] getRGB(int row, int column) {
-		double h = getValue(row, column, HUE);
-		double s = getValue(row, column, SATURATION);
-		double i = getValue(row, column, INTENSITY);
+	protected double[] getRGB(int column, int row) {
+		double h = getValue(column, row, HUE);
+		double s = getValue(column, row, SATURATION);
+		double i = getValue(column, row, INTENSITY);
 		
 		return hsi2rgb(h, s, i);
 	}

@@ -46,9 +46,10 @@ public class GroupedByteImage extends HsiByteImage implements GroupedImage {
 	}
 	
 	@Override
-	public void setGroup(int row, int column, int groupID) {
+	public void setGroup(int column, int row, int groupID) {
 		Group group = groups[groupID];
-		data[row][column] = group.hsi;
+		data[column][row] = group.hsi;
+		updateImage();
 	}
 	
 	/**

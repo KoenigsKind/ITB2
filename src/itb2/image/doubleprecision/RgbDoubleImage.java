@@ -64,16 +64,16 @@ public class RgbDoubleImage extends AbstractDoubleImage implements RgbImage {
 		for(int col = 0; col < width; col++) {
 			for(int row = 0; row < height; row++) {
 				raster.getPixel(minCol + col, minRow + row, rgb);
-				setValue(row, col, rgb);
+				setValue(col, row, rgb);
 			}
 		}
 	}
 
 	@Override
-	protected double[] getRGB(int row, int column) {
-		double r = data[row][column][RED];
-		double g = data[row][column][GREEN];
-		double b = data[row][column][BLUE];
+	protected double[] getRGB(int column, int row) {
+		double r = data[column][row][RED];
+		double g = data[column][row][GREEN];
+		double b = data[column][row][BLUE];
 		
 		return new double[]{r, g, b};
 	}

@@ -38,13 +38,13 @@ public class SimpleChannel implements Channel {
 	}
 
 	@Override
-	public double getValue(int row, int column) {
-		return image.getValue(row, column, channel);
+	public double getValue(int column, int row) {
+		return image.getValue(column, row, channel);
 	}
 
 	@Override
-	public void setValue(int row, int column, double value) {
-		image.setValue(row, column, channel, value);
+	public void setValue(int column, int row, double value) {
+		image.setValue(column, row, channel, value);
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class SimpleChannel implements Channel {
 					
 					@Override
 					public Row next() {
-						return new SimpleRow(image, channel, row++);
+						return getRow(row++);
 					}
 				};
 			}
@@ -94,7 +94,7 @@ public class SimpleChannel implements Channel {
 					
 					@Override
 					public Column next() {
-						return new SimpleColumn(image, channel, column++);
+						return getColumn(column++);
 					}
 				};
 			}

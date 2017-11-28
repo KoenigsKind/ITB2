@@ -96,25 +96,25 @@ public class DrawableImage implements Image {
 	}
 
 	@Override
-	public double[] getValue(int row, int column) {
+	public double[] getValue(int column, int row) {
 		return image.getRaster().getPixel(column, row, new double[3]);
 	}
 
 	@Override
-	public double getValue(int row, int column, int channel) {
-		return getValue(row, column)[channel];
+	public double getValue(int column, int row, int channel) {
+		return getValue(column, row)[channel];
 	}
 
 	@Override
-	public void setValue(int row, int column, double... values) {
+	public void setValue(int column, int row, double... values) {
 		image.getRaster().setPixel(column, row, values);
 	}
 
 	@Override
-	public void setValue(int row, int column, int channel, double value) {
-		double[] rgb = getValue(row, column);
+	public void setValue(int column, int row, int channel, double value) {
+		double[] rgb = getValue(column, row);
 		rgb[channel] = value;
-		setValue(row, column, rgb);
+		setValue(column, row, rgb);
 	}
 
 	@Override

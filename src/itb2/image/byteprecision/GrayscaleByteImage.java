@@ -38,12 +38,13 @@ public class GrayscaleByteImage extends AbstractByteImage implements GrayscaleIm
 	 * 
 	 * @param data Original data
 	 */
+	@Deprecated
 	public GrayscaleByteImage(double[][] data) {
 		this(data.length, data[0].length);
 		
-		for(int row = 0; row < size.height; row++)
-			for(int col = 0; col < size.width; col++)
-				this.data[row][col] = ((int)data[row][col]) & 0xFF;
+		for(int col = 0; col < size.width; col++)
+			for(int row = 0; row < size.height; row++)
+				this.data[col][row] = ((int)data[col][row]) & 0xFF;
 	}
 	
 	/**
@@ -54,14 +55,14 @@ public class GrayscaleByteImage extends AbstractByteImage implements GrayscaleIm
 	public GrayscaleByteImage(Channel channel) {
 		super(channel.getWidth(), channel.getHeight(), 1);
 		
-		for(int row = 0; row < size.height; row++)
-			for(int col = 0; col < size.width; col++)
-				this.data[row][col] = ((int)channel.getValue(row, col)) & 0xFF;
+		for(int col = 0; col < size.width; col++)
+			for(int row = 0; row < size.height; row++)
+				this.data[col][row] = ((int)channel.getValue(col, row)) & 0xFF;
 	}
 
 	@Override
-	protected double[] getRGB(int row, int column) {
-		double value = getValue(row, column, GRAYSCALE);
+	protected double[] getRGB(int column, int row) {
+		double value = getValue(column, row, GRAYSCALE);
 		
 		return new double[]{value, value, value};
 	}

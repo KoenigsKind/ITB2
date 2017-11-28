@@ -105,10 +105,10 @@ public final class ImageConverter {
 			ImageFactory factory = ImageFactory.getPrecision(gray);
 			RgbImage rgb =  factory.rgb(gray.getSize());
 			
-			for(int row = 0; row < gray.getHeight(); row++) {
-				for(int col = 0; col < gray.getWidth(); col++) {
-					double value = gray.getValue(row, col, 0);
-					rgb.setValue(row, col, value, value, value);
+			for(int col = 0; col < gray.getWidth(); col++) {
+				for(int row = 0; row < gray.getHeight(); row++) {
+					double value = gray.getValue(col, row, 0);
+					rgb.setValue(col, row, value, value, value);
 				}
 			}
 			
@@ -143,8 +143,8 @@ public final class ImageConverter {
 			
 			for(int col = 0; col < gray.getWidth(); col++) {
 				for(int row = 0; row < gray.getHeight(); row++) {
-					double intensity = gray.getValue(row, col, 0);
-					hsi.setValue(row, col, hue, saturation, intensity);
+					double intensity = gray.getValue(col, row, 0);
+					hsi.setValue(col, row, hue, saturation, intensity);
 				}
 			}
 			

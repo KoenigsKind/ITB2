@@ -60,7 +60,7 @@ public abstract class AbstractDoubleImage implements Image {
 		this.selections = new LinkedList<>();
 		this.channelCount = channelCount;
 		this.size = new Dimension(width, height);
-		this.data = new double[height][width][channelCount];
+		this.data = new double[width][height][channelCount];
 	}
 	
 	/**
@@ -68,16 +68,17 @@ public abstract class AbstractDoubleImage implements Image {
 	 * 
 	 * @param data Data of this image
 	 */
+	@Deprecated
 	public AbstractDoubleImage(double[][][] data) {
 		this.selections = new LinkedList<Point>();
 		this.data = data;
 		
-		this.size = new Dimension(data[0].length, data.length);
+		this.size = new Dimension(data.length, data[0].length);
 		this.channelCount = data[0][0].length;
 		
-		for(int x = 0; x < size.height; x++)
-			for(int y = 0; y < size.width; y++)
-				if(data[x][y].length != channelCount)
+		for(int col = 0; col < size.width; col++)
+			for(int row = 0; row < size.height; row++)
+				if(data[col][row].length != channelCount)
 					throw new ArrayIndexOutOfBoundsException(); // fail fast
 	}
 
@@ -102,28 +103,28 @@ public abstract class AbstractDoubleImage implements Image {
 	}
 	
 	@Override
-	public double[] getValue(int row, int column) {
-		return Arrays.copyOf(data[row][column], channelCount);
+	public double[] getValue(int column, int row) {
+		return Arrays.copyOf(data[column][row], channelCount);
 	}
 	
 	@Override
-	public double getValue(int row, int column, int channel) {
-		return data[row][column][channel];
+	public double getValue(int column, int row, int channel) {
+		return data[column][row][channel];
 	}
 	
 	@Override
-	public void setValue(int row, int column, double... values) {
+	public void setValue(int column, int row, double... values) {
 		if(values.length != channelCount)
 			throw new ArrayIndexOutOfBoundsException();
 		
 		for(int channel = 0; channel < channelCount; channel++)
-			data[row][column][channel] = values[channel];
+			data[column][row][channel] = values[channel];
 		image = null;
 	}
 	
 	@Override
-	public void setValue(int row, int column, int channel, double value) {
-		data[row][column][channel] = value;
+	public void setValue(int column, int row, int channel, double value) {
+		data[column][row][channel] = value;
 		image = null;
 	}
 	
@@ -153,11 +154,11 @@ public abstract class AbstractDoubleImage implements Image {
 			return image;
 		
 		double[][] samples = new double[3][size.width * size.height]; 
-		for(int row = 0; row < size.height; row++) {
-			for(int col = 0; col < size.width; col++) {
+		for(int col = 0; col < size.width; col++) {
+			for(int row = 0; row < size.height; row++) {
 				int index = row * size.width + col;
 				
-				double[] rgb = getRGB(row, col);
+				double[] rgb = getRGB(col, row);
 				for(int c = 0; c < 3; c++)
 					samples[c][index] = rgb[c];
 			}
@@ -190,13 +191,22 @@ public abstract class AbstractDoubleImage implements Image {
 	}
 	
 	/**
+	 * Calling the function indicates, that the image has changed and the
+	 * {@link BufferedImage} must be redrawn. Must be called by subclasses
+	 * after directly changing values in {@link #data}. 
+	 */
+	protected void updateImage() {
+		image = null;
+	}
+	
+	/**
 	 * Used for {@link #asBufferedImage()}. The implementing image
 	 * should return the RGB value for the given pixel.
 	 * 
-	 * @param row    Row of the pixel
 	 * @param column Column of the pixel
-	 * @return RBB value for pixel
+	 * @param row    Row of the pixel
+	 * @return RGB value for pixel
 	 */
-	protected abstract double[] getRGB(int row, int column);
+	protected abstract double[] getRGB(int column, int row);
 
 }

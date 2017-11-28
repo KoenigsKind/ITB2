@@ -47,20 +47,20 @@ public interface Channel {
 	/**
 	 * Returns the value of the given pixel
 	 * 	
-	 * @param row    Row of the pixel
 	 * @param column Column of the pixel
+	 * @param row    Row of the pixel
 	 * @return Value of the pixel
 	 */
-	public double getValue(int row, int column);
+	public double getValue(int column, int row);
 	
 	/**
 	 * Sets the value of the given pixel
 	 * 
-	 * @param row    Row of the pixel
 	 * @param column Column of the pixel
+	 * @param row    Row of the pixel
 	 * @param value  Value of the pixel
 	 */
-	public void setValue(int row, int column, double value);
+	public void setValue(int column, int row, double value);
 	
 	/**
 	 * Returns the row for the given ID

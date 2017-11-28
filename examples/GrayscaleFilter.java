@@ -38,10 +38,10 @@ public class GrayscaleFilter extends AbstractFilter {
 			RgbConverter converter = getProperties().getOptionProperty(CONVERSION_METHOD);
 			GrayscaleImage output = ImageFactory.doublePrecision().gray(input.getSize());
 			
-			for(int row = 0; row < input.getHeight(); row++) {
-				for(int col = 0; col < input.getWidth(); col++) {
-					double value = converter.convert(input.getValue(row, col));
-					output.setValue(row, col, value);
+			for(int col = 0; col < input.getWidth(); col++) {
+				for(int row = 0; row < input.getHeight(); row++) {
+					double value = converter.convert(input.getValue(col, row));
+					output.setValue(col, row, value);
 				}
 			}
 			return output;

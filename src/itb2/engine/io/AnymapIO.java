@@ -122,7 +122,7 @@ public class AnymapIO {
 						if(digit && row + 1 == header[HEIGHT] && col + 1 == header[WIDTH] && chan + 1 == channels) {
 							// Storing last digit
 							double value = val * factor;
-							image.setValue(row, col, chan, value);
+							image.setValue(col, row, chan, value);
 							break;
 						} else
 							throw new IOException("EOF too early");
@@ -137,7 +137,7 @@ public class AnymapIO {
 							digit = false;
 							
 							double value = val * factor;
-							image.setValue(row, col, chan, value);
+							image.setValue(col, row, chan, value);
 							
 							val = 0;
 							
@@ -162,7 +162,7 @@ public class AnymapIO {
 								throw new IOException("EOF too early");
 							
 							double value = b * factor;
-							image.setValue(row, col, chan, value);
+							image.setValue(col, row, chan, value);
 						}
 					}
 				}

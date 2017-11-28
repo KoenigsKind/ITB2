@@ -42,9 +42,9 @@ public class GrayscaleDoubleImage extends AbstractDoubleImage implements Graysca
 	public GrayscaleDoubleImage(double[][] data) {
 		this(data.length, data[0].length);
 		
-		for(int row = 0; row < size.height; row++)
-			for(int col = 0; col < size.width; col++)
-				this.data[row][col][GRAYSCALE] = data[row][col];
+		for(int col = 0; col < size.width; col++)
+			for(int row = 0; row < size.height; row++)
+				this.data[col][row][GRAYSCALE] = data[col][row];
 	}
 	
 	/**
@@ -55,14 +55,14 @@ public class GrayscaleDoubleImage extends AbstractDoubleImage implements Graysca
 	public GrayscaleDoubleImage(Channel channel) {
 		super(channel.getWidth(), channel.getHeight(), 1);
 		
-		for(int row = 0; row < size.height; row++)
-			for(int col = 0; col < size.width; col++)
-				this.data[row][col][GRAYSCALE] = channel.getValue(row, col);
+		for(int col = 0; col < size.width; col++)
+			for(int row = 0; row < size.height; row++)
+				this.data[col][row][GRAYSCALE] = channel.getValue(col, row);
 	}
 
 	@Override
-	protected double[] getRGB(int row, int column) {
-		double value = data[row][column][GRAYSCALE];
+	protected double[] getRGB(int column, int row) {
+		double value = data[column][row][GRAYSCALE];
 		
 		return new double[]{value, value, value};
 	}
