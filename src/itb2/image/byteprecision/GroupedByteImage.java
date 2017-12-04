@@ -1,6 +1,7 @@
 package itb2.image.byteprecision;
 
 import java.awt.Dimension;
+import java.io.Serializable;
 
 import itb2.image.GroupedImage;
 
@@ -11,6 +12,7 @@ import itb2.image.GroupedImage;
  * @author Micha Strauch
  */
 public class GroupedByteImage extends HsiByteImage implements GroupedImage {
+	private static final long serialVersionUID = -2056869939417487245L;
 	
 	/** Available groups */
 	private final Group[] groups;
@@ -57,7 +59,9 @@ public class GroupedByteImage extends HsiByteImage implements GroupedImage {
 	 * 
 	 * @author Micha Strauch
 	 */
-	class Group {
+	class Group implements Serializable {
+		private static final long serialVersionUID = 5350988366575593300L;
+
 		/** ID for black and white color */
 		static final int BLACK = -2, WHITE = -1;
 		

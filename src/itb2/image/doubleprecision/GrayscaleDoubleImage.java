@@ -11,7 +11,8 @@ import itb2.image.GrayscaleImage;
  * @author Micha Strauch
  */
 public class GrayscaleDoubleImage extends AbstractDoubleImage implements GrayscaleImage {
-	
+	private static final long serialVersionUID = -5520424708879023970L;
+
 	/**
 	 * Constructs an image with given size.
 	 * 

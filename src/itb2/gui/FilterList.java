@@ -33,6 +33,7 @@ public class FilterList extends JPanel {
 		filterList.setCellRenderer(new FilterRenderer());
 		filterList.setBackground(GuiConstants.DEFAULT_BACKGROUND);
 		filterList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		filterList.setTransferHandler(new FilterTransferHandler());
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(filterList);

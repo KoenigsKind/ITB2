@@ -1,6 +1,7 @@
 package itb2.image.doubleprecision;
 
 import java.awt.Dimension;
+import java.io.Serializable;
 
 import itb2.image.GroupedImage;
 
@@ -11,6 +12,7 @@ import itb2.image.GroupedImage;
  * @author Micha Strauch
  */
 public class GroupedDoubleImage extends HsiDoubleImage implements GroupedImage {
+	private static final long serialVersionUID = 3343972105660556508L;
 	
 	/** Available groups */
 	private final Group[] groups;
@@ -60,7 +62,9 @@ public class GroupedDoubleImage extends HsiDoubleImage implements GroupedImage {
 	 * 
 	 * @author Micha Strauch
 	 */
-	class Group {
+	class Group implements Serializable {
+		private static final long serialVersionUID = -4793393801781406559L;
+
 		/** ID for black and white color */
 		static final double BLACK = -2, WHITE = -1;
 		

@@ -11,7 +11,8 @@ import itb2.image.GrayscaleImage;
  * @author Micha Strauch
  */
 public class GrayscaleByteImage extends AbstractByteImage implements GrayscaleImage {
-	
+	private static final long serialVersionUID = -594941879275231638L;
+
 	/**
 	 * Constructs an image with given size.
 	 * 

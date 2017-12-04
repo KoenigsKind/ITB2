@@ -3,7 +3,13 @@ package itb2.image;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Iterator;
+
+import itb2.engine.io.AnymapIO;
 
 /**
  * RGB-Image that can be drawn to, using a Graphics Object.
@@ -11,15 +17,16 @@ import java.util.Iterator;
  * @author Micha Strauch
  */
 public class DrawableImage implements Image {
-	
+	private static final long serialVersionUID = -8586173010718312748L;
+
 	/** IDs for each channel */
 	public static final int RED = 0, GREEN = 1, BLUE = 2;
 	
 	/** Data of this image */
-	private final BufferedImage image;
+	private BufferedImage image;
 
 	/** Name of this image */
-	private Object name;
+	private Serializable name;
 	
 	/**
 	 * Constructs an image from the given image
@@ -57,6 +64,36 @@ public class DrawableImage implements Image {
 	 */
 	public DrawableImage(int width, int height) {
 		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+	}
+	
+	/**
+	 * Writes the BufferedImage to the given OutputStream for serialization
+	 * 
+	 * @param stream OutputStream to write to
+	 * 
+	 * @throws IOException If something goes wrong
+	 */
+	private void writeObject(ObjectOutputStream stream) throws IOException {
+		stream.writeObject(name);
+		AnymapIO.save(this, stream);
+	}
+	
+	/**
+	 * Reads the BufferedImage from the given InputStream for deserialization
+	 * 
+	 * @param stream InputStream to read from
+	 * 
+	 * @throws IOException If something goes wrong
+	 */
+	private void readObject(ObjectInputStream stream) throws IOException {
+		try {
+			
+			name = (Serializable) stream.readObject();
+			image = AnymapIO.load(stream).asBufferedImage();
+			
+		} catch (ClassNotFoundException e) {
+			throw new IOException("Could not deserialize " + getClass().getSimpleName());
+		}
 	}
 	
 	/**
@@ -121,7 +158,7 @@ public class DrawableImage implements Image {
 	}
 
 	@Override
-	public void setName(Object name) {
+	public void setName(Serializable name) {
 		this.name = name;
 	}
 

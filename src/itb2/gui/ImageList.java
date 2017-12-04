@@ -6,11 +6,13 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.DropMode;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -47,6 +49,9 @@ public class ImageList extends JPanel {
 	/** Scrollpane for the list */
 	private final JScrollPane scrollPane;
 	
+	/** SelectionModel keeping selection order */
+	private final OrderedSelectionModel selectionModel;
+	
 	/**
 	 * Constructor
 	 * 
@@ -54,13 +59,16 @@ public class ImageList extends JPanel {
 	 */
 	public ImageList(EditorGui gui) {
 		preferredSize = new Dimension(SIZE, 0);
+		selectionModel = new OrderedSelectionModel();
 		
 		imageList = new JList<>();
 		imageList.setModel(new ImageModel());
+		imageList.setSelectionModel(selectionModel);
+		imageList.setTransferHandler(new ImageTransferHandler(imageList));
+		imageList.setDragEnabled(true);
+		imageList.setDropMode(DropMode.INSERT);
 		imageList.setCellRenderer(new ImageRenderer());
 		imageList.setBackground(GuiConstants.DEFAULT_BACKGROUND);
-		
-		//TODO Keep order of selection
 		
 		scrollPane = new JScrollPane();
 		scrollPane.setViewportView(imageList);
@@ -99,7 +107,15 @@ public class ImageList extends JPanel {
 	 * @return List of selected images
 	 */
 	public List<Image> getSelectedImages() {
-		return imageList.getSelectedValuesList();
+		int[] selectedIndexes = selectionModel.getSelectedIndexes();
+		List<Image> images = Controller.getImageManager().getImageList();
+		
+		List<Image> selectedImages = new ArrayList<>();
+		
+		for(int index : selectedIndexes)
+			selectedImages.add(images.get(index));
+		
+		return selectedImages;
 	}
 	
 	/**

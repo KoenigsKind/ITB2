@@ -2,6 +2,7 @@ package itb2.image;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 
 /**
  * Interface for images.<br>
@@ -12,7 +13,7 @@ import java.awt.image.BufferedImage;
  * 
  * @author Micha Strauch
  */
-public interface Image extends Iterable<Channel> {
+public interface Image extends Iterable<Channel>, Serializable {
 	
 	/**
 	 * Returns the width of this image
@@ -102,7 +103,7 @@ public interface Image extends Iterable<Channel> {
 	 * 
 	 * @param name Name of image
 	 */
-	public void setName(Object name);
+	public void setName(Serializable name);
 	
 	/**
 	 * Creates a {@link BufferedImage} of this image. This function will

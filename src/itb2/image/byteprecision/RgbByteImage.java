@@ -12,7 +12,8 @@ import itb2.image.RgbImage;
  * @author Micha Strauch
  */
 public class RgbByteImage extends AbstractByteImage implements RgbImage {
-	
+	private static final long serialVersionUID = -7012819999944752756L;
+
 	/**
 	 * Constructs an image with given size.
 	 * 

@@ -10,7 +10,8 @@ import itb2.image.HsiImage;
  * @author Micha Strauch
  */
 public class HsiDoubleImage extends AbstractDoubleImage implements HsiImage {
-	
+	private static final long serialVersionUID = 6987212242453114952L;
+
 	/**
 	 * Constructs an image with given size.
 	 * 

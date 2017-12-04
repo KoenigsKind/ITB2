@@ -3,6 +3,7 @@ package itb2.image.byteprecision;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.io.Serializable;
 import java.util.Iterator;
 
 import itb2.image.Channel;
@@ -17,7 +18,8 @@ import itb2.image.SimpleChannel;
  * @author Micha Strauch
  */
 public abstract class AbstractByteImage implements Image {
-	
+	private static final long serialVersionUID = -8582719486198043204L;
+
 	/** Size of this image */
 	protected final Dimension size;
 
@@ -28,10 +30,10 @@ public abstract class AbstractByteImage implements Image {
 	protected final int[][] data;
 
 	/** Name of this image */
-	protected Object name;
+	protected Serializable name;
 
 	/** Last rendered state of this image */
-	private BufferedImage image;
+	private transient BufferedImage image;
 	
 	/**
 	 * Constructs an image with given size and channel count
@@ -168,7 +170,7 @@ public abstract class AbstractByteImage implements Image {
 	}
 	
 	@Override
-	public void setName(Object name) {
+	public void setName(Serializable name) {
 		this.name = name;
 	}
 

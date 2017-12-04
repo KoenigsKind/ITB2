@@ -3,6 +3,7 @@ package itb2.image.doubleprecision;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -17,21 +18,22 @@ import itb2.image.SimpleChannel;
  * @author Micha Strauch
  */
 public abstract class AbstractDoubleImage implements Image {
-	
+	private static final long serialVersionUID = 7443470161814281566L;
+
 	/** Size of this image */
 	protected final Dimension size;
 	
 	/** Number of channels */
 	protected final int channelCount;
 	
-	/** Data of this image <i>double[width][height][3]</i> */
+	/** Data of this image <br><code>double[width][height][channelCount]</code> */
 	protected final double[][][] data;
 	
 	/** Name of this image */
-	protected Object name;
+	protected Serializable name;
 	
 	/** Last rendered state of this image */
-	private BufferedImage image;
+	private transient BufferedImage image;
 	
 	/**
 	 * Constructs an image with given size and channel count
@@ -131,7 +133,7 @@ public abstract class AbstractDoubleImage implements Image {
 	}
 	
 	@Override
-	public void setName(Object name) {
+	public void setName(Serializable name) {
 		this.name = name;
 	}
 
