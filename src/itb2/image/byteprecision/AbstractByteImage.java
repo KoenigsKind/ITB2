@@ -1,12 +1,9 @@
 package itb2.image.byteprecision;
 
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import itb2.image.Channel;
 import itb2.image.Image;
@@ -21,9 +18,6 @@ import itb2.image.SimpleChannel;
  */
 public abstract class AbstractByteImage implements Image {
 	
-	/** List of selections */
-	protected final List<Point> selections;
-
 	/** Size of this image */
 	protected final Dimension size;
 
@@ -60,7 +54,6 @@ public abstract class AbstractByteImage implements Image {
 		if(channelCount > 4)
 			throw new IndexOutOfBoundsException("channelCount must be at max 4");
 		
-		this.selections = new LinkedList<>();
 		this.channelCount = channelCount;
 		this.size = new Dimension(width, height);
 		this.data = new int[size.width][size.height];
@@ -169,11 +162,6 @@ public abstract class AbstractByteImage implements Image {
 		return new SimpleChannel(this, channel);
 	}
 
-	@Override
-	public List<Point> getSelections() {
-		return selections;
-	}
-	
 	@Override
 	public Object getName() {
 		return name;

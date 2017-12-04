@@ -4,13 +4,12 @@ import java.util.Iterator;
 
 class SimpleRow implements Row {
 	private final Image image;
-	private final int channel;
-	private final int row;
+	private final int row, channel;
 	
-	public SimpleRow(Image image, int channel, int row) {
+	public SimpleRow(Image image, int row, int channel) {
 		this.image = image;
-		this.channel = channel;
 		this.row = row;
+		this.channel = channel;
 	}
 
 	@Override
@@ -35,17 +34,17 @@ class SimpleRow implements Row {
 
 	@Override
 	public double getValue(int column) {
-		return image.getValue(row, column, channel);
+		return image.getValue(column, row, channel);
 	}
 
 	@Override
 	public void setValue(int column, double value) {
-		image.setValue(row, column, channel, value);
+		image.setValue(column, row, channel, value);
 	}
 
 	@Override
 	public Cell getCell(int column) {
-		return new SimpleCell(image, row, column, channel);
+		return new SimpleCell(image, column, row, channel);
 	}
 
 	@Override

@@ -112,10 +112,10 @@ public class StatusBar extends JPanel {
 			MessageType type = MessageType.fromLevel(record.getLevel());
 			
 			SwingUtilities.invokeLater(() -> {
-				addMessage(record.getMessage().replaceAll("<.*?>", ""), type);
-				
 				if(type == MessageType.ERROR)
 					JOptionPane.showMessageDialog(gui, record.getMessage(), EditorGui.TITLE + " - Error", JOptionPane.ERROR_MESSAGE);
+				else
+					addMessage(record.getMessage().replaceAll("<.*?>", ""), type);
 			});
 		}
 		

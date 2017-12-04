@@ -1,5 +1,10 @@
 package itb2.engine;
 
+import java.awt.Point;
+import java.util.List;
+
+import itb2.image.Image;
+
 /**
  * Manager for communication output
  * 
@@ -42,6 +47,27 @@ public interface CommunicationManager {
 	 * @param param   Optional parameters for inserting into message
 	 */
 	public void error(String message, Object... param);
+	
+	/**
+	 * Previews the given image with the given message.
+	 * 
+	 * @param message Description
+	 * @param image   Image to show
+	 */
+	public void preview(String message, Image image);
+	
+	/**
+	 * Lets the user select a certain amount of pixels on the
+	 * given image. If count is zero or less, the user may select
+	 * any number of pixels.  
+	 * 
+	 * @param message             Message to display
+	 * @param requiredSelections  Number of pixels to select (Optional, set to 0 otherwise)
+	 * @param image               Image to select pixels from
+	 * 
+	 * @return Coordinates of the selected pixels (x := column; y := row)
+	 */
+	public List<Point> getSelections(String message, int requiredSelections, Image image);
 	
 	/**
 	 * Sets the progress indicator to the given value:

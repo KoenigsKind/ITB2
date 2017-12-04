@@ -49,12 +49,12 @@ public class SimpleChannel implements Channel {
 
 	@Override
 	public Row getRow(int row) {
-		return new SimpleRow(image, channel, row);
+		return new SimpleRow(image, row, channel);
 	}
 
 	@Override
 	public Column getColumn(int column) {
-		return new SimpleColumn(image, channel, column);
+		return new SimpleColumn(image, column, channel);
 	}
 
 	@Override

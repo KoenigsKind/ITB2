@@ -60,11 +60,13 @@ public class RgbDoubleImage extends AbstractDoubleImage implements RgbImage {
 		int width = raster.getWidth(), height = raster.getHeight();
 		int minCol = raster.getMinX(), minRow = raster.getMinY();
 		
-		double[] rgb = new double[3];
+		double[] rgb = new double[4];
 		for(int col = 0; col < width; col++) {
 			for(int row = 0; row < height; row++) {
 				raster.getPixel(minCol + col, minRow + row, rgb);
-				setValue(col, row, rgb);
+				
+				for(int cha = 0; cha < 3; cha++)
+					setValue(col, row, cha, rgb[cha]);
 			}
 		}
 	}

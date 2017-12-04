@@ -1,6 +1,5 @@
 package itb2.engine.io;
 
-import java.awt.Point;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -17,7 +16,6 @@ public class FilterWrapper implements Filter {
 	private final Object oldFilter;
 	private final Method filter1, filter2;
 	private final Method setDimensions;
-	private final Method handleMouseClick;
 	private final Field properties;
 	private Method hasProperties;
 	
@@ -31,7 +29,6 @@ public class FilterWrapper implements Filter {
 			throw new IOException("Can't find any filter methods in " + oldFilter.getClass().getName());
 		
 		setDimensions = getMethod("setDimensions", int.class, int.class);
-		handleMouseClick = getMethod("handleMouseClick", Point.class);
 		hasProperties = getMethod("hasProperties");
 		properties = getField("properties");
 	}
@@ -63,10 +60,6 @@ public class FilterWrapper implements Filter {
 			double[][][] dst = new double[3][width][height];
 			
 			callMethod(setDimensions, input[0].getWidth(), input[0].getHeight());
-			
-			for(Image image : input)
-				for(Point selection : image.getSelections())
-					callMethod(handleMouseClick, selection);
 			
 			if(input.length == 1)
 				callMethod(filter1, toDoubleMatrix(input[0]), dst);

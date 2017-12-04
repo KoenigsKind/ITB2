@@ -2,12 +2,12 @@ package itb2.image;
 
 class SimpleCell implements Cell {
 	private final Image image;
-	private final int row, column, channel;
+	private final int column, row, channel;
 	
-	public SimpleCell(Image image, int row, int column, int channel) {
+	public SimpleCell(Image image, int column, int row, int channel) {
 		this.image = image;
-		this.row = row;
 		this.column = column;
+		this.row = row;
 		this.channel = channel;
 	}
 
@@ -33,12 +33,12 @@ class SimpleCell implements Cell {
 
 	@Override
 	public double getValue() {
-		return image.getValue(row, column, channel);
+		return image.getValue(column, row, channel);
 	}
 
 	@Override
 	public void setValue(double value) {
-		image.setValue(row, column, channel, value);
+		image.setValue(column, row, channel, value);
 	}
 
 }

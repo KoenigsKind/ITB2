@@ -1,13 +1,10 @@
 package itb2.image.doubleprecision;
 
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import itb2.image.Channel;
 import itb2.image.Image;
@@ -20,9 +17,6 @@ import itb2.image.SimpleChannel;
  * @author Micha Strauch
  */
 public abstract class AbstractDoubleImage implements Image {
-	
-	/** List of selections */
-	protected final List<Point> selections;
 	
 	/** Size of this image */
 	protected final Dimension size;
@@ -57,7 +51,6 @@ public abstract class AbstractDoubleImage implements Image {
 	 * @param channelCount Number of channels
 	 */
 	public AbstractDoubleImage(int width, int height, int channelCount) {
-		this.selections = new LinkedList<>();
 		this.channelCount = channelCount;
 		this.size = new Dimension(width, height);
 		this.data = new double[width][height][channelCount];
@@ -70,7 +63,6 @@ public abstract class AbstractDoubleImage implements Image {
 	 */
 	@Deprecated
 	public AbstractDoubleImage(double[][][] data) {
-		this.selections = new LinkedList<Point>();
 		this.data = data;
 		
 		this.size = new Dimension(data.length, data[0].length);
@@ -133,11 +125,6 @@ public abstract class AbstractDoubleImage implements Image {
 		return new SimpleChannel(this, channel);
 	}
 
-	@Override
-	public List<Point> getSelections() {
-		return selections;
-	}
-	
 	@Override
 	public Object getName() {
 		return name;

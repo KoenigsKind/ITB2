@@ -1,9 +1,7 @@
 package itb2.image;
 
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.util.List;
 
 /**
  * Interface for images.<br>
@@ -91,13 +89,6 @@ public interface Image extends Iterable<Channel> {
 	 * @return Channel of the given ID
 	 */
 	public Channel getChannel(int channel);
-	
-	/**
-	 * Returns a list with all selected points.
-	 * 
-	 * @return Selected points
-	 */
-	public List<Point> getSelections();
 	
 	/**
 	 * Returns the name of this image.

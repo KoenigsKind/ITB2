@@ -2,11 +2,8 @@ package itb2.image;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * RGB-Image that can be drawn to, using a Graphics Object.
@@ -17,9 +14,6 @@ public class DrawableImage implements Image {
 	
 	/** IDs for each channel */
 	public static final int RED = 0, GREEN = 1, BLUE = 2;
-	
-	/** List of selections */
-	private final List<Point> selections;
 	
 	/** Data of this image */
 	private final BufferedImage image;
@@ -62,7 +56,6 @@ public class DrawableImage implements Image {
 	 * @param height       Height of this image
 	 */
 	public DrawableImage(int width, int height) {
-		selections = new LinkedList<>();
 		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 	}
 	
@@ -120,11 +113,6 @@ public class DrawableImage implements Image {
 	@Override
 	public Channel getChannel(int channel) {
 		return new SimpleChannel(this, channel);
-	}
-
-	@Override
-	public List<Point> getSelections() {
-		return selections;
 	}
 
 	@Override
