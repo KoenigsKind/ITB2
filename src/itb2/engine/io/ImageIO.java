@@ -63,11 +63,18 @@ public abstract class ImageIO {
 	 * @throws IOException If something goes wrong
 	 */
 	public static Image load(File file) throws IOException {
-		if(file.getName().toLowerCase().matches("^.*\\.p[pgbn]m$"))
-			return AnymapIO.load(file);
+		Image image;
 		
-		BufferedImage image = javax.imageio.ImageIO.read(file);
-		return ImageFactory.bytePrecision().rgb(image);
+		if(file.getName().toLowerCase().matches("^.*\\.p[pgbn]m$"))
+			image = AnymapIO.load(file);
+		else {
+			BufferedImage buffered = javax.imageio.ImageIO.read(file);
+			image = ImageFactory.bytePrecision().rgb(buffered);
+		}
+		
+		image.setName(file);
+		
+		return image;
 	}
 	
 	/**

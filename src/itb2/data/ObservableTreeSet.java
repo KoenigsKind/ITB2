@@ -12,7 +12,7 @@ import java.util.TreeSet;
 public class ObservableTreeSet<E> extends TreeSet<E> {
 	private static final long serialVersionUID = -8354061612671698512L;
 	public static final int ITEMS_ADDED = 1, ITEMS_REMOVED = 2;
-	protected final Set<SetListener<E>> listeners = new HashSet<>();
+	protected final transient Set<SetListener<E>> listeners = new HashSet<>();
 	
 	public ObservableTreeSet() {}
 	

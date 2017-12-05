@@ -9,7 +9,7 @@ import java.util.Set;
 public class ObservableLinkedList<E> extends LinkedList<E> {
 	private static final long serialVersionUID = -9164794867510245113L;
 	public static final int ITEMS_ADDED = 1, ITEMS_REMOVED = 2;
-	protected final Set<ListListener<E>> listeners = new HashSet<>();
+	protected final transient Set<ListListener<E>> listeners = new HashSet<>();
 	
 	public boolean addListener(ListListener<E> listener) {
 		return listeners.add(listener);

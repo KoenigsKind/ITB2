@@ -1,11 +1,16 @@
 package itb2.engine;
 
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import javax.swing.UIManager;
 
+import itb2.engine.io.Config;
 import itb2.gui.CommunicationManagerImpl;
 import itb2.gui.EditorGui;
 
@@ -70,6 +75,32 @@ public final class Controller {
 		gui.setDefaultCloseOperation(EditorGui.EXIT_ON_CLOSE);
 		
 		setCommunicationManager(new CommunicationManagerImpl(gui));
+		
+		// Remember state when closing window for next time
+		gui.addWindowListener(new WindowListener() {
+			@Override public void windowOpened(WindowEvent e) {}
+			@Override public void windowIconified(WindowEvent e) {}
+			@Override public void windowDeiconified(WindowEvent e) {}
+			@Override public void windowDeactivated(WindowEvent e) {}
+			@Override public void windowClosed(WindowEvent e) {}
+			@Override public void windowActivated(WindowEvent e) {}
+			
+			@Override
+			public void windowClosing(WindowEvent we) {
+				try {
+					Config.saveState(gui);
+				} catch (IOException e) {
+					getCommunicationManager().warning("Could not save config: " + e.getMessage());
+				}
+			}
+		});
+		try {
+			Config.loadState(gui);
+		} catch (FileNotFoundException e) {
+			// Ignore, config might not have been saved yet
+		} catch (IOException e) {
+			getCommunicationManager().warning("Could not load config file: " + e.getMessage());
+		}
 		
 		gui.setVisible(true);
 	}
