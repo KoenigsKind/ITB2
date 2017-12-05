@@ -8,9 +8,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import itb2.engine.Controller;
+import itb2.filter.Filter;
 import itb2.gui.EditorGui;
 import itb2.image.Image;
 
@@ -68,8 +72,17 @@ public class Config implements Serializable {
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		// Collect data
 		List<Image> images = Controller.getImageManager().getImageList();
+		Set<Filter> filters = Controller.getFilterManager().getFilters();
+		Set<File> filterPaths = new HashSet<>();
+		for(Filter filter : filters) {
+			Class<? extends Filter> clazz = filter.getClass();
+			URL path = clazz.getResource(clazz.getSimpleName() + ".class");
+			if(path != null)
+				filterPaths.add(new File(path.getPath()));
+		}
 		
 		// Write data
+		stream.writeObject(filterPaths);
 		stream.writeObject(images);
 	}
 	
@@ -82,10 +95,19 @@ public class Config implements Serializable {
 	 * @throws ClassNotFoundException If something goes wrong
 	 */
 	private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
-		// Read data
-		List<?> images = (List<?>) stream.readObject();
+		// First read filters, as they might contain image types
+		Set<?> filterPaths = (Set<?>) stream.readObject();
+		Controller.getFilterManager().getFilters().clear();
+		for(Object path : filterPaths) {
+			if(path instanceof File) try {
+				Controller.getFilterManager().loadFilter((File)path);
+			} catch(IOException e) {
+				//Ignore filter
+			}
+		}
 		
-		// Distribute data
+		// Then read images
+		List<?> images = (List<?>) stream.readObject();
 		List<Image> imageList = Controller.getImageManager().getImageList();
 		imageList.clear();
 		for(Object image : images) {
