@@ -26,12 +26,19 @@ public abstract class AbstractFilter implements Filter {
 	
 	@Override
 	public Image[] filter(Image[] input) {
+		if(input.length == 0) {
+			Controller.getCommunicationManager().warning("No image selected");
+			return new Image[0];
+		}
+		
 		List<Image> filteredImages = new ArrayList<>(input.length);
+		
 		for(Image image : input){
 			Image filtered = filter(image);
 			if(filtered != null)
 				filteredImages.add(filtered);
 		}
+		
 		return filteredImages.toArray(new Image[0]);
 	}
 	
