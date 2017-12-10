@@ -40,7 +40,6 @@ public class Config implements Serializable {
 		try(ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(DEFAULT_CONFIG))) {
 			output.writeObject(new Config());
 		} catch(Exception e) {
-			e.printStackTrace();
 			throw new IOException("Could not save config to file '" + DEFAULT_CONFIG.getAbsolutePath() + "'", e);
 		}
 	}
@@ -56,8 +55,9 @@ public class Config implements Serializable {
 	public static void loadState(EditorGui gui) throws FileNotFoundException, IOException {
 		try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(DEFAULT_CONFIG))) {
 			input.readObject();
+		} catch(FileNotFoundException e) {
+			throw e;
 		} catch(Exception e) {
-			e.printStackTrace();
 			throw new IOException("Could not load config from file '" + DEFAULT_CONFIG.getAbsolutePath() + "'", e);
 		}
 	}
@@ -75,7 +75,10 @@ public class Config implements Serializable {
 		Set<Filter> filters = Controller.getFilterManager().getFilters();
 		Set<File> filterPaths = new HashSet<>();
 		for(Filter filter : filters) {
-			Class<? extends Filter> clazz = filter.getClass();
+			Class<?> clazz = filter.getClass();
+			if(filter instanceof FilterWrapper)
+				clazz = ((FilterWrapper) filter).getWrappedClass();
+			
 			URL path = clazz.getResource(clazz.getSimpleName() + ".class");
 			if(path != null)
 				filterPaths.add(new File(path.getPath()));
@@ -101,7 +104,7 @@ public class Config implements Serializable {
 		for(Object path : filterPaths) {
 			if(path instanceof File) try {
 				Controller.getFilterManager().loadFilter((File)path);
-			} catch(IOException e) {
+			} catch(Exception e) {
 				//Ignore filter
 			}
 		}

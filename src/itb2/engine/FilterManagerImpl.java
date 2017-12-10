@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 
 import itb2.data.ObservableTreeSet;
 import itb2.engine.io.FilterIO;
+import itb2.engine.io.FilterWrapper;
 import itb2.filter.Filter;
 import itb2.filter.RequireImageType;
 import itb2.image.Image;
@@ -35,7 +36,10 @@ public class FilterManagerImpl implements FilterManager {
 			Collator collator = Collator.getInstance();
 			
 			public int compare(Filter a, Filter b) {
-				return collator.compare(a.getClass().getSimpleName(), b.getClass().getSimpleName());
+				Class<?> aClass = a instanceof FilterWrapper ? ((FilterWrapper)a).getWrappedClass() : a.getClass();
+				Class<?> bClass = b instanceof FilterWrapper ? ((FilterWrapper)b).getWrappedClass() : b.getClass();
+				
+				return collator.compare(aClass.getSimpleName(), bClass.getSimpleName());
 			};
 		});
 	}
