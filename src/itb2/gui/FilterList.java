@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -14,6 +15,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.Border;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionListener;
@@ -56,6 +58,10 @@ public class FilterList extends JPanel {
 	
 	private class FilterRenderer extends JLabel implements ListCellRenderer<Filter> {
 		private static final long serialVersionUID = 1442148494574959747L;
+
+		
+		/** Border for focused and non focused filters */
+		private final Border focused, nonfocused;
 		
 		public FilterRenderer() {
 			setBackground(Color.LIGHT_GRAY);
@@ -63,6 +69,9 @@ public class FilterList extends JPanel {
 			font = font.deriveFont(font.getSize() + 1.1f);
 			font = font.deriveFont(font.getStyle() & (Font.BOLD ^ -1));
 			setFont(font);
+			
+			focused = BorderFactory.createDashedBorder(Color.WHITE, 2, 7);
+			nonfocused = null;
 		}
 
 		@Override
@@ -72,6 +81,7 @@ public class FilterList extends JPanel {
 			else
 				setText(value.getClass().getSimpleName());
 			setOpaque(isSelected);
+			setBorder(cellHasFocus ? focused : nonfocused);
 			return this;
 		}
 		
