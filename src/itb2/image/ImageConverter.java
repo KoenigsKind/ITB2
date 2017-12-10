@@ -27,14 +27,19 @@ public final class ImageConverter {
 	
 	/** Initialize */
 	static {
-		map = new PathMap<>();
+		map = new PathMap<>(Image.class);
 		
 		// Add some basic conversion methods, may be overwritten by other filter
 		register(Image.class, DrawableImage.class, new Img2Draw());
-		register(DrawableImage.class, RgbImage.class, new Draw2Rgb());
-		register(GrayscaleImage.class, RgbImage.class, new Gray2Rgb());
-		register(GrayscaleImage.class, HsiImage.class, new Gray2Hsi());
-		register(HsiImage.class, GrayscaleImage.class, new Hsi2Gray());
+		register(DrawableImage.class, ImageFactory.bytePrecision().rgb(), new Draw2Rgb());
+		
+		register(ImageFactory.bytePrecision().gray(), ImageFactory.bytePrecision().rgb(), new Gray2Rgb());
+		register(ImageFactory.bytePrecision().gray(), ImageFactory.bytePrecision().hsi(), new Gray2Hsi());
+		register(ImageFactory.bytePrecision().hsi(), ImageFactory.bytePrecision().gray(), new Hsi2Gray());
+		
+		register(ImageFactory.doublePrecision().gray(), ImageFactory.doublePrecision().rgb(), new Gray2Rgb());
+		register(ImageFactory.doublePrecision().gray(), ImageFactory.doublePrecision().hsi(), new Gray2Hsi());
+		register(ImageFactory.doublePrecision().hsi(), ImageFactory.doublePrecision().gray(), new Hsi2Gray());
 	}
 	
 	/**
@@ -53,9 +58,11 @@ public final class ImageConverter {
 			return destination.cast(image);
 		
 		// Try to convert the image
-		@SuppressWarnings("unchecked")
-		T converted =  (T) map.convert(image, destination);
-		return converted;
+		synchronized(map) {
+			@SuppressWarnings("unchecked")
+			T converted =  (T) map.convert(image, destination);
+			return converted;
+		}
 	}
 	
 	/**
@@ -68,17 +75,19 @@ public final class ImageConverter {
 	 * @param converter   Filter to perform conversion
 	 */
 	public static void register(Class<? extends Image> source, Class<? extends Image> destination, Filter converter) {
-		map.add(source, destination, image -> {
-			Controller.getCommunicationManager().info("Converting image from '%s' to '%s' using '%s'",
-					source.getSimpleName(),
-					destination.getSimpleName(),
-					converter.getClass().getName());
-			
-			Image[] converted = converter.filter(new Image[]{image});
-			if(converted.length != 1)
-				throw new ConversionException(String.format("The converter '%s' must return a single image!", converter.getClass().getName()));
-			return converted[0];
-		});
+		synchronized (map) {
+			map.add(source, destination, image -> {
+				Controller.getCommunicationManager().info("Converting image from '%s' to '%s' using '%s'",
+						source.getSimpleName(),
+						destination.getSimpleName(),
+						converter.getClass().getName());
+				
+				Image[] converted = converter.filter(new Image[]{image});
+				if(converted.length != 1)
+					throw new ConversionException(String.format("The converter '%s' must return a single image!", converter.getClass().getName()));
+				return converted[0];
+			});
+		}
 	}
 	
 	/**

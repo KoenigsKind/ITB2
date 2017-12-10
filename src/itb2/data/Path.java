@@ -54,6 +54,9 @@ public class Path<T> {
 	 * @param post      Path to execute after calling converter
 	 */
 	public Path(Path<T> prev, Function<T, T> converter, Path<T> post) {
+		if(converter == null)
+			throw new NullPointerException(); // Fail fast
+		
 		this.prev = prev;
 		this.converter = converter;
 		this.post = post;
@@ -98,10 +101,10 @@ public class Path<T> {
 	public String toString() {
 		String output = "";
 		if(prev != null)
-			output += prev + ", ";
+			output += prev + " ";
 		output = converter.getClass().getSimpleName();
 		if(post != null)
-			output += ", " + post;
+			output += " " + post;
 		return "<" + output + ">";
 	}
 }

@@ -1,5 +1,6 @@
 package itb2.data;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
@@ -13,8 +14,10 @@ import java.util.function.Function;
  */
 public class PathMap<T> {
 	
+	protected final Class<T> classOfT;
+	
 	/** Indices for object types in map */
-	private final List<Class<? extends T>> order = new LinkedList<>();
+	protected final List<Class<? extends T>> order = new LinkedList<>();
 	
 	/**
 	 * Map with conversion paths.
@@ -23,7 +26,13 @@ public class PathMap<T> {
 	 * object type {@code src} to object type {@code dst}
 	 */ 
 	@SuppressWarnings("unchecked")
-	private Path<T>[][] map = new Path[10][10];
+	protected Path<T>[][] map = new Path[10][10];
+	
+	public PathMap(Class<T> classOfT) {
+		if(classOfT == null)
+			throw new NullPointerException(); //Fail fast
+		this.classOfT = classOfT;
+	}
 	
 	/**
 	 * Converts the given object into the requested object type 
@@ -41,10 +50,12 @@ public class PathMap<T> {
 		int convSrc = order.indexOf(o.getClass());
 		int convDst = order.indexOf(destination);
 		
-		if(convSrc >= 0 && convDst >= 0 && map[convSrc][convDst] != null)
-			return map[convSrc][convDst].convert(o);
+		if(convSrc >= 0 && convDst >= 0)
+			if(map[convSrc][convDst] != null && map[convSrc][convDst].length() == 1)
+				return map[convSrc][convDst].convert(o);
 		
 		// Check for conversion using sub and super types
+		List<Path<T>> paths = new ArrayList<>();
 		for(int src = 0; src < order.size(); src++) {
 			if( !order.get(src).isInstance(o) )
 				continue;
@@ -54,11 +65,16 @@ public class PathMap<T> {
 					continue;
 				
 				if(map[src][dst] != null)
-					return map[src][dst].convert(o);
+					paths.add(map[src][dst]);
 			}
 		}
 		
-		throw new ConversionException("No conversion found");
+		if(paths.isEmpty())
+			throw new ConversionException("No conversion found");
+		
+		// Take path with fewest conversions
+		paths.sort((a,b) -> a.length() - b.length());
+		return paths.get(0).convert(o);
 	}
 	
 	/**
@@ -69,7 +85,7 @@ public class PathMap<T> {
 	 * 
 	 * @return Index of class
 	 */
-	private int indexOf(Class<? extends T> clazz) {
+	protected int indexOf(Class<? extends T> clazz) {
 		int index = order.indexOf(clazz);
 		if(index >= 0)
 			return index;
@@ -81,7 +97,7 @@ public class PathMap<T> {
 	
 	/** Expands the map to fit more classes in it */
 	@SuppressWarnings("unchecked")
-	private void resize() {
+	protected void resize() {
 		Path<T>[][] oldMap = map;
 		map = new Path[oldMap.length + 5][oldMap.length + 5];
 		
@@ -98,6 +114,49 @@ public class PathMap<T> {
 	 * @param converter   Filter to perform conversion from source type to destination type
 	 */
 	public void add(Class<? extends T> source, Class<? extends T> destination, Function<T, T> converter) {
+		addPaths(source, destination, converter);
+		
+		// Create copy to prevent ConcurrentModificationException
+		List<Class<? extends T>> possibleSubs = new ArrayList<>(order);
+		
+		for(Class<? extends T> sub : possibleSubs) {
+			if(!source.isAssignableFrom(sub))
+				continue;
+			
+			// sub extends source
+			addPaths(sub, destination, converter);
+			
+			for(Class<?> inter : destination.getInterfaces()) {
+				if(!classOfT.isAssignableFrom(inter))
+					continue;
+				@SuppressWarnings("unchecked")
+				Class<? extends T> sup = (Class<? extends T>) inter;
+				
+				// destination implements sup
+				addPaths(sub, sup, converter);
+			}
+			
+			for(Class<?> cls = destination.getSuperclass(); cls != null; cls = cls.getSuperclass()) {
+				if(!classOfT.isAssignableFrom(cls))
+					break;
+				@SuppressWarnings("unchecked")
+				Class<? extends T> sup = (Class<? extends T>) cls;
+				
+				// destination extends sup
+				addPaths(sub, sup, converter);
+			}
+		}
+	}
+	
+	/**
+	 * Adds a conversion to the map.<br>
+	 * <i>Helper method for {@link #add(Class, Class, Function)}</i>
+	 * 
+	 * @param source      Conversion source
+	 * @param destination Conversion destination
+	 * @param converter   Filter to perform conversion from source type to destination type
+	 */
+	protected void addPaths(Class<? extends T> source, Class<? extends T> destination, Function<T, T> converter) {
 		int convSrc = indexOf(source), convDst = indexOf(destination);
 		
 		// Source > New Converter > Destination
@@ -134,14 +193,26 @@ public class PathMap<T> {
 					}
 				}
 			}
-		} 
+		}
 	}
 	
 	@Override
 	public String toString() {
 		String[][] sMap = new String[map.length][map.length];
+		String[] classNames = new String[map.length];
 		int width[] = new int[map.length];
+		int classWidth = 0;
 		
+		// Collect class names
+		for(int i = 0; i < order.size(); i++) {
+			classNames[i] = order.get(i).getSimpleName();
+			width[i] = classNames[i].length();
+			classWidth = width[i] > classWidth ? width[i] : classWidth;
+		}
+		for(int i = order.size(); i < classNames.length; i++)
+			classNames[i] = "";
+		
+		// Collect paths
 		for(int i = 0; i < map.length; i++) {
 			for(int j = 0; j < map.length; j++) {
 				sMap[i][j] = i == j ? "--" : map[i][j] == null ? "<>" : map[i][j].toString();
@@ -152,10 +223,17 @@ public class PathMap<T> {
 		}
 		
 		StringBuilder output = new StringBuilder();
+		// Write first line (class names)
+		output.append(String.format("%-" + classWidth + "s ", ""));
+		for(int i = 0; i < classNames.length; i++) {
+			output.append(' ');
+			output.append(String.format("%-" + width[i] + "s", classNames[i]));
+		}
+		// Write other lines
 		for(int i = 0; i < map.length; i++) {
-			if(i > 0)
-				output.append('\n');
-			output.append('[');
+			// Class name
+			output.append(String.format("\n%-" + classWidth + "s [", classNames[i]));
+			// Paths
 			for(int j = 0; j < map[i].length; j++) {
 				if(j > 0)
 					output.append(';');
