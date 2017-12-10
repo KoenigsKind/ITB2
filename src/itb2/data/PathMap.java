@@ -44,7 +44,7 @@ public class PathMap<T> {
 	 * 
 	 * @throws ConversionException If conversion unsuccessful
 	 */
-	public T convert(T o, Class<? extends T> destination) throws ConversionException {
+	public <R extends T> R convert(T o, Class<R> destination) throws ConversionException {
 		
 		// First check for exact conversion
 		int convSrc = order.indexOf(o.getClass());
@@ -52,7 +52,7 @@ public class PathMap<T> {
 		
 		if(convSrc >= 0 && convDst >= 0)
 			if(map[convSrc][convDst] != null && map[convSrc][convDst].length() == 1)
-				return map[convSrc][convDst].convert(o);
+				return destination.cast(map[convSrc][convDst].convert(o));
 		
 		// Check for conversion using sub and super types
 		List<Path<T>> paths = new ArrayList<>();
@@ -74,7 +74,7 @@ public class PathMap<T> {
 		
 		// Take path with fewest conversions
 		paths.sort((a,b) -> a.length() - b.length());
-		return paths.get(0).convert(o);
+		return destination.cast(paths.get(0).convert(o));
 	}
 	
 	/**
@@ -129,8 +129,7 @@ public class PathMap<T> {
 			for(Class<?> inter : destination.getInterfaces()) {
 				if(!classOfT.isAssignableFrom(inter))
 					continue;
-				@SuppressWarnings("unchecked")
-				Class<? extends T> sup = (Class<? extends T>) inter;
+				Class<? extends T> sup = inter.asSubclass(classOfT);
 				
 				// destination implements sup
 				addPaths(sub, sup, converter);
@@ -139,8 +138,7 @@ public class PathMap<T> {
 			for(Class<?> cls = destination.getSuperclass(); cls != null; cls = cls.getSuperclass()) {
 				if(!classOfT.isAssignableFrom(cls))
 					break;
-				@SuppressWarnings("unchecked")
-				Class<? extends T> sup = (Class<? extends T>) cls;
+				Class<? extends T> sup = cls.asSubclass(classOfT);
 				
 				// destination extends sup
 				addPaths(sub, sup, converter);

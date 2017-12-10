@@ -59,9 +59,7 @@ public final class ImageConverter {
 		
 		// Try to convert the image
 		synchronized(map) {
-			@SuppressWarnings("unchecked")
-			T converted =  (T) map.convert(image, destination);
-			return converted;
+			return map.convert(image, destination);
 		}
 	}
 	
