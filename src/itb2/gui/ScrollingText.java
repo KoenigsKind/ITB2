@@ -19,7 +19,7 @@ import itb2.engine.Controller;
  * 
  * @author Micha Strauch
  */
-public class ScrollingText extends JPanel {
+public class ScrollingText extends JPanel {  //TODO Get's stuck on slow systems ... better alternative?
 	private static final long serialVersionUID = 1648596938512699397L;
 	
 	/** Gap between two messages in pixel and delay between each paint in pixels */

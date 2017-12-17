@@ -7,6 +7,7 @@ import java.util.List;
 import itb2.data.LimitedList;
 import itb2.image.Image;
 
+@Deprecated //TODO Wird der noch benötigt?
 public abstract class AbstractSequenceFilter extends AbstractFilter {
 	private static final int MEMORY_SIZE = 1;
 	private final LimitedList<Image> lastImages;

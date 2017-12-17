@@ -13,7 +13,6 @@ import itb2.image.ImageFactory;
  * @author Micha Strauch
  */
 public abstract class ImageIO {
-	//TODO Add support for Portable Anymap
 	
 	/** Accepted file formats */
 	private static String[][] acceptedFormats;

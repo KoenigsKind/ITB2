@@ -30,7 +30,7 @@ public class ImageUtils {
 			for(Row row : channel.rows()) {
 				for(Cell cell : row) {
 					double value = cell.getValue();
-					value = (value - min) * 255 / max;
+					value = (value - min) / (max - min) * 255;
 					cell.setValue(value);
 				}
 			}
@@ -49,7 +49,7 @@ public class ImageUtils {
 		for(Row row : channel.rows()) {
 			for(Cell cell : row) {
 				double value = cell.getValue();
-				value = (value - min) * 255 / max;
+				value = (value - min) / (max - min) * 255;
 				cell.setValue(value);
 			}
 		}

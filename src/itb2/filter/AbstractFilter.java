@@ -64,7 +64,7 @@ public abstract class AbstractFilter implements Filter {
 	 * @param image Image to filter
 	 * @return First filtered image if filter was found, otherwise <i>null</i>
 	 */
-	public Image callFilter(String name, Image image) {
+	protected static Image callFilter(String name, Image image) {
 		Image[] filtered = callFilter(name, new Image[]{image});
 		if(filtered == null || filtered.length == 0)
 			return null;
@@ -80,7 +80,7 @@ public abstract class AbstractFilter implements Filter {
 	 * @param image Images to filter
 	 * @return Filtered images if filter was found, otherwise <i>null</i>
 	 */
-	public Image[] callFilter(String name, Image image[]) {
+	protected static Image[] callFilter(String name, Image image[]) {
 		Filter filter = Controller.getFilterManager().getFilter(name);
 		if(filter == null)
 			return null;

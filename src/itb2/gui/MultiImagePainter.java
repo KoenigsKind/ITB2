@@ -33,8 +33,6 @@ class MultiImagePainter extends JPanel {
 		list.setBorder(new EmptyBorder(10, 10, 10, 10));
 		list.setVisibleRowCount(-1);
 		
-		//TODO Give ability to sort using drag'n'drop
-		
 		JScrollPane scrollPane = new JScrollPane(list);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);

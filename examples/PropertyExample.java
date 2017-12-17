@@ -30,6 +30,7 @@ public class PropertyExample extends AbstractFilter {
 	@Override
 	public Image[] filter(Image[] input) {
 		DrawableImage image = new DrawableImage(300, 114);
+		image.setName(getClass().getSimpleName());
 		Graphics g = image.getGraphics();
 		g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
 		g.setColor(Color.WHITE);

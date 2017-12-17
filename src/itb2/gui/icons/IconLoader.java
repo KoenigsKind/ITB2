@@ -10,7 +10,7 @@ import javax.swing.ImageIcon;
  * 
  * @author Micha Strauch
  */
-public class IconLoader { //TODO Get better icons :D
+public class IconLoader {
 	
 	/** Icons for filter actions */
 	public static final String FILTER_OPEN = "filterOpen.png", FILTER_RUN = "filterRun.png", FILTER_CLOSE = "filterClose.png";
