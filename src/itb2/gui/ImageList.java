@@ -144,6 +144,7 @@ public class ImageList extends JPanel {
 		/** Constructor */
 		public ImageRenderer() {
 			setPreferredSize(new Dimension(SIZE, SIZE));
+			setBackground(getBackground().darker());
 			selected = BorderFactory.createBevelBorder(BevelBorder.LOWERED);
 			nonselected = null;
 		}
@@ -152,6 +153,7 @@ public class ImageList extends JPanel {
 		public Component getListCellRendererComponent(JList<? extends Image> list, Image value, int index, boolean isSelected, boolean cellHasFocus) {
 			image = value;
 			setBorder(isSelected ? selected : nonselected);
+			setOpaque(cellHasFocus);
 			return this;
 		}
 		
@@ -177,7 +179,7 @@ public class ImageList extends JPanel {
 	 * 
 	 * @author Micha Strauch
 	 */
-	private class ImageModel implements ListModel<Image> {
+	private class ImageModel implements ListModel<Image>, ListDataListener {
 		
 		/** List of currently opened images */
 		private final ObservableLinkedList<Image> images;
@@ -189,20 +191,7 @@ public class ImageList extends JPanel {
 		ImageModel() {
 			images = Controller.getImageManager().getImageList();
 			listeners = new HashSet<>();
-			images.addListener(new ObservableLinkedList.ListListener<Image>() {
-
-				@Override
-				public void itemsChanged(ObservableLinkedList<Image> list, int type) {
-					ListDataEvent event = new ListDataEvent(ImageModel.this, ListDataEvent.CONTENTS_CHANGED, 0, getSize());
-					
-					for(ListDataListener listener : listeners)
-						listener.contentsChanged(event);
-					
-					ImageList.this.revalidate();
-				}
-				
-			});
-			
+			images.addListener(this);
 		}
 
 		@Override
@@ -227,6 +216,45 @@ public class ImageList extends JPanel {
 		@Override
 		public void removeListDataListener(ListDataListener l) {
 			listeners.remove(l);
+		}
+
+		@Override
+		public void contentsChanged(ListDataEvent in) {
+			notice();
+			
+			//TODO Find Error
+			
+//			ListDataEvent out = new ListDataEvent(this, in.getType(), in.getIndex0(), in.getIndex1());
+//			
+//			for(ListDataListener listener : listeners)
+//				listener.contentsChanged(out);
+		}
+
+		@Override
+		public void intervalAdded(ListDataEvent in) {
+			notice();
+			
+//			ListDataEvent out = new ListDataEvent(this, in.getType(), in.getIndex0(), in.getIndex1());
+//			
+//			for(ListDataListener listener : listeners)
+//				listener.intervalAdded(out);
+		}
+
+		@Override
+		public void intervalRemoved(ListDataEvent in) {
+			notice();
+			
+//			ListDataEvent out = new ListDataEvent(this, in.getType(), in.getIndex0(), in.getIndex1());
+//			
+//			for(ListDataListener listener : listeners)
+//				listener.intervalRemoved(out);
+		}
+		
+		private void notice() {
+			ListDataEvent e = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, images.size());
+			
+			for(ListDataListener listener : listeners)
+				listener.contentsChanged(e);
 		}
 	}
 }

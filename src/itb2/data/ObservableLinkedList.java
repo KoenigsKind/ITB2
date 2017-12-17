@@ -1,39 +1,59 @@
 package itb2.data;
 
 import java.util.Collection;
-import java.util.EventListener;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
+
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
 public class ObservableLinkedList<E> extends LinkedList<E> {
 	private static final long serialVersionUID = -9164794867510245113L;
-	public static final int ITEMS_ADDED = 1, ITEMS_REMOVED = 2;
-	protected final transient Set<ListListener<E>> listeners = new HashSet<>();
+	protected final transient Set<ListDataListener> listeners = new HashSet<>();
 	
-	public boolean addListener(ListListener<E> listener) {
+	public boolean addListener(ListDataListener listener) {
 		return listeners.add(listener);
 	}
 	
-	public boolean removeListener(ListListener<E> listener) {
+	public boolean removeListener(ListDataListener listener) {
 		return listeners.remove(listener);
 	}
 	
-	protected void notice(int method) {
-		for(ListListener<E> listener : listeners)
-			listener.itemsChanged(this, method);
+	protected void notice(int type, int index) {
+		notice(type, index, index);
+	}
+	
+	protected void notice(int type, int index0, int index1) {
+		ListDataEvent event = new ListDataEvent(this, type, index0, index1);
+		
+		for(ListDataListener listener : listeners) {
+			switch(type) {
+				case ListDataEvent.CONTENTS_CHANGED:
+					listener.contentsChanged(event);
+					break;
+				case ListDataEvent.INTERVAL_ADDED:
+					listener.intervalAdded(event);
+					break;
+				case ListDataEvent.INTERVAL_REMOVED:
+					listener.intervalRemoved(event);
+					break;
+			}
+		}
 	}
 	
 	@Override
 	public void push(E e) {
 		super.push(e);
-		notice(ITEMS_ADDED);
+		notice(ListDataEvent.INTERVAL_ADDED, 0);
 	}
 	
 	@Override
 	public E pop() {
 		E item = super.pop();
-		notice(ITEMS_REMOVED);
+		notice(ListDataEvent.INTERVAL_REMOVED, 0);
 		
 		return item;
 	}
@@ -44,7 +64,7 @@ public class ObservableLinkedList<E> extends LinkedList<E> {
 		E item = super.poll();
 		
 		if(size != size())
-			notice(ITEMS_REMOVED);
+			notice(ListDataEvent.INTERVAL_REMOVED, 0);
 		
 		return item;
 	}
@@ -55,7 +75,7 @@ public class ObservableLinkedList<E> extends LinkedList<E> {
 		E item = super.pollFirst();
 		
 		if(size != size())
-			notice(ITEMS_REMOVED);
+			notice(ListDataEvent.INTERVAL_REMOVED, 0);
 		
 		return item;
 	}
@@ -66,7 +86,7 @@ public class ObservableLinkedList<E> extends LinkedList<E> {
 		E item = super.pollLast();
 		
 		if(size != size())
-			notice(ITEMS_REMOVED);
+			notice(ListDataEvent.INTERVAL_REMOVED, size-1);
 		
 		return item;
 	}
@@ -76,7 +96,7 @@ public class ObservableLinkedList<E> extends LinkedList<E> {
 		boolean changed = super.add(e);
 		
 		if(changed)
-			notice(ITEMS_ADDED);
+			notice(ListDataEvent.INTERVAL_ADDED, size()-1);
 		
 		return changed;
 	}
@@ -84,15 +104,16 @@ public class ObservableLinkedList<E> extends LinkedList<E> {
 	@Override
 	public void add(int index, E element) {
 		super.add(index, element);
-		notice(ITEMS_ADDED);
+		notice(ListDataEvent.INTERVAL_ADDED, index);
 	}
 	
 	@Override
 	public boolean addAll(Collection<? extends E> c) {
+		int first = size();
 		boolean changed = super.addAll(c);
 		
 		if(changed)
-			notice(ITEMS_ADDED);
+			notice(ListDataEvent.INTERVAL_ADDED, first, size()-1);
 		
 		return changed;
 	}
@@ -102,7 +123,7 @@ public class ObservableLinkedList<E> extends LinkedList<E> {
 		boolean changed = super.addAll(index, c);
 		
 		if(changed)
-			notice(ITEMS_ADDED);
+			notice(ListDataEvent.INTERVAL_ADDED, index, index + c.size()-1);
 		
 		return changed;
 	}
@@ -110,13 +131,13 @@ public class ObservableLinkedList<E> extends LinkedList<E> {
 	@Override
 	public void addFirst(E e) {
 		super.addFirst(e);
-		notice(ITEMS_ADDED);
+		notice(ListDataEvent.INTERVAL_ADDED, 0);
 	}
 	
 	@Override
 	public void addLast(E e) {
 		super.addLast(e);
-		notice(ITEMS_ADDED);
+		notice(ListDataEvent.INTERVAL_ADDED, size()-1);
 	}
 	
 	@Override
@@ -125,25 +146,43 @@ public class ObservableLinkedList<E> extends LinkedList<E> {
 		super.clear();
 		
 		if(size != size())
-			notice(ITEMS_REMOVED);
+			notice(ListDataEvent.INTERVAL_REMOVED, 0, size-1);
 	}
 	
 	@Override
 	public boolean remove(Object o) {
+		int index = super.indexOf(o);
 		boolean changed = super.remove(o);
 		
 		if(changed)
-			notice(ITEMS_REMOVED);
+			notice(ListDataEvent.INTERVAL_REMOVED, index);
 		
 		return changed;
 	}
 	
 	@Override
 	public boolean removeAll(Collection<?> c) {
+		List<int[]> indexes = new LinkedList<>();
+		int index = 0, start = -1;
+		for(E e : this) {
+			if(c.contains(e)) {
+				if(start < 0)
+					start = index;
+			} else if(start > 0) {
+				indexes.add(new int[] {start, index - 1});
+				start = -1;
+			}
+			index++;
+		}
+		if(start > 0)
+			indexes.add(new int[] {start, size() - 1});
+		Collections.reverse(indexes);
+		
 		boolean changed = super.removeAll(c);
 		
 		if(changed)
-			notice(ITEMS_REMOVED);
+			for(int[] segment : indexes)
+				notice(ListDataEvent.INTERVAL_REMOVED, segment[0], segment[1]);
 		
 		return changed;
 	}
@@ -154,7 +193,7 @@ public class ObservableLinkedList<E> extends LinkedList<E> {
 		E item = super.remove();
 		
 		if(size != size())
-			notice(ITEMS_REMOVED);
+			notice(ListDataEvent.INTERVAL_REMOVED, 0);
 		
 		return item;
 	}
@@ -165,7 +204,7 @@ public class ObservableLinkedList<E> extends LinkedList<E> {
 		E item = super.remove(index);
 		
 		if(size != size())
-			notice(ITEMS_REMOVED);
+			notice(ListDataEvent.INTERVAL_REMOVED, index);
 		
 		return item;
 	}
@@ -176,17 +215,18 @@ public class ObservableLinkedList<E> extends LinkedList<E> {
 		E item = super.removeFirst();
 		
 		if(size != size())
-			notice(ITEMS_REMOVED);
+			notice(ListDataEvent.INTERVAL_REMOVED, 0);
 		
 		return item;
 	}
 	
 	@Override
 	public boolean removeFirstOccurrence(Object o) {
+		int index = super.indexOf(o);
 		boolean changed = super.removeFirstOccurrence(o);
 		
 		if(changed)
-			notice(ITEMS_REMOVED);
+			notice(ListDataEvent.INTERVAL_REMOVED, index);
 		
 		return changed;
 	}
@@ -197,24 +237,32 @@ public class ObservableLinkedList<E> extends LinkedList<E> {
 		E item = super.removeLast();
 		
 		if(size != size())
-			notice(ITEMS_REMOVED);
+			notice(ListDataEvent.INTERVAL_REMOVED, size-1);
 		
 		return item;
 	}
 	
 	@Override
 	public boolean removeLastOccurrence(Object o) {
+		int index = super.lastIndexOf(o);
 		boolean changed = super.removeLastOccurrence(o);
 		
 		if(changed)
-			notice(ITEMS_REMOVED);
+			notice(ListDataEvent.INTERVAL_REMOVED, index);
 		
 		return changed;
 	}
 	
+	@Override
+	public E set(int index, E element) {
+		E previous = super.set(index, element);
+		
+		if(previous != element)
+			notice(ListDataEvent.CONTENTS_CHANGED, index);
+		
+		return previous;
+	}
+	
 	//TODO Check other Methods that should not be supported / must be modified
 	
-	public interface ListListener<E> extends EventListener {
-		public void itemsChanged(ObservableLinkedList<E> list, int type);
-	}
 }
