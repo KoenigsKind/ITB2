@@ -6,6 +6,7 @@ import java.awt.Frame;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
@@ -18,8 +19,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
-import itb2.engine.Controller;
-
 /**
  * Window displaying log messages
  * 
@@ -30,6 +29,9 @@ public class Log extends JDialog {
 	
 	/** Default size for window */ 
 	private static final int WIDTH = 400, HEIGHT = 200;
+	
+	/** Logger this window keeps track of */
+	private final Logger logger;
 	
 	/** Object for synchronizing lock */
 	private final Object sync;
@@ -44,10 +46,7 @@ public class Log extends JDialog {
 	private final String pageTemplate, messageTemplate;
 	
 	/** List of messages with and without debug messages */
-	private String messages, messagesFull;
-	
-	/** Whether to display debug messages */
-	private boolean displayDebug = false;
+	private String messages;
 	
 	/** Whether this log was shown before */
 	private boolean firstShown = true;
@@ -58,15 +57,6 @@ public class Log extends JDialog {
 		
 		sync = new Object();
 		dateFormat = new SimpleDateFormat("HH:mm");
-		
-		JCheckBox showDebug = new JCheckBox("Show debug messages", displayDebug);
-		showDebug.addActionListener(e -> {
-			displayDebug = showDebug.isSelected();
-			if(displayDebug && !Logger.getGlobal().isLoggable(MessageType.DEBUG.level))
-				Controller.getCommunicationManager().warning("Log level to high to receive any debug messages. "
-						+ "Use: <pre>Logger.getGlobal().setLevel(Level.ALL);</pre>");
-			update();
-		});
 		
 		StringBuilder templateBuilder = new StringBuilder("<html><head><style>");
 		
@@ -82,7 +72,16 @@ public class Log extends JDialog {
 		
 		pageTemplate = templateBuilder.toString();
 		messageTemplate = "<tr class='%s'><td valign='top'>%s</td><td>%s</td></tr>";
-		messages = messagesFull = "";
+		messages = "";
+		
+		logger = Logger.getLogger("ITB2");
+		
+		boolean displayDebug = logger.isLoggable(MessageType.DEBUG.level);
+		JCheckBox showDebug = new JCheckBox("Show debug messages", displayDebug);
+		showDebug.addActionListener(e -> {
+			Level level = showDebug.isSelected() ? MessageType.DEBUG.level : MessageType.INFO.level;
+			logger.setLevel(level);
+		});
 		
 		log = new JLabel();
 		log.setVerticalAlignment(JLabel.TOP);
@@ -104,7 +103,7 @@ public class Log extends JDialog {
 		setSize(WIDTH, HEIGHT);
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		
-		Logger.getGlobal().addHandler(new LogFrameHandler());
+		logger.addHandler(new LogFrameHandler());
 	}
 	
 	/** Shows/Hides the log window */
@@ -119,7 +118,7 @@ public class Log extends JDialog {
 	/** Updates the log with messages */
 	private void update() {
 		synchronized(sync) {
-			log.setText(String.format(pageTemplate, displayDebug ? messagesFull : messages));
+			log.setText(String.format(pageTemplate, messages));
 		}
 	}
 	
@@ -143,9 +142,7 @@ public class Log extends JDialog {
 					record.getMessage().replaceAll("\r?\n", "<br>"));
 			
 			synchronized(sync) {
-				messagesFull += message;
-				if(type != MessageType.DEBUG)
-					messages += message;
+				messages += message;
 			}
 			
 			SwingUtilities.invokeLater(() -> update());

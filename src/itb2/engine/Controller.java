@@ -4,7 +4,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -13,6 +12,7 @@ import javax.swing.UIManager;
 import itb2.engine.io.Config;
 import itb2.gui.CommunicationManagerImpl;
 import itb2.gui.EditorGui;
+import itb2.gui.MessageType;
 
 /**
  * Controller providing managers and starting application
@@ -20,6 +20,9 @@ import itb2.gui.EditorGui;
  * @author Micha Strauch
  */
 public final class Controller {
+	
+	/** Strong reference to logger, to keep logger alive */
+	private static Logger logger;
 	
 	/** Manager for filters */
 	private static FilterManager filterManager;
@@ -64,6 +67,12 @@ public final class Controller {
 		if(gui != null)
 			throw new RuntimeException("Application already running!");
 		
+		// Initialize logger; do not print to System.out
+		LogManager.getLogManager().reset();
+		logger = Logger.getLogger("ITB2");
+		logger.setLevel(MessageType.INFO.level);
+		logger.setUseParentHandlers(false);
+		
 		try {
 			String systemLookAndFeel = UIManager.getSystemLookAndFeelClassName();
 			UIManager.setLookAndFeel(systemLookAndFeel);
@@ -105,12 +114,8 @@ public final class Controller {
 		gui.setVisible(true);
 	}
 	
-	/** Sets logger-options and starts application */
+	/** Starts application */
 	public static void main(String[] args) {
-		// Log all levels, but not to System.out
-		LogManager.getLogManager().reset();
-		Logger.getGlobal().setLevel(Level.ALL);
-		
 		// Start application
 		startApplication();
 	}

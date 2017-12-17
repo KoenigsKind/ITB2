@@ -61,7 +61,7 @@ public class StatusBar extends JPanel {
 		setBorder(new EmptyBorder(2, 2, 2, 2));
 		
 		// Register log handler
-		Logger.getGlobal().addHandler(new StatusBarHandler());
+		Logger.getLogger("ITB2").addHandler(new StatusBarHandler());
 	}
 	
 	/**

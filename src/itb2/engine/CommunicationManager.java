@@ -53,21 +53,23 @@ public interface CommunicationManager {
 	 * 
 	 * @param message Description
 	 * @param image   Image to show
+	 * 
+	 * @return Handler to modify preview
 	 */
-	public void preview(String message, Image image);
+	public PreviewHandler preview(String message, Image image);
 	
 	/**
 	 * Lets the user select a certain amount of pixels on the
 	 * given image. If count is zero or less, the user may select
 	 * any number of pixels.  
 	 * 
-	 * @param message             Message to display
-	 * @param requiredSelections  Number of pixels to select (Optional, set to 0 otherwise)
-	 * @param image               Image to select pixels from
+	 * @param message        Message to display
+	 * @param maxSelections  Number of pixels to select (Optional, set to 0 otherwise)
+	 * @param image          Image to select pixels from
 	 * 
 	 * @return Coordinates of the selected pixels (x := column; y := row)
 	 */
-	public List<Point> getSelections(String message, int requiredSelections, Image image);
+	public List<Point> getSelections(String message, int maxSelections, Image image);
 	
 	/**
 	 * Sets the progress indicator to the given value:

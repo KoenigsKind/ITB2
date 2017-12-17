@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 
 import itb2.engine.CommunicationManager;
+import itb2.engine.PreviewHandler;
 import itb2.image.Image;
 
 /**
@@ -29,7 +30,7 @@ public class CommunicationManagerImpl implements CommunicationManager {
 	public CommunicationManagerImpl(EditorGui gui) {
 		this.gui = gui;
 		statusbar = gui.getStatusBar();
-		logger = Logger.getGlobal();
+		logger = Logger.getLogger("ITB2");
 	}
 
 	@Override
@@ -42,10 +43,14 @@ public class CommunicationManagerImpl implements CommunicationManager {
 
 	@Override
 	public void debug(String message, Object... params) {
+		if(!logger.isLoggable(MessageType.DEBUG.level))
+			return;
+		
 		if(params.length > 0)
 			message = String.format(message, params);
 		
 		logger.log(MessageType.DEBUG.level, message);
+		System.out.println(message);
 	}
 
 	@Override
@@ -65,17 +70,51 @@ public class CommunicationManagerImpl implements CommunicationManager {
 	}
 	
 	@Override
-	public void preview(String message, Image image) {
-		SwingUtilities.invokeLater(() -> new ImageFrame(gui, image, message).setVisible(true));
+	public PreviewHandler preview(String message, Image image) {
+		Wrapper<ImageFrame> wrapper = new Wrapper<>();
+		
+		SwingUtilities.invokeLater(() -> {
+			synchronized(wrapper) {
+				wrapper.value = new ImageFrame(gui, image, message);
+				wrapper.value.setVisible(true);
+			}
+		});
+		
+		PreviewHandler handler = new PreviewHandler() {
+			@Override
+			public void preview(String message, Image image) {
+				synchronized (wrapper) {
+					if(wrapper.value != null) {
+						ImageFrame frame = wrapper.value;
+						SwingUtilities.invokeLater(() -> {
+							frame.setImage(image);
+							frame.setTitle(message);
+						});
+					}
+				}
+			}
+			
+			@Override
+			public void close() {
+				synchronized (wrapper) {
+					if(wrapper.value != null) {
+						ImageFrame frame = wrapper.value;
+						SwingUtilities.invokeLater(() -> frame.dispose());
+					}
+				}
+			}
+		};
+		
+		return handler;
 	}
 	
 	@Override
-	public List<Point> getSelections(String message, int requiredSelections, Image image) {
+	public List<Point> getSelections(String message, int maxSelections, Image image) {
 		try {
 			Wrapper<List<Point>> output = new Wrapper<List<Point>>();
 			
 			synchronized(output) {
-				SwingUtilities.invokeLater(() -> new ImageFrame(gui, image, message, requiredSelections, selections -> {
+				SwingUtilities.invokeLater(() -> new ImageFrame(gui, image, message, maxSelections, selections -> {
 					synchronized (output) {
 						output.value = selections;
 						output.notifyAll();

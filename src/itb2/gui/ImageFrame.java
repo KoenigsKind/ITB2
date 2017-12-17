@@ -38,16 +38,16 @@ public class ImageFrame extends JFrame {
 	
 	/**
 	 * Creating the image window in the middle of the given component and displaying the given image.
-	 * Lets the user select pixels on the image and calls the given consumer, once the required number
-	 * of pixels are called (if > 0) or the window is closed. 
+	 * Lets the user select pixels on the image and calls the given consumer, once the maximum number
+	 * of pixels are called (if > 0) or the window is closed.
 	 * 
 	 * @param comp                Component this ImageFrame belongs to
 	 * @param image               Image to display
 	 * @param title               Title of the frame (Optional, set to null otherwise)
-	 * @param requiredSelections  Required number of selections (Optional, set to 0 otherwise)
+	 * @param maxSelections       Maximum number of selections (Optional, set to 0 otherwise)
 	 * @param callAfterSelection  Consumer to be called after selection
 	 */
-	public ImageFrame(Component comp, Image image, String title, int requiredSelections, Consumer<List<Point>> callAfterSelection) {
+	public ImageFrame(Component comp, Image image, String title, int maxSelections, Consumer<List<Point>> callAfterSelection) {
 		this(comp, new DrawableImage(image), title);
 		
 		Graphics graphics = ((DrawableImage)imagePainter.getImage()).getGraphics();
@@ -66,7 +66,7 @@ public class ImageFrame extends JFrame {
 				Point p = imagePainter.getMouseOnImage();
 				selections.add(p);
 				
-				if(requiredSelections > 0 && requiredSelections == selections.size())
+				if(maxSelections > 0 && maxSelections == selections.size())
 					dispose();
 				else {
 					// Draw circle at selection
@@ -106,16 +106,6 @@ public class ImageFrame extends JFrame {
 	 */
 	public ImageFrame(Component comp, Image image) {
 		this(comp, image, null);
-		
-		// Set title
-		String title = TITLE;
-		if(image.getName() != null) {
-			if(image.getName() instanceof File)
-				title += " - " + ((File)image.getName()).getName();
-			else
-				title += " - " + image.getName();
-		}
-		setTitle(title);
 	}
 	
 	/**
@@ -140,8 +130,7 @@ public class ImageFrame extends JFrame {
 		scrollPane.setPreferredSize(new Dimension(width + 10, height + 10));
 		
 		// Set title
-		if(title != null)
-			setTitle(title);
+		setTitle(title);
 		
 		// Closure
 		pack();
@@ -165,4 +154,25 @@ public class ImageFrame extends JFrame {
 		imagePainter.setZoom(zoom);
 	}
 	
+	@Override
+	public void setTitle(String title) {
+		if(title == null) {
+			title = TITLE;
+			Image image = imagePainter.getImage();
+			if(image != null && image.getName() != null) {
+				if(image.getName() instanceof File)
+					title += " - " + ((File)image.getName()).getName();
+				else
+					title += " - " + image.getName();
+			}
+		}
+		
+		super.setTitle(title);
+	}
+
+	/** Sets the image to display */
+	public void setImage(Image image) {
+		imagePainter.setImage(image);
+	}
+
 }
