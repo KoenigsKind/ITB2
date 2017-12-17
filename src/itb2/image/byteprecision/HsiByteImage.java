@@ -11,6 +11,9 @@ import itb2.image.HsiImage;
  */
 public class HsiByteImage extends AbstractByteImage implements HsiImage {
 	private static final long serialVersionUID = 503832263212040770L;
+	
+	/** Max values for hue, saturation and intensity */
+	private int[] maxValues = {255, 255, 255};
 
 	/**
 	 * Constructs an image with given size.
@@ -33,6 +36,32 @@ public class HsiByteImage extends AbstractByteImage implements HsiImage {
 	}
 	
 	@Override
+	public int maxHue() {
+		return maxValues[HUE];
+	}
+	
+	@Override
+	public int maxSaturation() {
+		return maxValues[SATURATION];
+	}
+	
+	@Override
+	public int maxIntensity() {
+		return maxValues[INTENSITY];
+	}
+	
+	@Override
+	public void setMaxValue(int hue, int saturation, int intensity) {
+		if(hue < 0 || hue > 255 || saturation < 0 || saturation > 255 || intensity < 0 || intensity > 255)
+			throw new IllegalArgumentException(String.format("Values must be between 0 and 255; given was: (%d, %d, %d)",
+					hue, saturation, intensity));
+		
+		maxValues[HUE] = hue;
+		maxValues[SATURATION] = saturation;
+		maxValues[INTENSITY] = intensity;
+	}
+	
+	@Override
 	protected double[] getRGB(int column, int row) {
 		double h = getValue(column, row, HUE);
 		double s = getValue(column, row, SATURATION);
@@ -51,9 +80,9 @@ public class HsiByteImage extends AbstractByteImage implements HsiImage {
 	 */
 	private double[] hsi2rgb(double h, double s, double i) {
 		// normalized HSI-values:
-		h *= 2 * Math.PI / MAX_HUE;
-		s /= MAX_SATURATION;
-		i /= MAX_INTENSITY;
+		h *= 2 * Math.PI / maxHue();
+		s /= maxSaturation();
+		i /= maxIntensity();
 		double x = i * (1 - s);
 		double y = i * (1 + ((s * Math.cos(h)) / (Math.cos(Math.PI / 3 - h))));
 		double z = 3 * i - (x + y);

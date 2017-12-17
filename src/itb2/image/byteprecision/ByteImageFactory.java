@@ -28,6 +28,11 @@ public class ByteImageFactory extends ImageFactory {
 	}
 
 	@Override
+	public Class<? extends GroupedImage> group() {
+		return GroupedByteImage.class;
+	}
+
+	@Override
 	public RgbImage rgb(int width, int height) {
 		return new RgbByteImage(width, height);
 	}

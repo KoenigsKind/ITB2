@@ -28,6 +28,11 @@ public class DoubleImageFactory extends ImageFactory {
 	}
 
 	@Override
+	public Class<? extends GroupedImage> group() {
+		return GroupedDoubleImage.class;
+	}
+
+	@Override
 	public RgbImage rgb(int width, int height) {
 		return new RgbDoubleImage(width, height);
 	}

@@ -34,6 +34,7 @@ public abstract class ImageFactory {
 	public abstract Class<? extends RgbImage> rgb();
 	public abstract Class<? extends HsiImage> hsi();
 	public abstract Class<? extends GrayscaleImage> gray();
+	public abstract Class<? extends GroupedImage> group();
 	
 	public abstract RgbImage rgb(int width, int height);
 	public abstract RgbImage rgb(Dimension size);

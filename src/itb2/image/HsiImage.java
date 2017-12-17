@@ -1,10 +1,20 @@
 package itb2.image;
 
 public interface HsiImage extends Image {
-	/** Max value for each channel */
-	public static final int MAX_HUE = 360, MAX_SATURATION = 100, MAX_INTENSITY = 255;
-	//TODO MAX_HUE zu groß für AbstractByteImage
 	
 	/** IDs for each channel */
 	public static int HUE = 0, SATURATION = 1, INTENSITY = 2;
+	
+	/** Maximum value for hue */
+	public int maxHue(); //360
+	
+	/** Maximum value for saturation */
+	public int maxSaturation(); //100
+	
+	/** Maximum value for intensity */
+	public int maxIntensity(); //255
+	
+	/** Sets the maximum value for hue, saturation and intensity */
+	public void setMaxValue(int hue, int saturation, int intensity);
+	
 }

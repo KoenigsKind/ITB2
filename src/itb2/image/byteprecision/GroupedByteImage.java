@@ -42,7 +42,7 @@ public class GroupedByteImage extends HsiByteImage implements GroupedImage {
 		else if(groupCount > 2) {
 			groups = new Group[groupCount];
 			for(int i = 0; i < groupCount; i++)
-				groups[i] = new Group(i * MAX_HUE / groupCount);
+				groups[i] = new Group((i * maxHue()) / groupCount);
 		} else
 			throw new RuntimeException("Group count must be at least 2!");
 	}
@@ -77,11 +77,11 @@ public class GroupedByteImage extends HsiByteImage implements GroupedImage {
 			if(id == BLACK) {
 				hsi = 0;
 			} else if(id == WHITE) {
-				hsi = (MAX_INTENSITY & 0xFF) << 24;
+				hsi = (maxIntensity() & 0xFF) << 24;
 			} else {
 				id &= 0xFF;
-				id |= (MAX_SATURATION & 0xFF) << 16;
-				id |= (MAX_INTENSITY & 0xFF) << 24;
+				id |= (maxSaturation() & 0xFF) << 16;
+				id |= (maxIntensity() & 0xFF) << 24;
 				
 				hsi = id;
 			}

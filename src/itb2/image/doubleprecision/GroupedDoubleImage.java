@@ -42,7 +42,7 @@ public class GroupedDoubleImage extends HsiDoubleImage implements GroupedImage {
 		else if(groupCount > 2) {
 			groups = new Group[groupCount];
 			for(int i = 0; i < groupCount; i++)
-				groups[i] = new Group((double)(i * MAX_HUE) / groupCount);
+				groups[i] = new Group((double)(i * maxHue()) / groupCount);
 		} else
 			throw new RuntimeException("Group count must be at least 2!");
 	}
@@ -80,9 +80,9 @@ public class GroupedDoubleImage extends HsiDoubleImage implements GroupedImage {
 			if(id == BLACK) {
 				hsi = new double[]{0, 0, 0};
 			} else if(id == WHITE) {
-				hsi = new double[]{0, 0, MAX_INTENSITY};
+				hsi = new double[]{0, 0, maxIntensity()};
 			} else {
-				hsi = new double[]{id, MAX_SATURATION, MAX_INTENSITY};
+				hsi = new double[]{id, maxSaturation(), maxIntensity()};
 			}
 		}
 		
