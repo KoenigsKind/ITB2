@@ -31,15 +31,16 @@ public final class ImageConverter {
 		
 		// Add some basic conversion methods, may be overwritten by other filter
 		register(Image.class, DrawableImage.class, new Img2Draw());
-		register(DrawableImage.class, ImageFactory.bytePrecision().rgb(), new Draw2Rgb());
 		
-		register(ImageFactory.bytePrecision().gray(), ImageFactory.bytePrecision().rgb(), new Gray2Rgb());
-		register(ImageFactory.bytePrecision().gray(), ImageFactory.bytePrecision().hsi(), new Gray2Hsi());
-		register(ImageFactory.bytePrecision().hsi(), ImageFactory.bytePrecision().gray(), new Hsi2Gray());
+		register(GrayscaleImage.class, ImageFactory.doublePrecision().rgb(), new Gray2Rgb(ImageFactory.doublePrecision()));
+		register(GrayscaleImage.class, ImageFactory.doublePrecision().hsi(), new Gray2Hsi(ImageFactory.doublePrecision()));
+		register(HsiImage.class, ImageFactory.doublePrecision().gray(), new Hsi2Gray(ImageFactory.doublePrecision()));
+		register(DrawableImage.class, ImageFactory.doublePrecision().rgb(), new Draw2Rgb(ImageFactory.doublePrecision()));
 		
-		register(ImageFactory.doublePrecision().gray(), ImageFactory.doublePrecision().rgb(), new Gray2Rgb());
-		register(ImageFactory.doublePrecision().gray(), ImageFactory.doublePrecision().hsi(), new Gray2Hsi());
-		register(ImageFactory.doublePrecision().hsi(), ImageFactory.doublePrecision().gray(), new Hsi2Gray());
+		register(GrayscaleImage.class, ImageFactory.bytePrecision().rgb(), new Gray2Rgb(ImageFactory.bytePrecision()));
+		register(GrayscaleImage.class, ImageFactory.bytePrecision().hsi(), new Gray2Hsi(ImageFactory.bytePrecision()));
+		register(HsiImage.class, ImageFactory.bytePrecision().gray(), new Hsi2Gray(ImageFactory.bytePrecision()));
+		register(DrawableImage.class, ImageFactory.bytePrecision().rgb(), new Draw2Rgb(ImageFactory.bytePrecision()));
 	}
 	
 	/**
@@ -64,12 +65,16 @@ public final class ImageConverter {
 	}
 	
 	/**
-	 * Registers a filter for image conversion. The filter
-	 * must return a single image of type destination, when
-	 * receiving a single image of type source.
+	 * Registers a filter for image conversion. The filter must return a single
+	 * image of type destination, when receiving a single image of type source.
+	 * The <u>source</u> should be the <i>least specific</i> acceptable type, e.g.
+	 * {@link RgbImage} is better than {@link ImageFactory#rgb() RgbByteImage}.
+	 * While the <u>destination</u> should be the <i>most specific</i> type,
+	 * e.g. {@link ImageFactory#gray() GrayscaleByteImage} is better than
+	 * {@link GrayscaleImage}.
 	 * 
-	 * @param source      Image type before conversion
-	 * @param destination Image type after conversion
+	 * @param source      Least specific image type before conversion
+	 * @param destination Most specific image type after conversion
 	 * @param converter   Filter to perform conversion
 	 */
 	public static void register(Class<? extends Image> source, Class<? extends Image> destination, Filter converter) {
@@ -101,14 +106,42 @@ public final class ImageConverter {
 	}
 	
 	/**
+	 * Converts an image
+	 * 
+	 * @author Micha Strauch
+	 */
+	private static abstract class AbstractConverter extends AbstractFilter {
+		/** Factory to use for output image */
+		final ImageFactory factory;
+		
+		AbstractConverter(ImageFactory factory) {
+			this.factory = factory;
+		}
+		
+		@Override
+		public final Image filter(Image input) {
+			if(factory != null)
+				return filter(input, factory);
+			return filter(input, ImageFactory.getPrecision(input));
+		}
+		
+		/** Converts an image using the given factory */
+		abstract Image filter(Image input, ImageFactory factory);
+	}
+	
+	/**
 	 * Converts a drawable image to an RGB-image
 	 * 
 	 * @author Micha Strauch
 	 */
-	private static class Draw2Rgb extends AbstractFilter {
+	private static class Draw2Rgb extends AbstractConverter {
+		public Draw2Rgb(ImageFactory factory) {
+			super(factory);
+		}
+		
 		@Override
-		public Image filter(Image draw) {
-			return ImageFactory.bytePrecision().rgb(draw.asBufferedImage());
+		public Image filter(Image draw, ImageFactory factory) {
+			return factory.rgb(draw.asBufferedImage());
 		}
 	}
 	
@@ -117,10 +150,13 @@ public final class ImageConverter {
 	 * 
 	 * @author Micha Strauch
 	 */
-	private static class Gray2Rgb extends AbstractFilter {
+	private static class Gray2Rgb extends AbstractConverter {
+		public Gray2Rgb(ImageFactory factory) {
+			super(factory);
+		}
+		
 		@Override
-		public Image filter(Image gray) {
-			ImageFactory factory = ImageFactory.getPrecision(gray);
+		public Image filter(Image gray, ImageFactory factory) {
 			RgbImage rgb =  factory.rgb(gray.getSize());
 			
 			for(int col = 0; col < gray.getWidth(); col++) {
@@ -139,10 +175,13 @@ public final class ImageConverter {
 	 * 
 	 * @author Micha Strauch
 	 */
-	private static class Hsi2Gray extends AbstractFilter {
+	private static class Hsi2Gray extends AbstractConverter {
+		public Hsi2Gray(ImageFactory factory) {
+			super(factory);
+		}
+		
 		@Override
-		public Image filter(Image hsi) {
-			ImageFactory factory = ImageFactory.getPrecision(hsi);
+		public Image filter(Image hsi, ImageFactory factory) {
 			return factory.gray(hsi.getChannel(HsiImage.INTENSITY));
 		}
 	}
@@ -152,10 +191,13 @@ public final class ImageConverter {
 	 * 
 	 * @author Micha Strauch
 	 */
-	private static class Gray2Hsi extends AbstractFilter {
+	private static class Gray2Hsi extends AbstractConverter {
+		public Gray2Hsi(ImageFactory factory) {
+			super(factory);
+		}
+		
 		@Override
-		public Image filter(Image gray) {
-			ImageFactory factory = ImageFactory.getPrecision(gray);
+		public Image filter(Image gray, ImageFactory factory) {
 			Image hsi = factory.hsi(gray.getSize());
 			double hue = 0, saturation = 0;
 			
