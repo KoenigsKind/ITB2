@@ -7,10 +7,10 @@ import itb2.data.ObservableLinkedList;
 import itb2.engine.io.ImageIO;
 import itb2.image.Image;
 
-public class ImageManagerImpl implements ImageManager {
+public class DefaultImageManager implements ImageManager {
 	private ObservableLinkedList<Image> imageList;
 	
-	ImageManagerImpl() {
+	DefaultImageManager() {
 		imageList = new ObservableLinkedList<>();
 	}
 	

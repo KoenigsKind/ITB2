@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 import javax.swing.UIManager;
 
 import itb2.engine.io.Config;
-import itb2.gui.CommunicationManagerImpl;
+import itb2.gui.DefaultCommunicationManager;
 import itb2.gui.EditorGui;
 import itb2.gui.MessageType;
 
@@ -39,7 +39,7 @@ public final class Controller {
 	/** Returns the filter manager */
 	public static FilterManager getFilterManager() {
 		if(filterManager == null)
-			filterManager = new FilterManagerImpl();
+			filterManager = new DefaultFilterManager();
 		
 		return filterManager;
 	}
@@ -47,7 +47,7 @@ public final class Controller {
 	/** Returns the image manager */
 	public static ImageManager getImageManager() {
 		if(imageManager == null)
-			imageManager = new ImageManagerImpl();
+			imageManager = new DefaultImageManager();
 		
 		return imageManager;
 	}
@@ -83,7 +83,7 @@ public final class Controller {
 		gui = new EditorGui();
 		gui.setDefaultCloseOperation(EditorGui.EXIT_ON_CLOSE);
 		
-		setCommunicationManager(new CommunicationManagerImpl(gui));
+		setCommunicationManager(new DefaultCommunicationManager(gui));
 		
 		// Remember state when closing window for next time
 		gui.addWindowListener(new WindowListener() {

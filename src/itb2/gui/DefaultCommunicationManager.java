@@ -15,7 +15,7 @@ import itb2.image.Image;
  * 
  * @author Micha Strauch
  */
-public class CommunicationManagerImpl implements CommunicationManager {
+public class DefaultCommunicationManager implements CommunicationManager {
 	
 	/** GUI this communication manager is for */
 	private final EditorGui gui;
@@ -27,7 +27,7 @@ public class CommunicationManagerImpl implements CommunicationManager {
 	private final Logger logger;
 	
 	/** Creates the CommunicationManager for {@link EditorGui} */
-	public CommunicationManagerImpl(EditorGui gui) {
+	public DefaultCommunicationManager(EditorGui gui) {
 		this.gui = gui;
 		statusbar = gui.getStatusBar();
 		logger = Logger.getLogger("ITB2");

@@ -21,7 +21,7 @@ import itb2.image.ImageConverter;
  * 
  * @author Micha Strauch
  */
-public class FilterManagerImpl implements FilterManager {
+public class DefaultFilterManager implements FilterManager {
 	
 	/** Set of loaded filters */
 	private final ObservableTreeSet<Filter> filterSet;
@@ -30,7 +30,7 @@ public class FilterManagerImpl implements FilterManager {
 	private final ExecutorService executor;
 	
 	/** Constructor */
-	FilterManagerImpl() {
+	DefaultFilterManager() {
 		executor = Executors.newSingleThreadExecutor();
 		filterSet = new ObservableTreeSet<>(new Comparator<Filter>() {
 			Collator collator = Collator.getInstance();
