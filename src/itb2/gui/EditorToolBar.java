@@ -32,31 +32,31 @@ public class EditorToolBar extends JToolBar {
 		super(HORIZONTAL);
 		setFloatable(false);
 		
-		openImage = getButton(IconLoader.IMAGE_OPEN, "Open image");
+		openImage = getButton(IconLoader.IMAGE_OPEN, "Open image", KeyController.Shortcut.IMAGE_OPEN);
 		openImage.addActionListener(e -> gui.openImage());
 
-		saveImage = getButton(IconLoader.IMAGE_SAVE, "Save image");
+		saveImage = getButton(IconLoader.IMAGE_SAVE, "Save image", KeyController.Shortcut.IMAGE_SAVE);
 		saveImage.addActionListener(e -> gui.saveImage());
 
-		closeImage = getButton(IconLoader.IMAGE_CLOSE, "Close image");
+		closeImage = getButton(IconLoader.IMAGE_CLOSE, "Close image", KeyController.Shortcut.IMAGE_CLOSE);
 		closeImage.addActionListener(e -> gui.closeImage());
 
-		openFilter = getButton(IconLoader.FILTER_OPEN, "Open filter");
+		openFilter = getButton(IconLoader.FILTER_OPEN, "Open filter", KeyController.Shortcut.FILTER_OPEN);
 		openFilter.addActionListener(e -> gui.openFilter());
 
-		runFilter = getButton(IconLoader.FILTER_RUN, "Run filter");
+		runFilter = getButton(IconLoader.FILTER_RUN, "Run filter", KeyController.Shortcut.FILTER_RUN);
 		runFilter.addActionListener(e -> gui.runFilter());
 
-		closeFilter = getButton(IconLoader.FILTER_CLOSE, "Close filter");
+		closeFilter = getButton(IconLoader.FILTER_CLOSE, "Close filter", KeyController.Shortcut.FILTER_CLOSE);
 		closeFilter.addActionListener(e -> gui.closeFilter());
 		
-		resetZoom = getButton(IconLoader.RESET_ZOOM, "Reset zoom");
+		resetZoom = getButton(IconLoader.RESET_ZOOM, "Reset zoom", KeyController.Shortcut.RESET_ZOOM);
 		resetZoom.addActionListener(e -> gui.resetZoom());
 		
-		fitToScreen = getButton(IconLoader.FIT_TO_SCREEN, "Fit to screen");
+		fitToScreen = getButton(IconLoader.FIT_TO_SCREEN, "Fit to screen", KeyController.Shortcut.FIT_TO_SCREEN);
 		fitToScreen.addActionListener(e -> gui.fitToScreen());
 		
-		log = getButton(IconLoader.LOG, "Open log");
+		log = getButton(IconLoader.LOG, "Open log", KeyController.Shortcut.LOG);
 		log.addActionListener(e -> gui.toggleLogFrame());
 
 		add(log);
@@ -81,7 +81,10 @@ public class EditorToolBar extends JToolBar {
 	 * @param tooltip  Tooltip to show when hovering above image
 	 * @return Created button
 	 */
-	private JButton getButton(String iconName, String tooltip) {
+	private JButton getButton(String iconName, String tooltip, KeyController.Shortcut shortcut) {
+		if(shortcut != null)
+			tooltip = String.format("<html>%s<br><i>%s</i></html>", tooltip, shortcut.description);
+		
 		JButton button = new JButton();
 		button.setBorder(null);
 		button.setToolTipText(tooltip);

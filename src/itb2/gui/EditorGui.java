@@ -78,6 +78,9 @@ public class EditorGui extends JFrame {
 		statusBar = new StatusBar(this);
 		logFrame = new Log(this);
 		
+		// Add Shortcuts
+		KeyController.registerShortcuts(this);
+		
 		// Add menu to window
 		setJMenuBar(menubar);
 		
@@ -106,6 +109,21 @@ public class EditorGui extends JFrame {
 	/** Returns the status bar for notification */
 	StatusBar getStatusBar() {
 		return statusBar;
+	}
+	
+	/** Returns the filter list */
+	FilterList getFilterList() {
+		return filterList;
+	}
+	
+	/** Returns the image list */
+	ImageList getImageList() {
+		return imageList;
+	}
+	
+	/** Returns the log frame */
+	Log getLogFrame() {
+		return logFrame;
 	}
 	
 	@Override
