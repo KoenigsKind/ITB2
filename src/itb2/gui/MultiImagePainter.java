@@ -56,7 +56,6 @@ class MultiImagePainter extends JPanel {
 	class ImageRenderer extends JLabel implements ListCellRenderer<Image> {
 		private static final long serialVersionUID = -5400394083339787019L;
 		Image image;
-		boolean isSelected;
 		
 		public ImageRenderer() {
 			setOpaque(false);
@@ -67,7 +66,6 @@ class MultiImagePainter extends JPanel {
 		@Override
 		public Component getListCellRendererComponent(JList<? extends Image> list, Image value, int index, boolean isSelected, boolean cellHasFocus) {
 			this.image = value;
-			this.isSelected = isSelected;
 			return this;
 		}
 		
@@ -94,10 +92,8 @@ class MultiImagePainter extends JPanel {
 			
 			g.drawImage(image.asBufferedImage(), x, y, imgWidth, imgHeight, null);
 			
-			if(isSelected) {
-				g.setColor(Color.BLACK);
-				g.drawRect(x, y, imgWidth, imgHeight);
-			}
+			g.setColor(Color.BLACK);
+			g.drawRect(x, y, imgWidth, imgHeight);
 		}
 		
 	}
