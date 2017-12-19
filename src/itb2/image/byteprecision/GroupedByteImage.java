@@ -81,7 +81,7 @@ public class GroupedByteImage extends HsiByteImage implements GroupedImage {
 			} else {
 				id &= 0xFF;
 				id |= (maxSaturation() & 0xFF) << 16;
-				id |= (maxIntensity() & 0xFF) << 24;
+				id |= ((maxIntensity() / 2) & 0xFF) << 24;
 				
 				hsi = id;
 			}

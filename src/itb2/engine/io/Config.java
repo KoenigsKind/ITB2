@@ -27,7 +27,7 @@ public class Config implements Serializable {
 	private static final long serialVersionUID = -4106334935531297234L;
 	
 	/** Config file */
-	private static final File DEFAULT_CONFIG = new File("ITB2.config");
+	private static final File DEFAULT_CONFIG = new File("ITB2.bin");
 	
 	/**
 	 * Saves the current ITB2 state

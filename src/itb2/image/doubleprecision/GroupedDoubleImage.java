@@ -82,7 +82,7 @@ public class GroupedDoubleImage extends HsiDoubleImage implements GroupedImage {
 			} else if(id == WHITE) {
 				hsi = new double[]{0, 0, maxIntensity()};
 			} else {
-				hsi = new double[]{id, maxSaturation(), maxIntensity()};
+				hsi = new double[]{id, maxSaturation(), 0.5 * maxIntensity()};
 			}
 		}
 		
