@@ -1,6 +1,8 @@
 package itb2.gui;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.ListSelectionModel;
@@ -51,22 +53,39 @@ public class OrderedSelectionModel extends DefaultListSelectionModel {
 
 	@Override
 	public void insertIndexInterval(int index, int length, boolean before) {
-		int min = before ? index : index + 1;
-		int max = min + length;
+		int start = before ? index : index + 1;
+		List<Integer> newIndexes = new ArrayList<>(selected.size());
 		
-		for(int i = min; i < max; i++)
-			selected.add(i);
+		for(int i : selected) {
+			if(i >= start)
+				i += length;
+			newIndexes.add(i);
+		}
+		
+		selected.clear();
+		selected.addAll(newIndexes);
 
 		super.insertIndexInterval(index, length, before);
 	}
 
 	@Override
 	public void removeIndexInterval(int index0, int index1) {
-		int dir = index0 < index1 ? 1 : -1;
-		int start = index0, stop = index1 + dir;
+		int start = index0 < index1 ? index0 : index1;
+		int end = index0 > index1 ? index0 : index1;
+		int length = end - start + 1;
 		
-		for(int i = start; i != stop; i += dir)
-			selected.remove(i);
+		List<Integer> newIndexes = new ArrayList<>(selected.size());
+		
+		for(int i : selected) {
+			if(i >= start && i <= end)
+				continue;
+			if(i > end)
+				i -= length;
+			newIndexes.add(i);
+		}
+		
+		selected.clear();
+		selected.addAll(newIndexes);
 
 		super.removeIndexInterval(index0, index1);
 	}

@@ -7,10 +7,9 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.DropMode;
 import javax.swing.JList;
@@ -18,7 +17,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
-import javax.swing.ListModel;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.event.ListDataEvent;
@@ -179,24 +177,16 @@ public class ImageList extends JPanel {
 	 * 
 	 * @author Micha Strauch
 	 */
-	private class ImageModel implements ListModel<Image>, ListDataListener {
+	private class ImageModel extends AbstractListModel<Image> implements ListDataListener {
+		private static final long serialVersionUID = -385609011901046837L;
 		
 		/** List of currently opened images */
 		private final ObservableLinkedList<Image> images;
 		
-		/** Listener on this model */
-		private final Set<ListDataListener> listeners;
-		
 		/** Constructor */
 		ImageModel() {
 			images = Controller.getImageManager().getImageList();
-			listeners = new HashSet<>();
 			images.addListener(this);
-		}
-
-		@Override
-		public void addListDataListener(ListDataListener listener) {
-			listeners.add(listener);
 		}
 
 		@Override
@@ -214,47 +204,19 @@ public class ImageList extends JPanel {
 		}
 
 		@Override
-		public void removeListDataListener(ListDataListener l) {
-			listeners.remove(l);
+		public void contentsChanged(ListDataEvent e) {
+			fireContentsChanged(this, e.getIndex0(), e.getIndex1());
 		}
 
 		@Override
-		public void contentsChanged(ListDataEvent in) {
-			notice();
-			
-			//TODO Find Error
-			
-//			ListDataEvent out = new ListDataEvent(this, in.getType(), in.getIndex0(), in.getIndex1());
-//			
-//			for(ListDataListener listener : listeners)
-//				listener.contentsChanged(out);
+		public void intervalAdded(ListDataEvent e) {
+			fireIntervalAdded(this, e.getIndex0(), e.getIndex1());
 		}
 
 		@Override
-		public void intervalAdded(ListDataEvent in) {
-			notice();
-			
-//			ListDataEvent out = new ListDataEvent(this, in.getType(), in.getIndex0(), in.getIndex1());
-//			
-//			for(ListDataListener listener : listeners)
-//				listener.intervalAdded(out);
-		}
-
-		@Override
-		public void intervalRemoved(ListDataEvent in) {
-			notice();
-			
-//			ListDataEvent out = new ListDataEvent(this, in.getType(), in.getIndex0(), in.getIndex1());
-//			
-//			for(ListDataListener listener : listeners)
-//				listener.intervalRemoved(out);
+		public void intervalRemoved(ListDataEvent e) {
+			fireIntervalRemoved(this, e.getIndex0(), e.getIndex1());
 		}
 		
-		private void notice() {
-			ListDataEvent e = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, images.size());
-			
-			for(ListDataListener listener : listeners)
-				listener.contentsChanged(e);
-		}
 	}
 }

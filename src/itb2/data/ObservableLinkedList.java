@@ -2,17 +2,15 @@ package itb2.data;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 public class ObservableLinkedList<E> extends LinkedList<E> {
 	private static final long serialVersionUID = -9164794867510245113L;
-	protected final transient Set<ListDataListener> listeners = new HashSet<>();
+	protected final transient List<ListDataListener> listeners = new LinkedList<>();
 	
 	public boolean addListener(ListDataListener listener) {
 		return listeners.add(listener);
@@ -168,13 +166,13 @@ public class ObservableLinkedList<E> extends LinkedList<E> {
 			if(c.contains(e)) {
 				if(start < 0)
 					start = index;
-			} else if(start > 0) {
+			} else if(start >= 0) {
 				indexes.add(new int[] {start, index - 1});
 				start = -1;
 			}
 			index++;
 		}
-		if(start > 0)
+		if(start >= 0)
 			indexes.add(new int[] {start, size() - 1});
 		Collections.reverse(indexes);
 		

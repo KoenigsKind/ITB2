@@ -277,8 +277,7 @@ public class EditorGui extends JFrame {
 	/** Closes the currently selected images */
 	public void closeImage() {
 		List<Image> selectedImages = imageList.getSelectedImages();
-		for(Image image : selectedImages)
-			Controller.getImageManager().getImageList().remove(image);
+		Controller.getImageManager().getImageList().removeAll(selectedImages);
 	}
 	
 	/** Runs the selected filter using the selected images */
