@@ -24,6 +24,8 @@ import itb2.data.ObservableTreeSet;
 import itb2.engine.Controller;
 import itb2.engine.io.FilterWrapper;
 import itb2.filter.Filter;
+import itb2.filter.RequireImageType;
+import itb2.image.Image;
 
 public class FilterList extends JPanel {
 	private static final long serialVersionUID = 977279295491172369L;
@@ -82,7 +84,23 @@ public class FilterList extends JPanel {
 				setText(value.getClass().getSimpleName());
 			setOpaque(isSelected);
 			setBorder(cellHasFocus ? focused : nonfocused);
+			
+			String requiredImageType = getRequiredImageType(value);
+			setToolTipText("<html><b>Required image type</b><br>" + requiredImageType + "</html>");
+			
 			return this;
+		}
+		
+		/**
+		 * Returns the required image type for this filter, or null if not specified
+		 * 
+		 * @param filter Filter to get image type for
+		 * @return Required image type
+		 */
+		private String getRequiredImageType(Filter filter) {
+			RequireImageType require = filter.getClass().getAnnotation(RequireImageType.class);
+			Class<? extends Image> image = require != null ? require.value() : null;
+			return image != null ? image.getSimpleName() : "-- none --";
 		}
 		
 	}
