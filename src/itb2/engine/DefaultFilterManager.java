@@ -73,7 +73,15 @@ public class DefaultFilterManager implements FilterManager {
 				images[i] = ImageConverter.convert(images[i], requiredImageType);
 		}
 		
-		return filter.filter(images);
+		long startTime = System.currentTimeMillis();
+		
+		Image[] output = filter.filter(images);
+		
+		double duration = (System.currentTimeMillis() - startTime) / 1000.;
+		Controller.getCommunicationManager().info("Filter '%s' finished after %.2f seconds.",
+				filter.getClass().getSimpleName(), duration);
+		
+		return output;
 	}
 	
 	/**
