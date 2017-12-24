@@ -44,8 +44,7 @@ public class ObservableLinkedList<E> extends LinkedList<E> {
 	
 	@Override
 	public void push(E e) {
-		super.push(e);
-		notice(ListDataEvent.INTERVAL_ADDED, 0);
+		super.push(e); // Calls addFirst(...)
 	}
 	
 	@Override

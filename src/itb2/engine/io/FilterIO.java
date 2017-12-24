@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 
+import itb2.data.ObservableLinkedList;
 import itb2.filter.Filter;
 
 /**
@@ -20,6 +21,34 @@ import itb2.filter.Filter;
 public class FilterIO {
 	/** Map of existing class loaders */
 	private static final Map<File, ClassLoader> loaders = new HashMap<>();
+	
+	/** Last opened filters */
+	private static final ObservableLinkedList<File> lastFilters = new ObservableLinkedList<>();
+	
+	/**
+	 * Returns a list of last opened filters.
+	 * Access should only be in synchronized environment!
+	 * 
+	 * @return Last opened filters
+	 */
+	public static ObservableLinkedList<File> getLastFilters() {
+		return lastFilters;
+	}
+	
+	/**
+	 * Adds the given file to the list of last loaded filters
+	 * 
+	 * @param file Last loaded filters
+	 */
+	private static void loaded(File file) {
+		synchronized (lastFilters) {
+			lastFilters.remove(file);
+			lastFilters.push(file);
+			
+			while(lastFilters.size() > 10)
+				lastFilters.removeLast();
+		}
+	}
 	
 	/**
 	 * Tries to load filter from given file (.java or .class)
@@ -56,7 +85,10 @@ public class FilterIO {
 			throw new IOException("Could not compile the file");
 		
 		String className = file.getName().replaceFirst(".java$", "");
-		return loadClass(file.getParentFile(), className);
+		Filter filter = loadClass(file.getParentFile(), className);
+		
+		loaded(file);
+		return filter;
 	}
 	
 	/**
@@ -68,7 +100,10 @@ public class FilterIO {
 	 */
 	public static Filter loadClass(File file) throws IOException {
 		String className = file.getName().replaceFirst(".class$", "");
-		return loadClass(file.getParentFile(), className);
+		Filter filter = loadClass(file.getParentFile(), className);
+		
+		loaded(file);
+		return filter;
 	}
 	
 	/**

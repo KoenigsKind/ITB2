@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import itb2.data.ObservableLinkedList;
 import itb2.image.Image;
 import itb2.image.ImageFactory;
 
@@ -14,8 +15,21 @@ import itb2.image.ImageFactory;
  */
 public abstract class ImageIO {
 	
+	/** Last opened images */
+	private static final ObservableLinkedList<File> lastImages = new ObservableLinkedList<>();
+	
 	/** Accepted file formats */
 	private static String[][] acceptedFormats;
+	
+	/**
+	 * Returns a list of last loaded images.
+	 * Access should only be in synchronized environment!
+	 * 
+	 * @return Last loaded images
+	 */
+	public static ObservableLinkedList<File> getLastImages() {
+		return lastImages;
+	}
 	
 	/**
 	 * Returns an array of accepted formats for saving/loading images
@@ -72,6 +86,14 @@ public abstract class ImageIO {
 		}
 		
 		image.setName(file);
+		
+		synchronized (lastImages) {
+			lastImages.remove(file);
+			lastImages.push(file);
+			
+			while(lastImages.size() > 10)
+				lastImages.removeLast();
+		}
 		
 		return image;
 	}

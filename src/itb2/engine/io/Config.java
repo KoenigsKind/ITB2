@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -83,10 +84,14 @@ public class Config implements Serializable {
 			if(path != null)
 				filterPaths.add(new File(path.getPath()));
 		}
+		List<File> lastImages = new ArrayList<>(ImageIO.getLastImages());
+		List<File> lastFilters = new ArrayList<>(FilterIO.getLastFilters());
 		
 		// Write data
 		stream.writeObject(filterPaths);
 		stream.writeObject(images);
+		stream.writeObject(lastImages);
+		stream.writeObject(lastFilters);
 	}
 	
 	/**
@@ -116,6 +121,26 @@ public class Config implements Serializable {
 		for(Object image : images) {
 			if(image instanceof Image) {
 				imageList.add((Image)image);
+			}
+		}
+		
+		// Then read last opened images
+		List<?> lastImages = (List<?>) stream.readObject();
+		List<File> lastImagesList = ImageIO.getLastImages();
+		lastImagesList.clear();
+		for(Object image : lastImages) {
+			if(image instanceof File) {
+				lastImagesList.add((File)image);
+			}
+		}
+		
+		// Then read last opened filters
+		List<?> lastFilters = (List<?>) stream.readObject();
+		List<File> lastFiltersList = FilterIO.getLastFilters();
+		lastFiltersList.clear();
+		for(Object filter : lastFilters) {
+			if(filter instanceof File) {
+				lastFiltersList.add((File)filter);
 			}
 		}
 	}
