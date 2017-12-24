@@ -3,18 +3,15 @@ package itb2.gui.property;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
-import itb2.filter.property.BooleanProperty;
-import itb2.filter.property.FilterProperty;
+import itb2.filter.FilterProperty;
 
 class BooleanPropertyBuilder extends PropertyBuilder {
 
 	@Override
-	public void build(FilterProperty property, JPanel panel) {
-		BooleanProperty booleanProperty = (BooleanProperty) property;
-		
-		JCheckBox checkBox = new JCheckBox(booleanProperty.name, booleanProperty.value);
+	public void build(FilterProperty<?> property, JPanel panel) {
+		JCheckBox checkBox = new JCheckBox(property.getName(), (boolean)property.getValue());
 		checkBox.setFont(TITLE_FONT);
-		checkBox.addChangeListener(e -> booleanProperty.value = checkBox.isSelected());
+		checkBox.addChangeListener(e -> property.setCastedValue(checkBox.isSelected()));
 		
 		panel.add(checkBox);
 	}

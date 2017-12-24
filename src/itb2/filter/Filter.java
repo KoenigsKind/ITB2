@@ -1,5 +1,7 @@
 package itb2.filter;
 
+import java.util.Collection;
+
 import itb2.image.Image;
 
 /**
@@ -24,6 +26,6 @@ public interface Filter {
 	 * 
 	 * @return Properties of this filter
 	 */
-	public FilterProperties getProperties();
+	public Collection<FilterProperty<?>> getProperties();
 
 }

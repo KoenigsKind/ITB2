@@ -2,154 +2,164 @@ package itb2.filter;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
-import itb2.filter.property.BooleanProperty;
-import itb2.filter.property.DoubleProperty;
-import itb2.filter.property.FilterProperty;
-import itb2.filter.property.IntegerProperty;
-import itb2.filter.property.OptionProperty;
-import itb2.filter.property.RangeProperty;
-import itb2.filter.property.StringProperty;
+import itb2.filter.FilterProperty.Option;
+import itb2.filter.FilterProperty.Range;
 
-public class FilterProperties {
-	private final HashMap<String, FilterProperty> properties = new HashMap<>();
-	
-	private <T extends FilterProperty> T getProperty(String name, Class<T> classOfT) {
-		FilterProperty property = properties.get(name);
+public class FilterProperties extends LinkedHashMap<String, FilterProperty<?>> {
+	private static final long serialVersionUID = -7985094039685903402L;
+
+	protected <T> T getValue(String name, Class<T> classOfT) {
+		FilterProperty<?> property = get(name);
 		
-		if(property != null && classOfT.isInstance(property))
-			return classOfT.cast(property);
+		if(property != null) try {
+			return classOfT.cast(property.getValue());
+		} catch(Exception e) {}
 		
-		return null;
+		throw new PropertyNotFoundException(classOfT.getSimpleName(), name);
 	}
 	
-	private void setProperty(FilterProperty property) {
-		properties.put(property.name, property);
+	protected <T> void setValue(String name, T defaultValue, Class<T> classOfT) {
+		setValue(name, defaultValue, classOfT, true);
+	}
+	
+	protected <T> void setValue(String name, T defaultValue, Class<T> classOfT, boolean mayChangeValue) {
+		FilterProperty<T> property = new FilterProperty<T>() {
+			private T value = defaultValue;
+			
+			@Override
+			public String getName() {
+				return name;
+			}
+			
+			@Override
+			public Class<T> getClassOfT() {
+				return classOfT;
+			}
+			
+			@Override
+			public T getValue() {
+				return value;
+			}
+			
+			@Override
+			public void setValue(T value) throws UnsupportedOperationException {
+				if(!mayChangeValue)
+					throw new UnsupportedOperationException();
+				this.value = value;
+			}
+		};
+		
+		put(name, property);
 	}
 	
 	public void addBooleanProperty(String name, boolean defaultValue) {
-		BooleanProperty property = getProperty(name, BooleanProperty.class);
-		if(property != null)
-			property.value = defaultValue;
-		else {
-			property = new BooleanProperty(name, defaultValue);
-			setProperty(property);
-		}
+		setValue(name, defaultValue, Boolean.class);
 	}
 	
 	public boolean getBooleanProperty(String name) {
-		BooleanProperty property = getProperty(name, BooleanProperty.class);
-		
-		if(property == null)
-			throw new PropertyNotFoundException("boolean", name);
-		
-		return property.getValue();
+		return getValue(name, Boolean.class);
 	}
 	
 	public void addDoubleProperty(String name, double defaultValue) {
-		DoubleProperty property = getProperty(name, DoubleProperty.class);
-		if(property != null)
-			property.value = defaultValue;
-		else {
-			property = new DoubleProperty(name, defaultValue);
-			setProperty(property);
-		}
+		setValue(name, defaultValue, Double.class);
 	}
 	
 	public double getDoubleProperty(String name) {
-		DoubleProperty property = getProperty(name, DoubleProperty.class);
-		
-		if(property == null)
-			throw new PropertyNotFoundException("double", name);;
-		
-		return property.getValue();
+		return getValue(name, Double.class);
 	}
 	
 	public void addIntegerProperty(String name, int defaultValue) {
-		IntegerProperty property = getProperty(name, IntegerProperty.class);
-		if(property != null)
-			property.value = defaultValue;
-		else {
-			property = new IntegerProperty(name, defaultValue);
-			setProperty(property);
-		}
+		setValue(name, defaultValue, Integer.class);
 	}
 	
 	public int getIntegerProperty(String name) {
-		IntegerProperty property = getProperty(name, IntegerProperty.class);
-		
-		if(property == null)
-			throw new PropertyNotFoundException("integer", name);
-		
-		return property.getValue();
+		return getValue(name, Integer.class);
 	}
 	
 	public void addStringProperty(String name, String defaultValue) {
-		StringProperty property = getProperty(name, StringProperty.class);
-		if(property != null)
-			property.value = defaultValue;
-		else {
-			property = new StringProperty(name, defaultValue);
-			setProperty(property);
-		}
+		setValue(name, defaultValue, String.class);
 	}
 	
 	public String getStringProperty(String name) {
-		StringProperty property = getProperty(name, StringProperty.class);
-		
-		if(property == null)
-			throw new PropertyNotFoundException("String", name);
-		
-		return property.getValue();
+		return getValue(name, String.class);
 	}
 	
 	public void addRangeProperty(String name, int defaultValue, int min, int step, int max) {
-		RangeProperty property = getProperty(name, RangeProperty.class);
-		if(property != null) {
-			property.value = defaultValue;
-			property.min = min;
-			property.step = step;
-			property.max = max;
-		} else {
-			property = new RangeProperty(name, defaultValue, min, step, max);
-			setProperty(property);
-		}
+		Range range = new Range() {
+			private int selection = defaultValue;
+			
+			@Override
+			public void setSelection(int selection) {
+				this.selection = selection;
+			}
+			
+			@Override
+			public int getSelection() {
+				return selection;
+			}
+			
+			@Override
+			public int getStep() {
+				return step;
+			}
+			
+			@Override
+			public int getMin() {
+				return min;
+			}
+			
+			@Override
+			public int getMax() {
+				return max;
+			}
+		};
+		
+		setValue(name, range, Range.class, false);
 	}
 	
 	public int getRangeProperty(String name) {
-		RangeProperty property = getProperty(name, RangeProperty.class);
-		
-		if(property == null)
-			throw new PropertyNotFoundException("Range", name);
-		
-		return property.getValue();
+		Range range = getValue(name, Range.class);
+		return range.getSelection();
 	}
 	
 	public void addOptionProperty(String name, Object defaultValue, Object... options) {
-		OptionProperty property = getProperty(name, OptionProperty.class);
-		if(property != null) {
-			property.value = defaultValue;
-			property.options = options;
-		} else {
-			property = new OptionProperty(name, defaultValue, options);
-			setProperty(property);
-		}
+		Option option = new Option() {
+			private Object selection = defaultValue;
+			
+			@Override
+			public void setSelection(Object selection) {
+				this.selection = selection;
+			}
+			
+			@Override
+			public Object getSelection() {
+				return selection;
+			}
+			
+			@Override
+			public Object[] getOptions() {
+				return options;
+			}
+		};
+		
+		setValue(name, option, Option.class, false);
 	}
 	
 	public <T> T getOptionProperty(String name) {
+		Option option = getValue(name, Option.class);
 		try {
-			FilterProperty property = properties.get(name);
 			@SuppressWarnings("unchecked")
-			T value = (T) property.getValue();
+			T value = (T) option.getSelection();
 			return value;
-		} catch(Exception e) {
-			throw new PropertyNotFoundException("Option", name);
+		} catch(ClassCastException e) {
+			throw new PropertyNotFoundException(Option.class.getSimpleName(), name);
 		}
 	}
 	
-	public Collection<FilterProperty> getProperties() {
-		return Collections.unmodifiableCollection(properties.values());
+	public Collection<FilterProperty<?>> getProperties() {
+		return Collections.unmodifiableCollection(values());
 	}
 
 }

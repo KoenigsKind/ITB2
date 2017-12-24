@@ -3,9 +3,11 @@ package imageToolBox;
 import java.awt.Frame;
 import java.awt.Point;
 import java.io.*;
+import java.util.Collection;
 
 import itb2.engine.io.ImageIO;
 import itb2.filter.FilterProperties;
+import itb2.filter.FilterProperty;
 import itb2.image.Image;
 import itb2.image.doubleprecision.RgbDoubleImage;
 
@@ -16,7 +18,8 @@ import itb2.image.doubleprecision.RgbDoubleImage;
  */
 @Deprecated
 public class AbstractFilter {
-	public final FilterProperties properties = new FilterProperties();
+	public final FilterProperties filterProperties = new FilterProperties();
+	public final Collection<FilterProperty<?>> properties = filterProperties.getProperties();
 	protected int width;
 	protected int height;
 	
@@ -122,11 +125,11 @@ public class AbstractFilter {
 	}
 
 	public final void addDoubleProperty(String name, double value) {
-		properties.addDoubleProperty(name, value);
+		filterProperties.addDoubleProperty(name, value);
 	}
 
 	public final double getDoubleProperty(String name) {
-		return properties.getDoubleProperty(name);
+		return filterProperties.getDoubleProperty(name);
 	}
 
 	public final void addBooleanProperty(String name) {
@@ -134,10 +137,10 @@ public class AbstractFilter {
 	}
 
 	public final void addBooleanProperty(String name, boolean value) {
-		properties.addBooleanProperty(name, value);
+		filterProperties.addBooleanProperty(name, value);
 	}
 
 	public final boolean getBooleanProperty(String name) {
-		return properties.getBooleanProperty(name);
+		return filterProperties.getBooleanProperty(name);
 	}
 }

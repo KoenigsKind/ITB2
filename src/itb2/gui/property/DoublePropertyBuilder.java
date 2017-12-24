@@ -6,16 +6,13 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import itb2.filter.property.DoubleProperty;
-import itb2.filter.property.FilterProperty;
+import itb2.filter.FilterProperty;
 
 class DoublePropertyBuilder extends PropertyBuilder {
 
 	@Override
-	public void build(FilterProperty property, JPanel panel) {
-		DoubleProperty doubleProperty = (DoubleProperty) property;
-		
-		JTextField value = new JTextField(Double.toString(doubleProperty.value));
+	public void build(FilterProperty<?> property, JPanel panel) {
+		JTextField value = new JTextField(Double.toString((double)property.getValue()));
 		value.setFont(VALUE_FONT);
 		value.getDocument().addDocumentListener(new DocumentListener() {
 			private String oldVal = value.getText();
@@ -37,8 +34,8 @@ class DoublePropertyBuilder extends PropertyBuilder {
 			
 			private void update() {
 				try {
-					double val = value.getText().isEmpty() ? 0 : Double.parseDouble(value.getText().replace(',', '.'));
-					doubleProperty.value = val;
+					double val = value.getText().matches("^[,.-]?$") ? 0 : Double.parseDouble(value.getText().replace(',', '.'));
+					property.setCastedValue(val);
 					oldVal = value.getText();
 				} catch(NumberFormatException e) {
 					SwingUtilities.invokeLater(() -> value.setText(oldVal));
@@ -46,7 +43,7 @@ class DoublePropertyBuilder extends PropertyBuilder {
 			}
 		});
 		
-		panel.add(getTitel(doubleProperty));
+		panel.add(getTitel(property));
 		panel.add(value);
 	}
 

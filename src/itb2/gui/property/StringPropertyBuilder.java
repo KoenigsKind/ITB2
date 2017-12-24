@@ -5,16 +5,14 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import itb2.filter.property.FilterProperty;
-import itb2.filter.property.StringProperty;
+import itb2.filter.FilterProperty;
 
 class StringPropertyBuilder extends PropertyBuilder {
 
 	@Override
-	public void build(FilterProperty property, JPanel panel) {
-		StringProperty stringProperty = (StringProperty) property;
+	public void build(FilterProperty<?> property, JPanel panel) {
 		
-		JTextField value = new JTextField(stringProperty.value);
+		JTextField value = new JTextField((String)property.getValue());
 		value.setFont(VALUE_FONT);
 		value.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
@@ -33,7 +31,7 @@ class StringPropertyBuilder extends PropertyBuilder {
 			}
 			
 			private void update() {
-				stringProperty.value = value.getText();
+				property.setCastedValue(value.getText());
 			}
 		});
 		

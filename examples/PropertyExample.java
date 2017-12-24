@@ -19,12 +19,12 @@ public class PropertyExample extends AbstractFilter {
 	
 	/** Constructor, setting the default values for the properties */
 	public PropertyExample() {
-		getProperties().addBooleanProperty(BOOLEAN, true);
-		getProperties().addDoubleProperty(DOUBLE, Math.PI);
-		getProperties().addIntegerProperty(INTEGER, 1337);
-		getProperties().addOptionProperty(OPTION, "Charlie", "Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot");
-		getProperties().addRangeProperty(RANGE, 42, 0, 7, 98);
-		getProperties().addStringProperty(STRING, "Hello World!");
+		properties.addBooleanProperty(BOOLEAN, true);
+		properties.addDoubleProperty(DOUBLE, Math.PI);
+		properties.addIntegerProperty(INTEGER, 1337);
+		properties.addOptionProperty(OPTION, "Charlie", "Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot");
+		properties.addRangeProperty(RANGE, 42, 0, 7, 98);
+		properties.addStringProperty(STRING, "Hello World!");
 	}
 	
 	@Override
@@ -35,12 +35,12 @@ public class PropertyExample extends AbstractFilter {
 		g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
 		g.setColor(Color.WHITE);
 		
-		g.drawString(String.format("%s: %b",   BOOLEAN, getProperties().getBooleanProperty(BOOLEAN)), 14,  25);
-		g.drawString(String.format("%s:  %f",  DOUBLE,  getProperties().getDoubleProperty(DOUBLE)),   14,  40);
-		g.drawString(String.format("%s: %d",   INTEGER, getProperties().getIntegerProperty(INTEGER)), 14,  55);
-		g.drawString(String.format("%s:  %s",  OPTION,  getProperties().getOptionProperty(OPTION)),   14,  70);
-		g.drawString(String.format("%s:   %d", RANGE,   getProperties().getRangeProperty(RANGE)),     14,  85);
-		g.drawString(String.format("%s:  %s",  STRING,  getProperties().getStringProperty(STRING)),   14, 100);
+		g.drawString(String.format("%s: %b",   BOOLEAN, properties.getBooleanProperty(BOOLEAN)), 14,  25);
+		g.drawString(String.format("%s:  %f",  DOUBLE,  properties.getDoubleProperty(DOUBLE)),   14,  40);
+		g.drawString(String.format("%s: %d",   INTEGER, properties.getIntegerProperty(INTEGER)), 14,  55);
+		g.drawString(String.format("%s:  %s",  OPTION,  properties.getOptionProperty(OPTION)),   14,  70);
+		g.drawString(String.format("%s:   %d", RANGE,   properties.getRangeProperty(RANGE)),     14,  85);
+		g.drawString(String.format("%s:  %s",  STRING,  properties.getStringProperty(STRING)),   14, 100);
 
 		return new Image[]{image};
 	}

@@ -3,8 +3,8 @@ package itb2.gui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -17,7 +17,7 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import itb2.filter.Filter;
-import itb2.filter.property.FilterProperty;
+import itb2.filter.FilterProperty;
 import itb2.gui.property.PropertyBuilder;
 
 public class FilterProperties extends JPanel {
@@ -87,19 +87,18 @@ public class FilterProperties extends JPanel {
 	private void filterChanged() {
 		Filter filter = filterList.getSelectedFilter();
 		
-		ArrayList<FilterProperty> properties = new ArrayList<>();
-		if(filter != null)
-			properties.addAll(filter.getProperties().getProperties());
-		properties.sort((a, b) -> a.index - b.index);
-		buildPanel(properties);
+		if(filter == null)
+			buildPanel(Collections.emptyList());
+		else
+			buildPanel(filter.getProperties());
 	}
 	
-	public void buildPanel(List<FilterProperty> properties) {
+	public void buildPanel(Collection<FilterProperty<?>> properties) {
 		boolean wasEmpty = isEmpty;
 		isEmpty = properties.isEmpty();
 		
 		propertyPanel.removeAll();
-		for(FilterProperty property : properties) {
+		for(FilterProperty<?> property : properties) {
 			PropertyBuilder.buildProperty(property, propertyPanel);
 			propertyPanel.add(Box.createVerticalStrut(5));
 		}

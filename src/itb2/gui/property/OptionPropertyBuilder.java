@@ -5,21 +5,21 @@ import java.awt.event.ItemEvent;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
-import itb2.filter.property.FilterProperty;
-import itb2.filter.property.OptionProperty;
+import itb2.filter.FilterProperty;
+import itb2.filter.FilterProperty.Option;
 
 class OptionPropertyBuilder extends PropertyBuilder {
 
 	@Override
-	public void build(FilterProperty property, JPanel panel) {
-		OptionProperty optionProperty = (OptionProperty) property;
+	public void build(FilterProperty<?> property, JPanel panel) {
+		Option option = (Option)property.getValue();
 		
-		JComboBox<Object> value = new JComboBox<>(optionProperty.options);
+		JComboBox<Object> value = new JComboBox<>(option.getOptions());
 		value.setFont(VALUE_FONT);
-		value.setSelectedItem(optionProperty.value);
+		value.setSelectedItem(option.getSelection());
 		value.addItemListener(e -> {
 			if(e.getStateChange() == ItemEvent.SELECTED)
-				optionProperty.value = e.getItem();
+				option.setSelection(e.getItem());
 		});
 		
 		panel.add(getTitel(property));

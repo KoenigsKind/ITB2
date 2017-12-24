@@ -3,29 +3,29 @@ package itb2.gui.property;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 
-import itb2.filter.property.FilterProperty;
-import itb2.filter.property.RangeProperty;
+import itb2.filter.FilterProperty;
+import itb2.filter.FilterProperty.Range;
 
 class RangePropertyBuilder extends PropertyBuilder {
 
 	@Override
-	public void build(FilterProperty property, JPanel panel) {
-		RangeProperty rangeProperty = (RangeProperty) property;
+	public void build(FilterProperty<?> property, JPanel panel) {
+		Range range = (Range)property.getValue();
 		
-		int min = rangeProperty.min;
-		int max = rangeProperty.max;
+		int min = range.getMin();
+		int max = range.getMax();
 		if(max < min) {
 			min ^= max;
 			max ^= min;
 			min ^= max;
 		}
 		
-		int val = rangeProperty.value;
+		int val = range.getSelection();
 		if(val < min || max < val)
 			val = min;
 		
 		boolean preferOdd = Math.abs(max) == Math.abs(min); // If 0 in center, prefer odd number of labels 
-		int minorStep = rangeProperty.step;
+		int minorStep = range.getStep();
 		int minorStepCount = (max - min) / minorStep;
 		int majorStep = minorStep;
 		
@@ -50,7 +50,7 @@ class RangePropertyBuilder extends PropertyBuilder {
 		value.setSnapToTicks(true);
 		
 		
-		value.getModel().addChangeListener(e -> rangeProperty.value = value.getValue());
+		value.getModel().addChangeListener(e -> range.setSelection(value.getValue()));
 		
 		panel.add(getTitel(property));
 		panel.add(value);

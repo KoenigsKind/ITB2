@@ -19,7 +19,7 @@ public class GrayscaleFilter extends AbstractFilter {
 	}
 	
 	public GrayscaleFilter() {
-		getProperties().addOptionProperty(CONVERSION_METHOD, DEFAULT, DEFAULT, CCIR_601, BT_709, SMPTE_240M);
+		properties.addOptionProperty(CONVERSION_METHOD, DEFAULT, DEFAULT, CCIR_601, BT_709, SMPTE_240M);
 		
 		ImageConverter.register(HsiImage.class, GrayscaleImage.class, this);
 		ImageConverter.register(RgbImage.class, ImageFactory.doublePrecision().gray(), this);
@@ -35,7 +35,7 @@ public class GrayscaleFilter extends AbstractFilter {
 		}
 		
 		if(input instanceof RgbImage) {
-			RgbConverter converter = getProperties().getOptionProperty(CONVERSION_METHOD);
+			RgbConverter converter = properties.getOptionProperty(CONVERSION_METHOD);
 			GrayscaleImage output = ImageFactory.doublePrecision().gray(input.getSize());
 			
 			for(int col = 0; col < input.getWidth(); col++) {

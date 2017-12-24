@@ -3,10 +3,12 @@ package itb2.engine.io;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import itb2.engine.Controller;
 import itb2.filter.Filter;
-import itb2.filter.FilterProperties;
+import itb2.filter.FilterProperty;
 import itb2.image.Image;
 import itb2.image.ImageConverter;
 import itb2.image.ImageFactory;
@@ -107,18 +109,23 @@ public class FilterWrapper implements Filter {
 	}
 
 	@Override
-	public FilterProperties getProperties() {
-		if(hasProperties != null) {
-			if(properties == null) {
-				Controller.getCommunicationManager().warning("Could not load properties for " + oldFilter.getClass().getName());
-				hasProperties = null;
-			} else try {
-				return (FilterProperties) properties.get(oldFilter);
-			} catch(Exception e) {
-				// Do nothing
-			}
+	public Collection<FilterProperty<?>> getProperties() {
+		Collection<FilterProperty<?>> props = new ArrayList<>();
+		
+		Boolean hasProps = callMethod(hasProperties);
+		if(hasProps != null && hasProps) try {
+			Collection<?> oldProps = (Collection<?>) properties.get(oldFilter);
+			
+			for(Object o : oldProps)
+				if(o instanceof FilterProperty)
+					props.add((FilterProperty<?>)o);
+			
+		} catch(Exception e) {
+			Controller.getCommunicationManager().warning("Could not load properties for " + oldFilter.getClass().getName());
+			hasProperties = null;
 		}
-		return null;
+		
+		return props;
 	}
 
 }

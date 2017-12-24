@@ -1,6 +1,7 @@
 package itb2.filter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import itb2.engine.Controller;
@@ -20,8 +21,8 @@ public abstract class AbstractFilter implements Filter {
 	protected FilterProperties properties = new FilterProperties();
 
 	@Override
-	public FilterProperties getProperties() {
-		return properties;
+	public Collection<FilterProperty<?>> getProperties() {
+		return properties.getProperties();
 	}
 	
 	@Override
