@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import itb2.engine.io.AnymapIO;
@@ -16,11 +17,8 @@ import itb2.engine.io.AnymapIO;
  * 
  * @author Micha Strauch
  */
-public class DrawableImage implements Image {
+public class DrawableImage implements RgbImage {
 	private static final long serialVersionUID = -8586173010718312748L;
-
-	/** IDs for each channel */
-	public static final int RED = 0, GREEN = 1, BLUE = 2;
 	
 	/** Data of this image */
 	private BufferedImage image;
@@ -127,12 +125,14 @@ public class DrawableImage implements Image {
 
 	@Override
 	public double[] getValue(int column, int row) {
-		return image.getRaster().getPixel(column, row, new double[3]);
+		double[] values = new double[image.getRaster().getNumBands()];
+		image.getRaster().getPixel(column, row, values);
+		return values.length == 3 ? values : Arrays.copyOf(values, 3); 
 	}
 
 	@Override
 	public double getValue(int column, int row, int channel) {
-		return getValue(column, row)[channel];
+		return image.getRaster().getSample(column, row, channel);
 	}
 
 	@Override
@@ -142,9 +142,7 @@ public class DrawableImage implements Image {
 
 	@Override
 	public void setValue(int column, int row, int channel, double value) {
-		double[] rgb = getValue(column, row);
-		rgb[channel] = value;
-		setValue(column, row, rgb);
+		image.getRaster().setSample(column, row, channel, value);
 	}
 
 	@Override
