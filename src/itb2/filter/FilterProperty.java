@@ -2,16 +2,18 @@ package itb2.filter;
 
 /**
  * Property for a {@link Filter}.<p>
- * Currently implemented types <i>T</i> of FilterProperties:<br>
+ * Currently implemented value types <i>T</i> of FilterProperties:<br>
  * Boolean, Double, Integer, String, FilterProperty.Range, FilterProperty.Option
  *
  * @author Micha Strauch
- * @param <T> Type of FilterProperty (see above)
  */
-public interface FilterProperty<T> {
+public interface FilterProperty {
+	
+	/** Returns the name of this property */
+	public String getName();
 	
 	/** Current value of this property */
-	public T getValue();
+	public Object getValue();
 	
 	/**
 	 * Sets the value of this property.<p>
@@ -20,30 +22,9 @@ public interface FilterProperty<T> {
 	 * 
 	 * @param value Value to set
 	 * @throws UnsupportedOperationException If the value itself should be modified
+	 * @throws ClassCastException If the given value is of the wrong type
 	 */
-	public void setValue(T value) throws UnsupportedOperationException;
-	
-	/** Returns the name of this property */
-	public String getName();
-	
-	/** Class of T (the class of the value) */
-	public Class<T> getClassOfT();
-	
-	/**
-	 * Sets the value of this property.<p>
-	 * Might throw an exception, if the value itself should be modified.
-	 * For example: FilterProperty.Range or FilterProperty.Option<p>
-	 * Tries to convert the value into the type of this property;
-	 * if not possible it throws a {@link ClassCastException}.
-	 * 
-	 * @param value Value to set
-	 * @throws UnsupportedOperationException If the value itself should be modified
-	 * @throws ClassCastException If the value is of the wrong type
-	 */
-	default public void setCastedValue(Object value) throws UnsupportedOperationException, ClassCastException {
-		T castedValue = getClassOfT().cast(value);
-		setValue(castedValue);
-	}
+	public void setValue(Object value) throws UnsupportedOperationException, ClassCastException;
 	
 	/**
 	 * Value to use, if this property represents a range of integers. 

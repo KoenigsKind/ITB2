@@ -21,7 +21,7 @@ public abstract class AbstractFilter implements Filter {
 	protected FilterProperties properties = new FilterProperties();
 
 	@Override
-	public Collection<FilterProperty<?>> getProperties() {
+	public Collection<FilterProperty> getProperties() {
 		return properties.getProperties();
 	}
 	

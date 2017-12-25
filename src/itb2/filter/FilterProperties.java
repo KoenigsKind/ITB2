@@ -7,26 +7,32 @@ import java.util.LinkedHashMap;
 import itb2.filter.FilterProperty.Option;
 import itb2.filter.FilterProperty.Range;
 
-public class FilterProperties extends LinkedHashMap<String, FilterProperty<?>> {
+public class FilterProperties extends LinkedHashMap<String, FilterProperty> {
 	private static final long serialVersionUID = -7985094039685903402L;
 
-	protected <T> T getValue(String name, Class<T> classOfT) {
-		FilterProperty<?> property = get(name);
+	public <T> T getProperty(String name) {
+		FilterProperty property = get(name);
 		
 		if(property != null) try {
-			return classOfT.cast(property.getValue());
+			@SuppressWarnings("unchecked")
+			T value = (T) property.getValue();
+			return value;
 		} catch(Exception e) {}
 		
-		throw new PropertyNotFoundException(classOfT.getSimpleName(), name);
+		throw new PropertyNotFoundException(name);
 	}
 	
-	protected <T> void setValue(String name, T defaultValue, Class<T> classOfT) {
-		setValue(name, defaultValue, classOfT, true);
+	public void addProperty(String name, Object defaultValue) {
+		addProperty(name, defaultValue, true);
 	}
 	
-	protected <T> void setValue(String name, T defaultValue, Class<T> classOfT, boolean mayChangeValue) {
-		FilterProperty<T> property = new FilterProperty<T>() {
-			private T value = defaultValue;
+	public void addProperty(String name, Object defaultValue, boolean mayChangeValue) {
+		if(defaultValue == null)
+			throw new NullPointerException("defaultValue must not be null");
+		
+		FilterProperty property = new FilterProperty() {
+			private final Class<?> valueClass = defaultValue.getClass();
+			private Object value = defaultValue;
 			
 			@Override
 			public String getName() {
@@ -34,56 +40,23 @@ public class FilterProperties extends LinkedHashMap<String, FilterProperty<?>> {
 			}
 			
 			@Override
-			public Class<T> getClassOfT() {
-				return classOfT;
-			}
-			
-			@Override
-			public T getValue() {
+			public Object getValue() {
 				return value;
 			}
 			
 			@Override
-			public void setValue(T value) throws UnsupportedOperationException {
+			public void setValue(Object value) throws UnsupportedOperationException {
 				if(!mayChangeValue)
 					throw new UnsupportedOperationException();
+				
+				if(!valueClass.isInstance(value))
+					throw new ClassCastException();
+				
 				this.value = value;
 			}
 		};
 		
 		put(name, property);
-	}
-	
-	public void addBooleanProperty(String name, boolean defaultValue) {
-		setValue(name, defaultValue, Boolean.class);
-	}
-	
-	public boolean getBooleanProperty(String name) {
-		return getValue(name, Boolean.class);
-	}
-	
-	public void addDoubleProperty(String name, double defaultValue) {
-		setValue(name, defaultValue, Double.class);
-	}
-	
-	public double getDoubleProperty(String name) {
-		return getValue(name, Double.class);
-	}
-	
-	public void addIntegerProperty(String name, int defaultValue) {
-		setValue(name, defaultValue, Integer.class);
-	}
-	
-	public int getIntegerProperty(String name) {
-		return getValue(name, Integer.class);
-	}
-	
-	public void addStringProperty(String name, String defaultValue) {
-		setValue(name, defaultValue, String.class);
-	}
-	
-	public String getStringProperty(String name) {
-		return getValue(name, String.class);
 	}
 	
 	public void addRangeProperty(String name, int defaultValue, int min, int step, int max) {
@@ -116,11 +89,11 @@ public class FilterProperties extends LinkedHashMap<String, FilterProperty<?>> {
 			}
 		};
 		
-		setValue(name, range, Range.class, false);
+		addProperty(name, range, false);
 	}
 	
 	public int getRangeProperty(String name) {
-		Range range = getValue(name, Range.class);
+		Range range = getProperty(name);
 		return range.getSelection();
 	}
 	
@@ -144,21 +117,53 @@ public class FilterProperties extends LinkedHashMap<String, FilterProperty<?>> {
 			}
 		};
 		
-		setValue(name, option, Option.class, false);
+		addProperty(name, option, false);
 	}
 	
 	public <T> T getOptionProperty(String name) {
-		Option option = getValue(name, Option.class);
+		Option option = getProperty(name);
 		try {
 			@SuppressWarnings("unchecked")
 			T value = (T) option.getSelection();
 			return value;
 		} catch(ClassCastException e) {
-			throw new PropertyNotFoundException(Option.class.getSimpleName(), name);
+			throw new PropertyNotFoundException(name, Option.class);
 		}
 	}
 	
-	public Collection<FilterProperty<?>> getProperties() {
+	public void addBooleanProperty(String name, boolean defaultValue) {
+		addProperty(name, defaultValue);
+	}
+	
+	public boolean getBooleanProperty(String name) {
+		return getProperty(name);
+	}
+	
+	public void addDoubleProperty(String name, double defaultValue) {
+		addProperty(name, defaultValue);
+	}
+	
+	public double getDoubleProperty(String name) {
+		return getProperty(name);
+	}
+	
+	public void addIntegerProperty(String name, int defaultValue) {
+		addProperty(name, defaultValue);
+	}
+	
+	public int getIntegerProperty(String name) {
+		return getProperty(name);
+	}
+	
+	public void addStringProperty(String name, String defaultValue) {
+		addProperty(name, defaultValue);
+	}
+	
+	public String getStringProperty(String name) {
+		return getProperty(name);
+	}
+	
+	public Collection<FilterProperty> getProperties() {
 		return Collections.unmodifiableCollection(values());
 	}
 

@@ -11,7 +11,7 @@ import itb2.filter.FilterProperty;
 class IntegerPropertyBuilder extends PropertyBuilder {
 
 	@Override
-	public void build(FilterProperty<?> property, JPanel panel) {
+	public void build(FilterProperty property, JPanel panel) {
 		JTextField value = new JTextField(Integer.toString((int)property.getValue()));
 		value.setFont(VALUE_FONT);
 		value.getDocument().addDocumentListener(new DocumentListener() {
@@ -35,7 +35,7 @@ class IntegerPropertyBuilder extends PropertyBuilder {
 			private void update() {
 				try {
 					int val = value.getText().matches("^-?$") ? 0 : Integer.parseInt(value.getText());
-					property.setCastedValue(val);
+					property.setValue(val);
 					oldVal = value.getText();
 				} catch(NumberFormatException e) {
 					SwingUtilities.invokeLater(() -> value.setText(oldVal));

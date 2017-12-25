@@ -29,18 +29,29 @@ public abstract class PropertyBuilder {
 		builders.put(FilterProperty.Range.class, new RangePropertyBuilder());
 	}
 	
-	public static void buildProperty(FilterProperty<?> property, JPanel panel) {
-		PropertyBuilder builder = builders.get(property.getClassOfT());
-		if(builder == null)
-			throw new RuntimeException("Unknown FilterProperty: " + property.getClassOfT().getSimpleName());
+	public static void buildProperty(FilterProperty property, JPanel panel) {
+		Object value = property.getValue();
+		if(value == null)
+			throw new NullPointerException("The value of a property must not be null");
+		
+		PropertyBuilder builder = builders.get(value.getClass());
+		if(builder == null) {
+			for(Map.Entry<Class<?>, PropertyBuilder> entry : builders.entrySet())
+				if(entry.getKey().isAssignableFrom(value.getClass()))
+					builder = entry.getValue();
+			
+			if(builder == null)
+				throw new RuntimeException("Unknown FilterProperty: " + value);
+		}
+		
 		builder.build(property, panel);
 	}
 	
 	PropertyBuilder() {}
 	
-	public abstract void build(FilterProperty<?> property, JPanel panel);
+	public abstract void build(FilterProperty property, JPanel panel);
 	
-	protected JComponent getTitel(FilterProperty<?> property) {
+	protected JComponent getTitel(FilterProperty property) {
 		JLabel title = new JLabel(property.getName());
 		title.setFont(TITLE_FONT);
 		return title;

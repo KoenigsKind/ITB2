@@ -19,7 +19,7 @@ import itb2.image.doubleprecision.RgbDoubleImage;
 @Deprecated
 public class AbstractFilter {
 	public final FilterProperties filterProperties = new FilterProperties();
-	public final Collection<FilterProperty<?>> properties = filterProperties.getProperties();
+	public final Collection<FilterProperty> properties = filterProperties.getProperties();
 	protected int width;
 	protected int height;
 	

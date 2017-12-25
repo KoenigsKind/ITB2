@@ -9,7 +9,7 @@ import itb2.filter.FilterProperty.Range;
 class RangePropertyBuilder extends PropertyBuilder {
 
 	@Override
-	public void build(FilterProperty<?> property, JPanel panel) {
+	public void build(FilterProperty property, JPanel panel) {
 		Range range = (Range)property.getValue();
 		
 		int min = range.getMin();

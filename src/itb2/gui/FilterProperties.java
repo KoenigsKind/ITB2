@@ -93,12 +93,12 @@ public class FilterProperties extends JPanel {
 			buildPanel(filter.getProperties());
 	}
 	
-	public void buildPanel(Collection<FilterProperty<?>> properties) {
+	public void buildPanel(Collection<FilterProperty> properties) {
 		boolean wasEmpty = isEmpty;
 		isEmpty = properties.isEmpty();
 		
 		propertyPanel.removeAll();
-		for(FilterProperty<?> property : properties) {
+		for(FilterProperty property : properties) {
 			PropertyBuilder.buildProperty(property, propertyPanel);
 			propertyPanel.add(Box.createVerticalStrut(5));
 		}

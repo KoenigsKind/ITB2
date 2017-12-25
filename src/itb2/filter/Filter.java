@@ -26,6 +26,6 @@ public interface Filter {
 	 * 
 	 * @return Properties of this filter
 	 */
-	public Collection<FilterProperty<?>> getProperties();
+	public Collection<FilterProperty> getProperties();
 
 }

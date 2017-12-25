@@ -10,7 +10,7 @@ import itb2.filter.FilterProperty;
 class StringPropertyBuilder extends PropertyBuilder {
 
 	@Override
-	public void build(FilterProperty<?> property, JPanel panel) {
+	public void build(FilterProperty property, JPanel panel) {
 		
 		JTextField value = new JTextField((String)property.getValue());
 		value.setFont(VALUE_FONT);
@@ -31,7 +31,7 @@ class StringPropertyBuilder extends PropertyBuilder {
 			}
 			
 			private void update() {
-				property.setCastedValue(value.getText());
+				property.setValue(value.getText());
 			}
 		});
 		

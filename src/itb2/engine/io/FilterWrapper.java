@@ -109,8 +109,8 @@ public class FilterWrapper implements Filter {
 	}
 
 	@Override
-	public Collection<FilterProperty<?>> getProperties() {
-		Collection<FilterProperty<?>> props = new ArrayList<>();
+	public Collection<FilterProperty> getProperties() {
+		Collection<FilterProperty> props = new ArrayList<>();
 		
 		Boolean hasProps = callMethod(hasProperties);
 		if(hasProps != null && hasProps) try {
@@ -118,7 +118,7 @@ public class FilterWrapper implements Filter {
 			
 			for(Object o : oldProps)
 				if(o instanceof FilterProperty)
-					props.add((FilterProperty<?>)o);
+					props.add((FilterProperty)o);
 			
 		} catch(Exception e) {
 			Controller.getCommunicationManager().warning("Could not load properties for " + oldFilter.getClass().getName());

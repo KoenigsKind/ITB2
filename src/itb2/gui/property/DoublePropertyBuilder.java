@@ -11,7 +11,7 @@ import itb2.filter.FilterProperty;
 class DoublePropertyBuilder extends PropertyBuilder {
 
 	@Override
-	public void build(FilterProperty<?> property, JPanel panel) {
+	public void build(FilterProperty property, JPanel panel) {
 		JTextField value = new JTextField(Double.toString((double)property.getValue()));
 		value.setFont(VALUE_FONT);
 		value.getDocument().addDocumentListener(new DocumentListener() {
@@ -35,7 +35,7 @@ class DoublePropertyBuilder extends PropertyBuilder {
 			private void update() {
 				try {
 					double val = value.getText().matches("^[,.-]?$") ? 0 : Double.parseDouble(value.getText().replace(',', '.'));
-					property.setCastedValue(val);
+					property.setValue(val);
 					oldVal = value.getText();
 				} catch(NumberFormatException e) {
 					SwingUtilities.invokeLater(() -> value.setText(oldVal));
