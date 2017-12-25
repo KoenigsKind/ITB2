@@ -13,7 +13,7 @@ import itb2.image.ImageFactory;
  * 
  * @author Micha Strauch
  */
-public abstract class ImageIO {
+public final class ImageIO {
 	
 	/** Last opened images */
 	private static final ObservableLinkedList<File> lastImages = new ObservableLinkedList<>();
@@ -127,5 +127,8 @@ public abstract class ImageIO {
 		else
 			javax.imageio.ImageIO.write(image.asBufferedImage(), format, file);
 	}
+	
+	/** Should not be instantiated */
+	private ImageIO() {}
 	
 }

@@ -18,7 +18,7 @@ import itb2.filter.Filter;
  * 
  * @author Micha Strauch
  */
-public class FilterIO {
+public final class FilterIO {
 	/** Map of existing class loaders */
 	private static final Map<File, ClassLoader> loaders = new HashMap<>();
 	
@@ -165,4 +165,6 @@ public class FilterIO {
 		return new FilterWrapper(oldFilter);
 	}
 	
+	/** Should not be instantiated */
+	private FilterIO() {}
 }

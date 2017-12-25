@@ -120,4 +120,7 @@ public final class Controller {
 		startApplication();
 	}
 	
+	/** Should not be instantiated */
+	private Controller() {}
+	
 }
