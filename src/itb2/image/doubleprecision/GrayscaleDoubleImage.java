@@ -34,21 +34,6 @@ public class GrayscaleDoubleImage extends AbstractDoubleImage implements Graysca
 	}
 	
 	/**
-	 * Constructs an image from the given data matrix.
-	 * The matrix must be off the size: double[width][height]
-	 * 
-	 * @param data Original data
-	 */
-	@Deprecated
-	public GrayscaleDoubleImage(double[][] data) {
-		this(data.length, data[0].length);
-		
-		for(int col = 0; col < size.width; col++)
-			for(int row = 0; row < size.height; row++)
-				this.data[GRAYSCALE][col][row] = data[col][row];
-	}
-	
-	/**
 	 * Constructs an image from the given channel.
 	 * 
 	 * @param channel Channel to construct image from

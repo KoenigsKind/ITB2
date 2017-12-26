@@ -34,21 +34,6 @@ public class GrayscaleByteImage extends AbstractByteImage implements GrayscaleIm
 	}
 	
 	/**
-	 * Constructs an image from the given data matrix.
-	 * The matrix must be off the size: double[width][height]
-	 * 
-	 * @param data Original data
-	 */
-	@Deprecated
-	public GrayscaleByteImage(double[][] data) {
-		this(data.length, data[0].length);
-		
-		for(int col = 0; col < size.width; col++)
-			for(int row = 0; row < size.height; row++)
-				this.data[col][row] = ((int)data[col][row]) & 0xFF;
-	}
-	
-	/**
 	 * Constructs an image from the given channel.
 	 * 
 	 * @param channel Channel to construct image from
@@ -58,7 +43,7 @@ public class GrayscaleByteImage extends AbstractByteImage implements GrayscaleIm
 		
 		for(int col = 0; col < size.width; col++)
 			for(int row = 0; row < size.height; row++)
-				this.data[col][row] = ((int)channel.getValue(col, row)) & 0xFF;
+				this.data[GRAYSCALE][col][row] = convert(channel.getValue(col, row));
 	}
 
 	@Override

@@ -26,8 +26,8 @@ public abstract class AbstractByteImage implements Image {
 	/** Number of channels */
 	protected final int channelCount;
 
-	/** Data of this image */
-	protected final int[][] data;
+	/** Data of this image <br><code>double[channelCount][width][height]</code> */
+	protected final byte[][][] data;
 
 	/** Name of this image */
 	protected Serializable name;
@@ -53,49 +53,9 @@ public abstract class AbstractByteImage implements Image {
 	 * @param channelCount Number of channels
 	 */
 	public AbstractByteImage(int width, int height, int channelCount) {
-		if(channelCount > 4)
-			throw new IndexOutOfBoundsException("channelCount must be at max 4");
-		
 		this.channelCount = channelCount;
 		this.size = new Dimension(width, height);
-		this.data = new int[size.width][size.height];
-	}
-	
-	/**
-	 * Encodes the given value and channel for storing,
-	 * while settings the other channels to 0.
-	 * 
-	 * @param value   Value to encode
-	 * @param channel Channel ID of value
-	 * @return Encoded value
-	 */
-	protected int encode(int value, int channel) {
-		return (value & 0xFF) << (8 * channel);
-	}
-	
-	/**
-	 * Encodes the given value and channel for storing,
-	 * while using values from iValue for other channels.
-	 * 
-	 * @param iValue  Default values for other channels
-	 * @param value   Value to encode
-	 * @param channel Channel ID of value
-	 * @return Encoded value
-	 */
-	protected int encode(int iValue, int value, int channel) {
-		int mask = 0xFF << (8 * channel);
-		return (iValue & ~mask) | encode(value, channel);
-	}
-	
-	/**
-	 * Decodes the value for the given channel.
-	 * 
-	 * @param iValue  Encoded values
-	 * @param channel Channel ID to retrieve value for
-	 * @return Decoded channel value
-	 */
-	protected int decode(int iValue, int channel) {
-		return (iValue >>> (8 * channel)) & 0xFF;
+		this.data = new byte[channelCount][size.width][size.height];
 	}
 	
 	@Override
@@ -120,16 +80,15 @@ public abstract class AbstractByteImage implements Image {
 	
 	@Override
 	public double[] getValue(int column, int row) {
-		int iValue = data[column][row];
-		double[] values = new double[channelCount];
-		for(int channel = 0; channel < channelCount; channel++)
-			values[channel] = decode(iValue, channel);
-		return values;
+		double[] value = new double[channelCount];
+		for(int c = 0; c < channelCount; c++)
+			value[c] = data[c][column][row] & 0xFF;
+		return value;
 	}
 	
 	@Override
 	public double getValue(int column, int row, int channel) {
-		return decode(data[column][row], channel);
+		return data[channel][column][row] & 0xFF;
 	}
 	
 	@Override
@@ -137,25 +96,15 @@ public abstract class AbstractByteImage implements Image {
 		if(values.length != channelCount)
 			throw new ArrayIndexOutOfBoundsException();
 		
-		int iValue = 0;
-		for(int channel = 0; channel < channelCount; channel++) {
-			int value = (int)values[channel];
-			value = value < 0 ? 0 : value > 255 ? 255 : value;			
-			iValue |= encode(value, channel);
-		}
-		data[column][row] = iValue;
+		for(int channel = 0; channel < channelCount; channel++)
+			data[channel][column][row] = convert(values[channel]);
 		
 		image = null;
 	}
 	
 	@Override
 	public void setValue(int column, int row, int channel, double value) {
-		int val = value < 0 ? 0 : value > 255 ? 255 : (int)value;
-		
-		int iValue = data[column][row];
-		iValue = encode(iValue, val, channel);
-		data[column][row] = iValue;
-		
+		data[channel][column][row] = convert(value);
 		image = null;
 	}
 	
@@ -214,6 +163,16 @@ public abstract class AbstractByteImage implements Image {
 				return getChannel(channel++);
 			}
 		};
+	}
+	
+	protected byte convert(double value) {
+		if(value <= 0)
+			return 0;
+		
+		if(value >= 255)
+			return (byte)255;
+		
+		return (byte)value;
 	}
 	
 	/**

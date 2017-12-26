@@ -50,7 +50,10 @@ public class GroupedByteImage extends HsiByteImage implements GroupedImage {
 	@Override
 	public void setGroup(int column, int row, int groupID) {
 		Group group = groups[groupID];
-		data[column][row] = group.hsi;
+		
+		for(int chan = 0; chan < 3; chan++)
+			data[chan][column][row] = group.hsi[chan];
+		
 		updateImage();
 	}
 	
@@ -66,7 +69,7 @@ public class GroupedByteImage extends HsiByteImage implements GroupedImage {
 		static final int BLACK = -2, WHITE = -1;
 		
 		/** HSI value of group */
-		final int hsi;
+		final byte[] hsi;
 		
 		/**
 		 * Constructs the color from the given ID.
@@ -75,15 +78,15 @@ public class GroupedByteImage extends HsiByteImage implements GroupedImage {
 		 */
 		Group(int id) {
 			if(id == BLACK) {
-				hsi = 0;
+				hsi = new byte[3];
 			} else if(id == WHITE) {
-				hsi = (maxIntensity() & 0xFF) << 24;
+				hsi = new byte[] {0, 0, convert(maxIntensity())};
 			} else {
-				id &= 0xFF;
-				id |= (maxSaturation() & 0xFF) << 16;
-				id |= ((maxIntensity() / 2) & 0xFF) << 24;
-				
-				hsi = id;
+				hsi = new byte[] {
+					convert(id),
+					convert(maxSaturation()),
+					convert(maxIntensity() / 2)
+				};
 			}
 		}
 		
