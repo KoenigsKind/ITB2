@@ -74,9 +74,9 @@ public class RgbDoubleImage extends AbstractDoubleImage implements RgbImage {
 
 	@Override
 	protected double[] getRGB(int column, int row) {
-		double r = data[column][row][RED];
-		double g = data[column][row][GREEN];
-		double b = data[column][row][BLUE];
+		double r = data[RED][column][row];
+		double g = data[GREEN][column][row];
+		double b = data[BLUE][column][row];
 		
 		return new double[]{r, g, b};
 	}

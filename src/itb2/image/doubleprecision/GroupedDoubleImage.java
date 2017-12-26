@@ -52,7 +52,7 @@ public class GroupedDoubleImage extends HsiDoubleImage implements GroupedImage {
 		Group group = groups[groupID];
 		
 		for(int c = 0; c < 3; c++)
-			data[column][row][c] = group.hsi[c];
+			data[c][column][row] = group.hsi[c];
 		
 		updateImage();
 	}

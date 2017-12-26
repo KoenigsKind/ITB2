@@ -63,9 +63,9 @@ public class HsiDoubleImage extends AbstractDoubleImage implements HsiImage {
 	
 	@Override
 	protected double[] getRGB(int column, int row) {
-		double h = data[column][row][HUE];
-		double s = data[column][row][SATURATION];
-		double i = data[column][row][INTENSITY];
+		double h = data[HUE][column][row];
+		double s = data[SATURATION][column][row];
+		double i = data[INTENSITY][column][row];
 		
 		return hsi2rgb(h, s, i);
 	}

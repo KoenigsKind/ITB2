@@ -26,7 +26,7 @@ public abstract class AbstractDoubleImage implements Image {
 	/** Number of channels */
 	protected final int channelCount;
 	
-	/** Data of this image <br><code>double[width][height][channelCount]</code> */
+	/** Data of this image <br><code>double[channelCount][width][height]</code> */
 	protected final double[][][] data;
 	
 	/** Name of this image */
@@ -55,7 +55,7 @@ public abstract class AbstractDoubleImage implements Image {
 	public AbstractDoubleImage(int width, int height, int channelCount) {
 		this.channelCount = channelCount;
 		this.size = new Dimension(width, height);
-		this.data = new double[width][height][channelCount];
+		this.data = new double[channelCount][width][height];
 	}
 	
 	/**
@@ -98,12 +98,15 @@ public abstract class AbstractDoubleImage implements Image {
 	
 	@Override
 	public double[] getValue(int column, int row) {
-		return Arrays.copyOf(data[column][row], channelCount);
+		double[] value = new double[channelCount];
+		for(int c = 0; c < channelCount; c++)
+			value[c] = data[c][column][row];
+		return value;
 	}
 	
 	@Override
 	public double getValue(int column, int row, int channel) {
-		return data[column][row][channel];
+		return data[channel][column][row];
 	}
 	
 	@Override
@@ -112,13 +115,13 @@ public abstract class AbstractDoubleImage implements Image {
 			throw new ArrayIndexOutOfBoundsException();
 		
 		for(int channel = 0; channel < channelCount; channel++)
-			data[column][row][channel] = values[channel];
+			data[channel][column][row] = values[channel];
 		image = null;
 	}
 	
 	@Override
 	public void setValue(int column, int row, int channel, double value) {
-		data[column][row][channel] = value;
+		data[channel][column][row] = value;
 		image = null;
 	}
 	
