@@ -15,6 +15,70 @@ import itb2.image.Row;
 public class ImageUtils {
 	
 	/**
+	 * Reads all values from the given image and writes them into the given
+	 * double matrix. If null is given, a double matrix will be created.
+	 * The matrix must be of the size double[channelCount][width][height]
+	 *  
+	 * @param image  Image to get values from
+	 * @param values Matrix to write values into (or null)
+	 * @return Matrix with values
+	 */
+	public static double[][][] getValues(Image image, double[][][] values) {
+		if(values == null)
+			values = new double[image.getChannelCount()][][];
+		
+		for(int chan = 0; chan < image.getChannelCount(); chan++)
+			values[chan] = getValues(image.getChannel(chan), values[chan]);
+		
+		return values;
+	}
+	
+	/**
+	 * Reads all values from the given channel and writes them into the given
+	 * double matrix. If null is given, a double matrix will be created.
+	 * The matrix must be of the size double[width][height]
+	 *  
+	 * @param image  Channel to get values from
+	 * @param values Matrix to write values into (or null)
+	 * @return Matrix with values
+	 */
+	public static double[][] getValues(Channel channel, double[][] values) {
+		if(values == null)
+			values = new double[channel.getWidth()][channel.getHeight()];
+		
+		for(int col = 0; col < channel.getWidth(); col++)
+			for(int row = 0; row < channel.getHeight(); row++)
+					values[col][row] = channel.getValue(col, row);
+		
+		return values;
+	}
+	
+	/**
+	 * Fills the image with the values from the given matrix.
+	 * The matrix must be of the size double[channelCount][width][height].
+	 * 
+	 * @param image  Image to set values for
+	 * @param values Values to set
+	 */
+	public static void setValues(Image image, double[][][] values) {
+		for(int chan = 0; chan < image.getChannelCount(); chan++)
+			setValues(image.getChannel(chan), values[chan]);
+	}
+	
+	/**
+	 * Fills the channel with the values from the given matrix.
+	 * The matrix must be of the size double[width][height].
+	 * 
+	 * @param image  Channel to set values for
+	 * @param values Values to set
+	 */
+	public static void setValues(Channel channel, double[][] values) {
+		for(int col = 0; col < channel.getWidth(); col++)
+			for(int row = 0; row < channel.getHeight(); row++)
+				channel.setValue(col, row, values[col][row]);
+	}
+	
+	/**
 	 * Scales the given image linearly.
 	 * <p>
 	 * <strong>Important:</strong><br>

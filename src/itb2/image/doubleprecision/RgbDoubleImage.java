@@ -35,21 +35,6 @@ public class RgbDoubleImage extends AbstractDoubleImage implements RgbImage {
 	}
 	
 	/**
-	 * Constructs an image from the given data matrix.
-	 * The matrix must be off the size: double[width][height][3]
-	 * With the last Array being the RGB-Channel.
-	 * 
-	 * @param data Original data
-	 */
-	@Deprecated
-	public RgbDoubleImage(double[][][] data) {
-		super(data);
-		
-		if(channelCount != 3)
-			throw new RuntimeException("data must have three channels (red, green and blue)");
-	}
-	
-	/**
 	 * Constructs an image from the given {@link BufferedImage}
 	 * 
 	 * @param image Original image

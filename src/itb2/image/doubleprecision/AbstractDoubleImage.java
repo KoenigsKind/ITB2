@@ -57,24 +57,6 @@ public abstract class AbstractDoubleImage implements Image {
 		this.size = new Dimension(width, height);
 		this.data = new double[channelCount][width][height];
 	}
-	
-	/**
-	 * Constructs an image using the given data
-	 * 
-	 * @param data Data of this image
-	 */
-	@Deprecated
-	public AbstractDoubleImage(double[][][] data) {
-		this.data = data;
-		
-		this.size = new Dimension(data.length, data[0].length);
-		this.channelCount = data[0][0].length;
-		
-		for(int col = 0; col < size.width; col++)
-			for(int row = 0; row < size.height; row++)
-				if(data[col][row].length != channelCount)
-					throw new ArrayIndexOutOfBoundsException(); // fail fast
-	}
 
 	@Override
 	public int getWidth() {

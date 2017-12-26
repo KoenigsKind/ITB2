@@ -5,11 +5,13 @@ import java.awt.Point;
 import java.io.*;
 import java.util.Collection;
 
+
 import itb2.engine.io.ImageIO;
 import itb2.filter.FilterProperties;
 import itb2.filter.FilterProperty;
 import itb2.image.Image;
-import itb2.image.doubleprecision.RgbDoubleImage;
+import itb2.image.ImageFactory;
+import itb2.utils.ImageUtils;
 
 /**
  * This class only exists for backwards compatibility and <u>should not be used!</u>
@@ -28,7 +30,8 @@ public class AbstractFilter {
 	}
 
 	public final boolean saveImage(double[][][] img, String filename) {
-		Image image = new RgbDoubleImage(img);
+		Image image = ImageFactory.doublePrecision().rgb(width, height);
+		ImageUtils.setValues(image, img);
 		try {
 			ImageIO.save(image, new File(filename));
 			return true;
