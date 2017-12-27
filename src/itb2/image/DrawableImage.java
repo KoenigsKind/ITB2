@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import itb2.engine.io.AnymapIO;
@@ -125,9 +124,7 @@ public class DrawableImage implements RgbImage {
 
 	@Override
 	public double[] getValue(int column, int row) {
-		double[] values = new double[image.getRaster().getNumBands()];
-		image.getRaster().getPixel(column, row, values);
-		return values.length == 3 ? values : Arrays.copyOf(values, 3); 
+		return image.getRaster().getPixel(column, row, new double[3]);
 	}
 
 	@Override

@@ -1,11 +1,4 @@
-package itb2.utils;
-
-import itb2.image.Cell;
-import itb2.image.Channel;
-import itb2.image.GrayscaleImage;
-import itb2.image.Image;
-import itb2.image.RgbImage;
-import itb2.image.Row;
+package itb2.image;
 
 /**
  * Utility functions for images

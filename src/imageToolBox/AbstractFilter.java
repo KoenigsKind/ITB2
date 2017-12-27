@@ -11,7 +11,7 @@ import itb2.filter.FilterProperties;
 import itb2.filter.FilterProperty;
 import itb2.image.Image;
 import itb2.image.ImageFactory;
-import itb2.utils.ImageUtils;
+import itb2.image.ImageUtils;
 
 /**
  * This class only exists for backwards compatibility and <u>should not be used!</u>

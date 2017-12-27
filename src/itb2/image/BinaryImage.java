@@ -8,9 +8,9 @@ import java.util.Iterator;
 public class BinaryImage implements Image {
 	private static final long serialVersionUID = -2722823332210447391L;
 	public static final int BINARY = 0;
-	private static final int BITS = 8 * Integer.BYTES;
+	private static final int BITS = 8;
 	private final Dimension size;
-	private final int[][] data;
+	private final byte[][] data;
 	private Serializable name;
 	private transient BufferedImage image;
 	
@@ -24,7 +24,7 @@ public class BinaryImage implements Image {
 			x++;
 		
 		size = new Dimension(width, height);
-		data = new int[width][x]; 
+		data = new byte[width][x]; 
 	}
 
 	@Override
