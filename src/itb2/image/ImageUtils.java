@@ -1,5 +1,8 @@
 package itb2.image;
 
+import itb2.data.ConversionException;
+import itb2.engine.CommunicationManager;
+
 /**
  * Utility functions for images
  * 
@@ -182,6 +185,51 @@ public class ImageUtils {
 		}
 	
 		return min;
+	}
+	
+	/**
+	 * Returns an image containing multiple colors. This can be used with
+	 * {@link CommunicationManager#getSelections(String, int, Image) Controller.getCommunicationManager.getSelections(...)}
+	 * to let the user select a color.
+	 * 
+	 * @param width      Width of the image
+	 * @param height     Height of the image
+	 * @param colors     Number of colors (or 0 for full range)
+	 * @param returnType ImageType to return
+	 * 
+	 * @return Image containing different colors
+	 * 
+	 * @throws ConversionException If it's not possible to convert to the requested image type
+	 */
+	public static <T extends Image> T colorPick(int width, int height, int colors, Class<T> returnType) throws ConversionException {
+		Image image;
+		if(colors >= 2) {
+			image = ImageFactory.doublePrecision().group(width, height, colors);
+			int columns = (int)Math.sqrt(colors);
+			int rows = (int)Math.ceil((double) colors / columns);
+			for(int col = 0; col < width; col++) {
+				for(int row = 0; row < height; row++) {
+					int group = (row * rows) / height;
+					group *= columns;
+					group += (col * columns) / width;
+					group %= colors;
+					image.setValue(col, row, group);
+				}
+			}
+		} else {
+			image = ImageFactory.doublePrecision().hsv(width, height);
+			double h = ((HsvImage)image).maxHue();
+			double s = ((HsvImage)image).maxSaturation();
+			double v = ((HsvImage)image).maxValue();
+			
+			for(int col = 0; col < width; col++) {
+				for(int row = 0; row < height/2; row++)
+					image.setValue(col, row, col * h / width, s, 2 * row * v / height);
+				for(int row = height/2; row < height; row++)
+					image.setValue(col, row, col * h / width, 2 * (height - row) * s / height, v);
+			}
+		}
+		return ImageConverter.convert(image, returnType);
 	}
 
 }
