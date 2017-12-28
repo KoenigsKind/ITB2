@@ -118,6 +118,9 @@ public final class Controller {
 	public static void main(String[] args) {
 		// Start application
 		startApplication();
+		
+		// Register image conversions for all basic image types
+		ConversionHelper.registerImageConversions();
 	}
 	
 	/** Should not be instantiated */
