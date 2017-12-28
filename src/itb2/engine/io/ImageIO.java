@@ -108,7 +108,7 @@ public final class ImageIO {
 	 * @throws IOException If format could not be identified or something else goes wrong
 	 */
 	public static void save(Image image, File file) throws IOException {
-		String format = file.getName().replaceFirst("^.*(\\..*?)$", "$1");
+		String format = file.getName().replaceFirst("^.*\\.(.*?)$", "$1");
 		save(image, format, file);
 	}
 	
@@ -124,8 +124,8 @@ public final class ImageIO {
 	public static void save(Image image, String format, File file) throws IOException {
 		if(format.equalsIgnoreCase("ppm"))
 			AnymapIO.save(image, file);
-		else
-			javax.imageio.ImageIO.write(image.asBufferedImage(), format, file);
+		else if( !javax.imageio.ImageIO.write(image.asBufferedImage(), format, file) )
+			throw new IOException("Unknown format: " + format);
 	}
 	
 	/** Should not be instantiated */
