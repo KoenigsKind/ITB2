@@ -10,7 +10,7 @@ import itb2.image.GrayscaleImage;
  *  
  * @author Micha Strauch
  */
-public class GrayscaleDoubleImage extends AbstractDoubleImage implements GrayscaleImage {
+class GrayscaleDoubleImage extends AbstractDoubleImage implements GrayscaleImage {
 	private static final long serialVersionUID = -5520424708879023970L;
 
 	/**
@@ -19,7 +19,7 @@ public class GrayscaleDoubleImage extends AbstractDoubleImage implements Graysca
 	 * @param width  Width of this image
 	 * @param height Height of this image
 	 */
-	public GrayscaleDoubleImage(int width, int height) {
+	GrayscaleDoubleImage(int width, int height) {
 		super(width, height, 1);
 	}
 	
@@ -29,7 +29,7 @@ public class GrayscaleDoubleImage extends AbstractDoubleImage implements Graysca
 	 * @param width  Width of this image
 	 * @param height Height of this image
 	 */
-	public GrayscaleDoubleImage(Dimension size) {
+	GrayscaleDoubleImage(Dimension size) {
 		super(size, 1);
 	}
 	
@@ -38,7 +38,7 @@ public class GrayscaleDoubleImage extends AbstractDoubleImage implements Graysca
 	 * 
 	 * @param channel Channel to construct image from
 	 */
-	public GrayscaleDoubleImage(Channel channel) {
+	GrayscaleDoubleImage(Channel channel) {
 		super(channel.getWidth(), channel.getHeight(), 1);
 		
 		for(int col = 0; col < size.width; col++)

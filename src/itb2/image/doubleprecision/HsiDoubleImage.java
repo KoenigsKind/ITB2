@@ -5,15 +5,15 @@ import java.awt.Dimension;
 import itb2.image.HsiImage;
 
 /**
- * Represents an image with huse, saturation and intensity channel
+ * Represents an image with hue, saturation and intensity channel
  *  
  * @author Micha Strauch
  */
-public class HsiDoubleImage extends AbstractDoubleImage implements HsiImage {
+class HsiDoubleImage extends AbstractDoubleImage implements HsiImage {
 	private static final long serialVersionUID = 6987212242453114952L;
 	
 	/** Max values for hue, saturation and intensity */
-	private int[] maxValues = {360, 100, 255};
+	private double[] maxValues = {360, 100, 255};
 
 	/**
 	 * Constructs an image with given size.
@@ -21,7 +21,7 @@ public class HsiDoubleImage extends AbstractDoubleImage implements HsiImage {
 	 * @param width  Width of this image
 	 * @param height Height of this image
 	 */
-	public HsiDoubleImage(int width, int height) {
+	HsiDoubleImage(int width, int height) {
 		super(width, height, 3);
 	}
 	
@@ -31,29 +31,29 @@ public class HsiDoubleImage extends AbstractDoubleImage implements HsiImage {
 	 * @param width  Width of this image
 	 * @param height Height of this image
 	 */
-	public HsiDoubleImage(Dimension size) {
+	HsiDoubleImage(Dimension size) {
 		super(size, 3);
 	}
 	
 	@Override
-	public int maxHue() {
+	public double maxHue() {
 		return maxValues[HUE];
 	}
 	
 	@Override
-	public int maxSaturation() {
+	public double maxSaturation() {
 		return maxValues[SATURATION];
 	}
 	
 	@Override
-	public int maxIntensity() {
+	public double maxIntensity() {
 		return maxValues[INTENSITY];
 	}
 	
 	@Override
-	public void setMaxValue(int hue, int saturation, int intensity) {
+	public void setMaxValue(double hue, double saturation, double intensity) {
 		if(hue < 0 || saturation < 0 || intensity < 0)
-			throw new IllegalArgumentException(String.format("Values must be positive; given was: (%d, %d, %d)",
+			throw new IllegalArgumentException(String.format("Values must be positive; given was: (%.0f, %.0f, %.0f)",
 					hue, saturation, intensity));
 		
 		maxValues[HUE] = hue;
@@ -108,6 +108,15 @@ public class HsiDoubleImage extends AbstractDoubleImage implements HsiImage {
 				rgb[2] = y;
 				rgb[0] = z;
 			}
+		}
+		
+		// Bound RGB values between 0 and 1
+		for(int k = 0; k < 3; k++) {
+			if(rgb[k] < 0)
+				rgb[k] = 0;
+			
+			if(rgb[k] > 1)
+				rgb[k] = 1;
 		}
 
 		// convert and round normalized values

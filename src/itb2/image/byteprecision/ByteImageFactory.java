@@ -7,9 +7,17 @@ import itb2.image.Channel;
 import itb2.image.GrayscaleImage;
 import itb2.image.GroupedImage;
 import itb2.image.HsiImage;
+import itb2.image.HsvImage;
 import itb2.image.ImageFactory;
 import itb2.image.RgbImage;
 
+/**
+ * Factory to create an image with byte precision. Byte precision
+ * images can store only integers between 0 and 255, but take eight
+ * times less space then double precision images. 
+ *
+ * @author Micha Strauch
+ */
 public class ByteImageFactory extends ImageFactory {
 
 	@Override
@@ -20,6 +28,11 @@ public class ByteImageFactory extends ImageFactory {
 	@Override
 	public Class<? extends HsiImage> hsi() {
 		return HsiByteImage.class;
+	}
+
+	@Override
+	public Class<? extends HsvImage> hsv() {
+		return HsvByteImage.class;
 	}
 
 	@Override
@@ -55,6 +68,16 @@ public class ByteImageFactory extends ImageFactory {
 	@Override
 	public HsiImage hsi(Dimension size) {
 		return new HsiByteImage(size);
+	}
+
+	@Override
+	public HsvImage hsv(int width, int height) {
+		return new HsvByteImage(width, height);
+	}
+
+	@Override
+	public HsvImage hsv(Dimension size) {
+		return new HsvByteImage(size);
 	}
 
 	@Override

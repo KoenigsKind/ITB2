@@ -5,11 +5,11 @@ import java.awt.Dimension;
 import itb2.image.HsiImage;
 
 /**
- * Represents an image with huse, saturation and intensity channel
+ * Represents an image with hue, saturation and intensity channel
  *  
  * @author Micha Strauch
  */
-public class HsiByteImage extends AbstractByteImage implements HsiImage {
+class HsiByteImage extends AbstractByteImage implements HsiImage {
 	private static final long serialVersionUID = 503832263212040770L;
 	
 	/** Max values for hue, saturation and intensity */
@@ -21,7 +21,7 @@ public class HsiByteImage extends AbstractByteImage implements HsiImage {
 	 * @param width  Width of this image
 	 * @param height Height of this image
 	 */
-	public HsiByteImage(int width, int height) {
+	HsiByteImage(int width, int height) {
 		super(width, height, 3);
 	}
 	
@@ -31,34 +31,37 @@ public class HsiByteImage extends AbstractByteImage implements HsiImage {
 	 * @param width  Width of this image
 	 * @param height Height of this image
 	 */
-	public HsiByteImage(Dimension size) {
+	HsiByteImage(Dimension size) {
 		super(size, 3);
 	}
 	
 	@Override
-	public int maxHue() {
+	public double maxHue() {
 		return maxValues[HUE];
 	}
 	
 	@Override
-	public int maxSaturation() {
+	public double maxSaturation() {
 		return maxValues[SATURATION];
 	}
 	
 	@Override
-	public int maxIntensity() {
+	public double maxIntensity() {
 		return maxValues[INTENSITY];
 	}
 	
 	@Override
-	public void setMaxValue(int hue, int saturation, int intensity) {
+	public void setMaxValue(double hue, double saturation, double intensity) {
+		if(hue != (int) hue || saturation != (int) saturation || intensity != (int) intensity)
+			throw new IllegalArgumentException(String.format("Values must be integers; given was: (%.1f, %.1f, %.1f)",
+					hue, saturation, intensity));
 		if(hue < 0 || hue > 255 || saturation < 0 || saturation > 255 || intensity < 0 || intensity > 255)
-			throw new IllegalArgumentException(String.format("Values must be between 0 and 255; given was: (%d, %d, %d)",
+			throw new IllegalArgumentException(String.format("Values must be between 0 and 255; given was: (%.0f, %.0f, %.0f)",
 					hue, saturation, intensity));
 		
-		maxValues[HUE] = hue;
-		maxValues[SATURATION] = saturation;
-		maxValues[INTENSITY] = intensity;
+		maxValues[HUE] = (int)hue;
+		maxValues[SATURATION] = (int)saturation;
+		maxValues[INTENSITY] = (int)intensity;
 	}
 	
 	@Override
@@ -108,6 +111,15 @@ public class HsiByteImage extends AbstractByteImage implements HsiImage {
 				rgb[2] = y;
 				rgb[0] = z;
 			}
+		}
+		
+		// Bound RGB values between 0 and 1
+		for(int k = 0; k < 3; k++) {
+			if(rgb[k] < 0)
+				rgb[k] = 0;
+			
+			if(rgb[k] > 1)
+				rgb[k] = 1;
 		}
 
 		// convert and round normalized values

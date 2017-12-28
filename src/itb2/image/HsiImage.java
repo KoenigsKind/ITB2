@@ -6,15 +6,15 @@ public interface HsiImage extends Image {
 	public static int HUE = 0, SATURATION = 1, INTENSITY = 2;
 	
 	/** Maximum value for hue */
-	public int maxHue(); //360
+	public double maxHue();
 	
 	/** Maximum value for saturation */
-	public int maxSaturation(); //100
+	public double maxSaturation();
 	
 	/** Maximum value for intensity */
-	public int maxIntensity(); //255
+	public double maxIntensity();
 	
 	/** Sets the maximum value for hue, saturation and intensity */
-	public void setMaxValue(int hue, int saturation, int intensity);
+	public void setMaxValue(double hue, double saturation, double intensity);
 	
 }

@@ -11,7 +11,7 @@ import itb2.image.RgbImage;
  *  
  * @author Micha Strauch
  */
-public class RgbDoubleImage extends AbstractDoubleImage implements RgbImage {
+class RgbDoubleImage extends AbstractDoubleImage implements RgbImage {
 	private static final long serialVersionUID = -2730549401612308560L;
 
 	/**
@@ -20,7 +20,7 @@ public class RgbDoubleImage extends AbstractDoubleImage implements RgbImage {
 	 * @param width  Width of this image
 	 * @param height Height of this image
 	 */
-	public RgbDoubleImage(int width, int height) {
+	RgbDoubleImage(int width, int height) {
 		super(width, height, 3);
 	}
 	
@@ -30,7 +30,7 @@ public class RgbDoubleImage extends AbstractDoubleImage implements RgbImage {
 	 * @param width  Width of this image
 	 * @param height Height of this image
 	 */
-	public RgbDoubleImage(Dimension size) {
+	RgbDoubleImage(Dimension size) {
 		super(size, 3);
 	}
 	
@@ -39,7 +39,7 @@ public class RgbDoubleImage extends AbstractDoubleImage implements RgbImage {
 	 * 
 	 * @param image Original image
 	 */
-	public RgbDoubleImage(BufferedImage image) {
+	RgbDoubleImage(BufferedImage image) {
 		super(image.getWidth(), image.getHeight(), 3);
 		
 		Raster raster = image.getData();

@@ -7,9 +7,17 @@ import itb2.image.Channel;
 import itb2.image.GrayscaleImage;
 import itb2.image.GroupedImage;
 import itb2.image.HsiImage;
+import itb2.image.HsvImage;
 import itb2.image.ImageFactory;
 import itb2.image.RgbImage;
 
+/**
+ * Factory to create an image with double precision. Double
+ * precision images can store any type of value but take eight
+ * times more space then byte precision images. 
+ *
+ * @author Micha Strauch
+ */
 public class DoubleImageFactory extends ImageFactory {
 
 	@Override
@@ -20,6 +28,11 @@ public class DoubleImageFactory extends ImageFactory {
 	@Override
 	public Class<? extends HsiImage> hsi() {
 		return HsiDoubleImage.class;
+	}
+
+	@Override
+	public Class<? extends HsvImage> hsv() {
+		return HsvDoubleImage.class;
 	}
 
 	@Override
@@ -55,6 +68,16 @@ public class DoubleImageFactory extends ImageFactory {
 	@Override
 	public HsiImage hsi(Dimension size) {
 		return new HsiDoubleImage(size);
+	}
+
+	@Override
+	public HsvImage hsv(int width, int height) {
+		return new HsvDoubleImage(width, height);
+	}
+
+	@Override
+	public HsvImage hsv(Dimension size) {
+		return new HsvDoubleImage(size);
 	}
 
 	@Override

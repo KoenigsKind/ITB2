@@ -1,7 +1,6 @@
 package itb2.image.doubleprecision;
 
 import java.awt.Dimension;
-import java.io.Serializable;
 
 import itb2.image.GroupedImage;
 
@@ -11,11 +10,11 @@ import itb2.image.GroupedImage;
  * 
  * @author Micha Strauch
  */
-public class GroupedDoubleImage extends HsiDoubleImage implements GroupedImage {
-	private static final long serialVersionUID = 3343972105660556508L;
+class GroupedDoubleImage extends AbstractDoubleImage implements GroupedImage {
+	private static final long serialVersionUID = -2395222062447381765L;
 	
-	/** Available groups */
-	private final Group[] groups;
+	/** Number of groups */
+	private final int groupCount;
 	
 	/**
 	 * Constructs image with given size and number of groups.
@@ -24,8 +23,13 @@ public class GroupedDoubleImage extends HsiDoubleImage implements GroupedImage {
 	 * @param height     Height of the image
 	 * @param groupCount Number of groups
 	 */
-	public GroupedDoubleImage(int width, int height, int groupCount) {
-		this(new Dimension(width, height), groupCount);
+	GroupedDoubleImage(int width, int height, int groupCount) {
+		super(width, height, 1);
+		
+		if(groupCount < 2)
+			throw new RuntimeException("Group count must be at least 2!");
+		
+		this.groupCount = groupCount;
 	}
 	
 	/**
@@ -34,58 +38,82 @@ public class GroupedDoubleImage extends HsiDoubleImage implements GroupedImage {
 	 * @param size       Size of the image
 	 * @param groupCount Number of groups
 	 */
-	public GroupedDoubleImage(Dimension size, int groupCount) {
-		super(size);
-		
-		if(groupCount == 2)
-			groups = new Group[]{new Group(Group.BLACK), new Group(Group.WHITE)};
-		else if(groupCount > 2) {
-			groups = new Group[groupCount];
-			for(int i = 0; i < groupCount; i++)
-				groups[i] = new Group((double)(i * maxHue()) / groupCount);
-		} else
-			throw new RuntimeException("Group count must be at least 2!");
+	GroupedDoubleImage(Dimension size, int groupCount) {
+		this(size.width, size.height, groupCount);
 	}
 	
 	@Override
-	public void setGroup(int column, int row, int groupID) {
-		Group group = groups[groupID];
+	public int getGroupCount() {
+		return groupCount;
+	}
+	
+	@Override
+	public void setValue(int column, int row, double... values) {
+		for(double value : values)
+			check(value);
 		
-		for(int c = 0; c < 3; c++)
-			data[c][column][row] = group.hsi[c];
+		super.setValue(column, row, values);
+	}
+	
+	@Override
+	public void setValue(int column, int row, int channel, double value) {
+		check(value);
 		
-		updateImage();
+		super.setValue(column, row, channel, value);
+	}
+
+	@Override
+	protected double[] getRGB(int column, int row) {
+		double group = data[GROUP_ID][column][row];
+		
+		if(groupCount == 2)
+			return hsv2rgb(0, 0, group < .5 ? 0 : 1);
+		
+		return hsv2rgb(360 * group / groupCount, 1, 1);
 	}
 	
 	/**
-	 * Contains HSI-values of the group
+	 * Checks whether the given value is a valid group id
 	 * 
-	 * @author Micha Strauch
+	 * @param value Value to check
 	 */
-	class Group implements Serializable {
-		private static final long serialVersionUID = -4793393801781406559L;
-
-		/** ID for black and white color */
-		static final double BLACK = -2, WHITE = -1;
+	private void check(double value) {
+		if(value < 0 || value >= groupCount)
+			throw new RuntimeException("Value must be between 0 and " + (groupCount - 1));
+	}
+	
+	/**
+	 * Converts HSV values to RGB values
+	 * 
+	 * @param h Hue
+	 * @param s Saturation
+	 * @param v Value
+	 * @return Array with RGB-values
+	 */
+	private double[] hsv2rgb(double h, double s, double v) {
+		double c = v * s; // chroma
+		double x = c * (1 - Math.abs(((h/60)%2) - 1));
+		double m = v - c;
 		
-		/** HSI value of group */
-		final double[] hsi;
+		double[] rgb;
 		
-		/**
-		 * Constructs the color from the given ID.
-		 * 
-		 * @param id
-		 */
-		Group(double id) {
-			if(id == BLACK) {
-				hsi = new double[]{0, 0, 0};
-			} else if(id == WHITE) {
-				hsi = new double[]{0, 0, maxIntensity()};
-			} else {
-				hsi = new double[]{id, maxSaturation(), 0.5 * maxIntensity()};
-			}
-		}
+		if(h < 60)
+			rgb = new double[] {c, x, 0};
+		else if(h < 120)
+			rgb = new double[] {x, c, 0};
+		else if(h < 180)
+			rgb = new double[] {0, c, x};
+		else if(h < 240)
+			rgb = new double[] {0, x, c};
+		else if(h < 300)
+			rgb = new double[] {x, 0, c};
+		else
+			rgb = new double[] {c, 0, x};
 		
+		for(int i = 0; i < 3; i++)
+			rgb[i] = 255 * (rgb[i] + m);
+		
+		return rgb;
 	}
 
 }

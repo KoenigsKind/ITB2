@@ -10,7 +10,7 @@ import itb2.image.GrayscaleImage;
  *  
  * @author Micha Strauch
  */
-public class GrayscaleByteImage extends AbstractByteImage implements GrayscaleImage {
+class GrayscaleByteImage extends AbstractByteImage implements GrayscaleImage {
 	private static final long serialVersionUID = -594941879275231638L;
 
 	/**
@@ -19,7 +19,7 @@ public class GrayscaleByteImage extends AbstractByteImage implements GrayscaleIm
 	 * @param width  Width of this image
 	 * @param height Height of this image
 	 */
-	public GrayscaleByteImage(int width, int height) {
+	GrayscaleByteImage(int width, int height) {
 		super(width, height, 1);
 	}
 	
@@ -29,7 +29,7 @@ public class GrayscaleByteImage extends AbstractByteImage implements GrayscaleIm
 	 * @param width  Width of this image
 	 * @param height Height of this image
 	 */
-	public GrayscaleByteImage(Dimension size) {
+	GrayscaleByteImage(Dimension size) {
 		super(size, 1);
 	}
 	
@@ -38,7 +38,7 @@ public class GrayscaleByteImage extends AbstractByteImage implements GrayscaleIm
 	 * 
 	 * @param channel Channel to construct image from
 	 */
-	public GrayscaleByteImage(Channel channel) {
+	GrayscaleByteImage(Channel channel) {
 		super(channel.getWidth(), channel.getHeight(), 1);
 		
 		for(int col = 0; col < size.width; col++)
