@@ -16,50 +16,57 @@ public class Path<T> {
 	private final Path<T> prev, post;
 	/** Converter to call */
 	private final Function<T, T> converter;
+	/** Description to print at {@link #toString()} */
+	private final String description;
 	
 	/**
 	 * Creates a path with only this converter in it.
 	 * 
-	 * @param converter Converter to call
+	 * @param description Description to use at {@link #toString()}
+	 * @param converter   Converter to call
 	 */
-	public Path(Function<T, T> converter) {
-		this(null, converter, null);
+	public Path(String description, Function<T, T> converter) {
+		this(description, null, converter, null);
 	}
 	
 	/**
 	 * Creates a path, with calling prev before converter
 	 * 
-	 * @param prev      Path to execute before calling converter
-	 * @param converter Converter to call
+	 * @param description Description to use at {@link #toString()}
+	 * @param prev        Path to execute before calling converter
+	 * @param converter   Converter to call
 	 */
-	public Path(Path<T> prev, Function<T, T> converter) {
-		this(prev, converter, null);
+	public Path(String description, Path<T> prev, Function<T, T> converter) {
+		this(description, prev, converter, null);
 	}
 	
 	/**
 	 * Creates a path, with calling post after converter
 	 * 
-	 * @param converter Converter to call
-	 * @param post      Path to execute after calling converter
+	 * @param description Description to use at {@link #toString()}
+	 * @param converter   Converter to call
+	 * @param post        Path to execute after calling converter
 	 */
-	public Path(Function<T, T> converter, Path<T> post) {
-		this(null, converter, post);
+	public Path(String description, Function<T, T> converter, Path<T> post) {
+		this(description, null, converter, post);
 	}
 	
 	/**
 	 * Creates a full path, with calling prev before and post after converter
-	 * 
-	 * @param prev      Path to execute before calling converter
-	 * @param converter Converter to call
-	 * @param post      Path to execute after calling converter
+	 *
+	 * @param description Description to use at {@link #toString()}
+	 * @param prev        Path to execute before calling converter
+	 * @param converter   Converter to call
+	 * @param post        Path to execute after calling converter
 	 */
-	public Path(Path<T> prev, Function<T, T> converter, Path<T> post) {
+	public Path(String description, Path<T> prev, Function<T, T> converter, Path<T> post) {
 		if(converter == null)
 			throw new NullPointerException(); // Fail fast
 		
 		this.prev = prev;
 		this.converter = converter;
 		this.post = post;
+		this.description = description;
 	}
 	
 	/**
@@ -102,7 +109,7 @@ public class Path<T> {
 		String output = "";
 		if(prev != null)
 			output += prev + " ";
-		output = converter.getClass().getSimpleName();
+		output += description;
 		if(post != null)
 			output += " " + post;
 		return "<" + output + ">";

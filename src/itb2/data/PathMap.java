@@ -114,7 +114,19 @@ public class PathMap<T> {
 	 * @param converter   Filter to perform conversion from source type to destination type
 	 */
 	public void add(Class<? extends T> source, Class<? extends T> destination, Function<T, T> converter) {
-		addPaths(source, destination, converter);
+		add(source, destination, converter, converter.getClass().getSimpleName());
+	}
+	
+	/**
+	 * Adds a conversion to the map.
+	 * 
+	 * @param source      Conversion source
+	 * @param destination Conversion destination
+	 * @param converter   Filter to perform conversion from source type to destination type
+	 * @param description Description to use at {@link #toString()}
+	 */
+	public void add(Class<? extends T> source, Class<? extends T> destination, Function<T, T> converter, String description) {
+		addPaths(source, destination, converter, description);
 		
 		// Create copy to prevent ConcurrentModificationException
 		List<Class<? extends T>> possibleSubs = new ArrayList<>(order);
@@ -124,7 +136,7 @@ public class PathMap<T> {
 				continue;
 			
 			// sub extends source
-			addPaths(sub, destination, converter);
+			addPaths(sub, destination, converter, description);
 			
 			for(Class<?> inter : destination.getInterfaces()) {
 				if(!classOfT.isAssignableFrom(inter))
@@ -132,7 +144,7 @@ public class PathMap<T> {
 				Class<? extends T> sup = inter.asSubclass(classOfT);
 				
 				// destination implements sup
-				addPaths(sub, sup, converter);
+				addPaths(sub, sup, converter, description);
 			}
 			
 			for(Class<?> cls = destination.getSuperclass(); cls != null; cls = cls.getSuperclass()) {
@@ -141,7 +153,7 @@ public class PathMap<T> {
 				Class<? extends T> sup = cls.asSubclass(classOfT);
 				
 				// destination extends sup
-				addPaths(sub, sup, converter);
+				addPaths(sub, sup, converter, description);
 			}
 		}
 	}
@@ -154,18 +166,18 @@ public class PathMap<T> {
 	 * @param destination Conversion destination
 	 * @param converter   Filter to perform conversion from source type to destination type
 	 */
-	protected void addPaths(Class<? extends T> source, Class<? extends T> destination, Function<T, T> converter) {
+	protected void addPaths(Class<? extends T> source, Class<? extends T> destination, Function<T, T> converter, String description) {
 		int convSrc = indexOf(source), convDst = indexOf(destination);
 		
 		// Source > New Converter > Destination
-		map[convSrc][convDst] = new Path<T>(converter);
+		map[convSrc][convDst] = new Path<T>(description, converter);
 		
 		// T > Old Converter > Source > New Converter > Destination
 		for(int src = 0; src < order.size(); src++) {
 			if(src == convDst || map[src][convSrc] == null)
 				continue;
 			
-			Path<T> path = new Path<T>(map[src][convSrc], converter);
+			Path<T> path = new Path<T>(description, map[src][convSrc], converter);
 			if(map[src][convDst] == null || map[src][convDst].length() >= path.length()) {
 				map[src][convDst] = path;
 			}
@@ -176,7 +188,7 @@ public class PathMap<T> {
 			if(dst == convSrc || map[convDst][dst] == null)
 				continue;
 			
-			Path<T> path = new Path<T>(converter, map[convDst][dst]);
+			Path<T> path = new Path<T>(description, converter, map[convDst][dst]);
 			if(map[convSrc][dst] == null || map[convSrc][dst].length() >= path.length()) {
 				map[convSrc][dst] = path;
 				
@@ -185,7 +197,7 @@ public class PathMap<T> {
 					if(src == dst || map[src][convSrc] == null)
 						continue;
 					
-					path = new Path<T>(map[src][convSrc], converter, map[convDst][dst]);
+					path = new Path<T>(description, map[src][convSrc], converter, map[convDst][dst]);
 					if(map[src][dst] == null || map[src][dst].length() >= path.length()) {
 						map[src][dst] = path;
 					}

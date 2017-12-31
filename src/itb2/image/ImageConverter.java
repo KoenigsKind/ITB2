@@ -89,7 +89,14 @@ public final class ImageConverter {
 				if(converted.length != 1)
 					throw new ConversionException(String.format("The converter '%s' must return a single image!", converter.getClass().getName()));
 				return converted[0];
-			});
+			}, converter.getClass().getSimpleName());
+		}
+	}
+	
+	/** Returns the current mappings, for debugging purposes. */
+	public static String getMappings() {
+		synchronized(map) {
+			return map.toString();
 		}
 	}
 	
