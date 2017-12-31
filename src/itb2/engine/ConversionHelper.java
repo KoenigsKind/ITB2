@@ -35,17 +35,12 @@ final class ConversionHelper extends AbstractFilter {
 		ImageFactory[] factories = {ImageFactory.doublePrecision(), ImageFactory.bytePrecision(), null};
 		ImageType[] types = {ImageType.RGB, ImageType.GRAYSCALE, ImageType.HSI, ImageType.HSV, ImageType.GROUPED};
 		
-		ImageConverter.register(Image.class, BinaryImage.class, new ConversionHelper(ImageType.BINARY));
-		ImageConverter.register(Image.class, DrawableImage.class, new ConversionHelper(ImageType.DRAWABLE));
+		ImageConverter.register(Image.class, ImageFactory.bytePrecision().binary(), new ConversionHelper(ImageType.BINARY, ImageFactory.bytePrecision()));
+		ImageConverter.register(Image.class, ImageFactory.bytePrecision().drawable(), new ConversionHelper(ImageType.DRAWABLE, ImageFactory.bytePrecision()));
 		
 		for(ImageFactory factory : factories)
 			for(ImageType type : types)
 				ImageConverter.register(Image.class, type.getClass(factory), new ConversionHelper(type, factory));
-	}
-	
-	/** Converts any image into the given type, keeping the precision of the input image */
-	private ConversionHelper(ImageType type) {
-		this(type, null);
 	}
 	
 	/** Converts any image into the given type, using the given factory */
@@ -119,8 +114,8 @@ final class ConversionHelper extends AbstractFilter {
 			return factory.gray(input.getChannel(GrayscaleImage.GRAYSCALE));
 		if(input instanceof HsiImage)
 			return factory.gray(input.getChannel(HsiImage.INTENSITY));
-		if(input instanceof HsvImage || input instanceof GroupedImage)
-			input = new DrawableImage(input.asBufferedImage());
+		if(input instanceof HsvImage || input instanceof GroupedImage || input instanceof BinaryImage)
+			input = ImageFactory.bytePrecision().drawable(input.asBufferedImage());
 		
 		Image output = factory.gray(input.getSize());
 		for(int col = 0; col < output.getWidth(); col++) {
@@ -267,8 +262,8 @@ final class ConversionHelper extends AbstractFilter {
 	
 	/** Converts the input image into a binary image using the given factory */
 	private Image toBinary(Image input, ImageFactory factory) {
-		input = toGrayscale(input, ImageFactory.bytePrecision());
-		Image output = new BinaryImage(input.getSize());
+		input = toGrayscale(input, factory);
+		Image output = factory.binary(input.getSize());
 		
 		for(int col = 0; col < input.getWidth(); col++) {
 			for(int row = 0; row < output.getHeight(); row++) {
@@ -282,7 +277,7 @@ final class ConversionHelper extends AbstractFilter {
 	
 	/** Converts the input image into a drawable image using the given factory */
 	private Image toDrawable(Image input, ImageFactory factory) {
-		return new DrawableImage(input);
+		return factory.drawable(input.asBufferedImage());
 	}
 	
 	/**

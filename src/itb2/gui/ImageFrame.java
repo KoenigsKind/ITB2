@@ -18,6 +18,7 @@ import javax.swing.JFrame;
 
 import itb2.image.DrawableImage;
 import itb2.image.Image;
+import itb2.image.ImageFactory;
 
 /**
  * Simple window to display an image.
@@ -48,7 +49,7 @@ public class ImageFrame extends JFrame {
 	 * @param callAfterSelection  Consumer to be called after selection
 	 */
 	public ImageFrame(Component comp, Image image, String title, int maxSelections, Consumer<List<Point>> callAfterSelection) {
-		this(comp, new DrawableImage(image), title);
+		this(comp, ImageFactory.bytePrecision().drawable(image.asBufferedImage()), title);
 		
 		Graphics graphics = ((DrawableImage)imagePainter.getImage()).getGraphics();
 		

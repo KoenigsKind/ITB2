@@ -79,6 +79,10 @@ public abstract class ImageFactory {
 	public abstract Class<? extends GrayscaleImage> gray();
 	/** Class for GroupedImage with the precision of this factory. */
 	public abstract Class<? extends GroupedImage> group();
+	/** Class for BinaryImage with the precision of this factory. */
+	public abstract Class<? extends BinaryImage> binary();
+	/** Class for DrawableImage with the precision of this factory. */
+	public abstract Class<? extends DrawableImage> drawable();
 	
 	/**
 	 * Creates an RgbImage
@@ -193,5 +197,52 @@ public abstract class ImageFactory {
 	 * @return Created GroupedImage
 	 */
 	public abstract GroupedImage group(Dimension size, int groupCount);
+	
+	/**
+	 * Creates a BinaryImage
+	 * 
+	 * @param width  Width of the image
+	 * @param height Height of the image
+	 * 
+	 * @return Created BinaryImage
+	 */
+	public abstract BinaryImage binary(int width, int height);
+	
+	/**
+	 * Creates a BinaryImage
+	 * 
+	 * @param size Size of the image
+	 * 
+	 * @return Created BinaryImage
+	 */
+	public abstract BinaryImage binary(Dimension size);
+	
+	/**
+	 * Creates a DrawableImage
+	 * 
+	 * @param width  Width of the image
+	 * @param height Height of the image
+	 * 
+	 * @return Created DrawableImage
+	 */
+	public abstract DrawableImage drawable(int width, int height);
+	
+	/**
+	 * Creates a DrawableImage
+	 * 
+	 * @param size Size of the image
+	 * 
+	 * @return Created DrawableImage
+	 */
+	public abstract DrawableImage drawable(Dimension size);
+	
+	/**
+	 * Creates a DrawableImage filled with values of the given image
+	 * 
+	 * @param image Image to create DrawableImage from
+	 * 
+	 * @return Created DrawableImage
+	 */
+	public abstract DrawableImage drawable(BufferedImage image);
 	
 }

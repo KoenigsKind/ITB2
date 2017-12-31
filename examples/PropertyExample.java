@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import itb2.filter.AbstractFilter;
 import itb2.image.DrawableImage;
 import itb2.image.Image;
+import itb2.image.ImageFactory;
 
 /**
  * Exemplary filter showing all property types
@@ -29,7 +30,7 @@ public class PropertyExample extends AbstractFilter {
 	
 	@Override
 	public Image[] filter(Image[] input) {
-		DrawableImage image = new DrawableImage(300, 114);
+		DrawableImage image = ImageFactory.bytePrecision().drawable(300, 114);
 		image.setName(getClass().getSimpleName());
 		Graphics g = image.getGraphics();
 		g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));

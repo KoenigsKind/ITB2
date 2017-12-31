@@ -30,7 +30,7 @@ public final class ImageConverter {
 		map = new PathMap<>(Image.class);
 		
 		// Add some basic conversion methods, may be overwritten by other filter
-		register(Image.class, DrawableImage.class, new Img2Draw());
+		register(Image.class, ImageFactory.bytePrecision().drawable(), new Img2Draw());
 		
 		register(GrayscaleImage.class, ImageFactory.doublePrecision().rgb(), new Gray2Rgb(ImageFactory.doublePrecision()));
 		register(GrayscaleImage.class, ImageFactory.doublePrecision().hsi(), new Gray2Hsi(ImageFactory.doublePrecision()));
@@ -108,7 +108,7 @@ public final class ImageConverter {
 	private static class Img2Draw extends AbstractFilter {
 		@Override
 		public Image filter(Image input) {
-			return new DrawableImage(input.asBufferedImage());
+			return ImageFactory.bytePrecision().drawable(input.asBufferedImage());
 		}
 	}
 	

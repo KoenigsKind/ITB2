@@ -3,7 +3,9 @@ package itb2.image.byteprecision;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
+import itb2.image.BinaryImage;
 import itb2.image.Channel;
+import itb2.image.DrawableImage;
 import itb2.image.GrayscaleImage;
 import itb2.image.GroupedImage;
 import itb2.image.HsiImage;
@@ -43,6 +45,16 @@ public class ByteImageFactory extends ImageFactory {
 	@Override
 	public Class<? extends GroupedImage> group() {
 		return GroupedByteImage.class;
+	}
+	
+	@Override
+	public Class<? extends BinaryImage> binary() {
+		return BinaryByteImage.class;
+	}
+	
+	@Override
+	public Class<? extends DrawableImage> drawable() {
+		return DrawableByteImage.class;
 	}
 
 	@Override
@@ -105,4 +117,29 @@ public class ByteImageFactory extends ImageFactory {
 		return new GroupedByteImage(size, groupCount);
 	}
 
+	@Override
+	public BinaryImage binary(int width, int height) {
+		return new BinaryByteImage(width, height);
+	}
+
+	@Override
+	public BinaryImage binary(Dimension size) {
+		return new BinaryByteImage(size);
+	}
+
+	@Override
+	public DrawableImage drawable(int width, int height) {
+		return new DrawableByteImage(width, height);
+	}
+
+	@Override
+	public DrawableImage drawable(Dimension size) {
+		return new DrawableByteImage(size);
+	}
+
+	@Override
+	public DrawableImage drawable(BufferedImage image) {
+		return new DrawableByteImage(image);
+	}
+	
 }

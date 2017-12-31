@@ -3,7 +3,9 @@ package itb2.image.doubleprecision;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
+import itb2.image.BinaryImage;
 import itb2.image.Channel;
+import itb2.image.DrawableImage;
 import itb2.image.GrayscaleImage;
 import itb2.image.GroupedImage;
 import itb2.image.HsiImage;
@@ -43,6 +45,16 @@ public class DoubleImageFactory extends ImageFactory {
 	@Override
 	public Class<? extends GroupedImage> group() {
 		return GroupedDoubleImage.class;
+	}
+
+	@Override
+	public Class<? extends BinaryImage> binary() {
+		throw new UnsupportedOperationException("BinaryImage not implemented for double precision");
+	}
+
+	@Override
+	public Class<? extends DrawableImage> drawable() {
+		throw new UnsupportedOperationException("DrawableImage not implemented for double precision");
 	}
 
 	@Override
@@ -103,6 +115,31 @@ public class DoubleImageFactory extends ImageFactory {
 	@Override
 	public GroupedImage group(Dimension size, int groupCount) {
 		return new GroupedDoubleImage(size, groupCount);
+	}
+
+	@Override
+	public BinaryImage binary(int width, int height) {
+		throw new UnsupportedOperationException("BinaryImage not implemented for double precision");
+	}
+
+	@Override
+	public BinaryImage binary(Dimension size) {
+		throw new UnsupportedOperationException("BinaryImage not implemented for double precision");
+	}
+
+	@Override
+	public DrawableImage drawable(int width, int height) {
+		throw new UnsupportedOperationException("DrawableImage not implemented for double precision");
+	}
+
+	@Override
+	public DrawableImage drawable(Dimension size) {
+		throw new UnsupportedOperationException("DrawableImage not implemented for double precision");
+	}
+
+	@Override
+	public DrawableImage drawable(BufferedImage image) {
+		throw new UnsupportedOperationException("DrawableImage not implemented for double precision");
 	}
 
 }

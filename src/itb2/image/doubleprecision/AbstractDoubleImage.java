@@ -97,13 +97,15 @@ public abstract class AbstractDoubleImage implements Image {
 		
 		for(int channel = 0; channel < channelCount; channel++)
 			data[channel][column][row] = values[channel];
-		image = null;
+		
+		updateImage();
 	}
 	
 	@Override
 	public void setValue(int column, int row, int channel, double value) {
 		data[channel][column][row] = value;
-		image = null;
+		
+		updateImage();
 	}
 	
 	@Override
