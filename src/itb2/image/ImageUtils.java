@@ -1,5 +1,8 @@
 package itb2.image;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
 import itb2.data.ConversionException;
 import itb2.engine.CommunicationManager;
 
@@ -75,10 +78,46 @@ public class ImageUtils {
 	}
 	
 	/**
+	 * Copies all values from one image to the other. The <i>to</i>
+	 * image must be at least as big as the <i>from</i> image.
+	 * 
+	 * @param from Image to copy values from
+	 * @param to   Image to copy values to
+	 * 
+	 * @throws ArrayIndexOutOfBoundsException If <i>to</i> image is too small
+	 */
+	public static void copy(Image from, Image to) throws ArrayIndexOutOfBoundsException {
+		if(to.getChannelCount() < from.getChannelCount())
+			throw new ArrayIndexOutOfBoundsException();
+		
+		for(int channel = 0; channel < from.getChannelCount(); channel++)
+			copy(from.getChannel(channel), to.getChannel(channel));
+	}
+	
+	/**
+	 * Copies all values from one channel to the other. The <i>to</i>
+	 * channel must be at least as big as the <i>from</i> channel.
+	 * 
+	 * @param from Channel to copy values from
+	 * @param to   Channel to copy values to
+	 * 
+	 * @throws ArrayIndexOutOfBoundsException If <i>to</i> channel is too small
+	 */
+	public static void copy(Channel from, Channel to) throws ArrayIndexOutOfBoundsException {
+		if(to.getWidth() < from.getWidth() || to.getHeight() < from.getHeight())
+			throw new ArrayIndexOutOfBoundsException();
+		
+		for(int col = 0; col < from.getWidth(); col++) {
+			for(int row = 0; row < from.getHeight(); row++) {
+				double value = from.getValue(col, row);
+				to.setValue(col, row, value);
+			}
+		}
+	}
+	
+	/**
 	 * Scales the given image linearly.
-	 * <p>
-	 * <strong>Important:</strong><br>
-	 * Only works for images that use values 0-255 on all channels. Like {@link RgbImage} and {@link GrayscaleImage}.
+	 * The new values will be between 0 and 255.
 	 * 
 	 * @param image
 	 */
@@ -86,30 +125,83 @@ public class ImageUtils {
 		double min = min(image);
 		double max = max(image);
 		
-		for(Channel channel : image) {
-			for(Row row : channel.rows()) {
-				for(Cell cell : row) {
-					double value = cell.getValue();
-					value = (value - min) / (max - min) * 255;
-					cell.setValue(value);
-				}
-			}
-		}
+		scaleLinearly(image, min, max, 0, 255);
+	}
+	
+	/**
+	 * Scales the given image linearly.
+	 * 
+	 * @param image  Image to scale
+	 * @param oldMin Old minimum value
+	 * @param oldMax Old maximum value
+	 * @param newMin New minimum value
+	 * @param newMax New maximum value
+	 */
+	public static void scaleLinearly(Image image, double oldMin, double oldMax, double newMin, double newMax) {
+		for(Channel channel : image)
+			scaleLinearly(channel, oldMin, oldMax, newMin, newMax);
 	}
 	
 	/**
 	 * Scales the given channel linearly.
+	 * The new values will be between 0 and 255.
 	 * 
-	 * @param image
+	 * @param channel Channel to scale
 	 */
 	public static void scaleLinearly(Channel channel) {
 		double min = min(channel);
 		double max = max(channel);
 		
+		scaleLinearly(channel, min, max, 0, 255);
+	}
+	
+	/**
+	 * Scales the given channel linearly.
+	 * 
+	 * @param channel Channel to scale
+	 * @param oldMin  Old minimum value
+	 * @param oldMax  Old maximum value
+	 * @param newMin  New minimum value
+	 * @param newMax  New maximum value
+	 */
+	public static void scaleLinearly(Channel channel, double oldMin, double oldMax, double newMin, double newMax) {
 		for(Row row : channel.rows()) {
 			for(Cell cell : row) {
 				double value = cell.getValue();
-				value = (value - min) / (max - min) * 255;
+				value = (value - oldMin) / (oldMax - oldMin) * (newMax - newMin) + newMin;
+				cell.setValue(value);
+			}
+		}
+	}
+	
+	/**
+	 * Fills the channel with the values given by the provider.
+	 * The provider is called for each cell with the first argument
+	 * being the cell's column and the second arguemtn being the
+	 * cell's row.
+	 * 
+	 * @param channel  Channel to fill with values
+	 * @param provider Function providing values to fill into the image
+	 */
+	public static void fill(Channel channel, BiFunction<Integer, Integer, Double> provider) {
+		for(int col = 0; col < channel.getWidth(); col++)
+			for(int row = 0; row < channel.getHeight(); row++)
+				channel.setValue(col, row, provider.apply(col, row));
+	}
+	
+	/**
+	 * Calls the replacer for each cell, replacing its value with the
+	 * value returned by the replacer. The replacer is called for each
+	 * cell with the argument being the current value.
+	 * 
+	 * @param channel  Channel to replace values in
+	 * @param replacer Replacer returning the new value for each given value
+	 */
+	public static void replace(Channel channel, Function<Double, Double> replacer) {
+		for(Row row : channel.rows()) {
+			for(Cell cell : row) {
+				double value = cell.getValue();
+				value = replacer.apply(value);
 				cell.setValue(value);
 			}
 		}
