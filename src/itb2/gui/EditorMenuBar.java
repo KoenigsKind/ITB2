@@ -3,6 +3,7 @@ package itb2.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JMenu;
@@ -14,13 +15,26 @@ import javax.swing.event.ListDataListener;
 import itb2.engine.Controller;
 import itb2.engine.io.FilterIO;
 import itb2.engine.io.ImageIO;
+import itb2.image.BinaryImage;
+import itb2.image.DrawableImage;
+import itb2.image.GrayscaleImage;
+import itb2.image.GroupedImage;
+import itb2.image.HsiImage;
+import itb2.image.HsvImage;
+import itb2.image.Image;
+import itb2.image.ImageConverter;
+import itb2.image.ImageFactory;
+import itb2.image.RgbImage;
 
 public class EditorMenuBar extends JMenuBar {
 	private static final long serialVersionUID = -217686192194157463L;
 	private static final String TYPE_FILTER = "filter", TYPE_IMAGE = "image";
-	private final JMenu imageMenu, filterMenu;
+	private final EditorGui gui;
+	private final JMenu imageMenu, filterMenu, converterMenu;
 	
 	public EditorMenuBar(EditorGui gui) {
+		this.gui = gui;
+		
 		// Build image menu
 		imageMenu = new JMenu("Last Images");
 		add(imageMenu);
@@ -43,6 +57,66 @@ public class EditorMenuBar extends JMenuBar {
 			for(File file : FilterIO.getLastFilters())
 				filterMenu.add(new Item(file, TYPE_FILTER));
 		}
+		
+		// Build converter menu
+		converterMenu = new JMenu("Convert Image");
+		converterMenu.add(getConverter("RGB", RgbImage.class));
+		converterMenu.add(getConverter("HSI", HsiImage.class));
+		converterMenu.add(getConverter("HSV", HsvImage.class));
+		converterMenu.addSeparator();
+		converterMenu.add(getConverter("Grayscale", GrayscaleImage.class));
+		converterMenu.add(getConverter("Binary", BinaryImage.class));
+		converterMenu.addSeparator();
+		converterMenu.add(getConverter("Drawable", DrawableImage.class));
+		converterMenu.add(getConverter("Grouped", GroupedImage.class));
+		converterMenu.addSeparator();
+		
+		JMenu converterByteMenu = new JMenu("Byte Precision");
+		converterByteMenu.add(getConverter("RGB", ImageFactory.bytePrecision().rgb()));
+		converterByteMenu.add(getConverter("HSI", ImageFactory.bytePrecision().hsi()));
+		converterByteMenu.add(getConverter("HSV", ImageFactory.bytePrecision().hsv()));
+		converterByteMenu.addSeparator();
+		converterByteMenu.add(getConverter("Grayscale", ImageFactory.bytePrecision().gray()));
+		converterByteMenu.add(getConverter("Binary", ImageFactory.bytePrecision().binary()));
+		converterByteMenu.addSeparator();
+		converterByteMenu.add(getConverter("Drawable", ImageFactory.bytePrecision().drawable()));
+		converterByteMenu.add(getConverter("Grouped", ImageFactory.bytePrecision().group()));
+		
+		JMenu converterDoubleMenu = new JMenu("Double Precision");
+		converterDoubleMenu.add(getConverter("RGB", ImageFactory.doublePrecision().rgb()));
+		converterDoubleMenu.add(getConverter("HSI", ImageFactory.doublePrecision().hsi()));
+		converterDoubleMenu.add(getConverter("HSV", ImageFactory.doublePrecision().hsv()));
+		converterDoubleMenu.addSeparator();
+		converterDoubleMenu.add(getConverter("Grayscale", ImageFactory.doublePrecision().gray()));
+		converterDoubleMenu.addSeparator();
+		converterDoubleMenu.add(getConverter("Grouped", ImageFactory.doublePrecision().group()));
+		
+		converterMenu.add(converterByteMenu);
+		converterMenu.add(converterDoubleMenu);
+		add(converterMenu);
+		
+		
+	}
+	
+	private JMenuItem getConverter(String text, Class<? extends Image> destination) {
+		JMenuItem item = new JMenuItem(text);
+		
+		item.addActionListener(e -> {
+			try {	
+				List<Image> input = gui.getImageList().getSelectedImages();
+				List<Image> output = new ArrayList<>(input.size());
+				
+				for(Image image : input)
+					output.add( ImageConverter.convert(image, destination) );
+				
+				Controller.getImageManager().getImageList().addAll(output);
+				
+			} catch(Exception ex) {
+				Controller.getCommunicationManager().error("Error while converting images:\n%s", ex.getMessage());
+			}
+		});
+		
+		return item;
 	}
 	
 	private class Listener implements ListDataListener {
