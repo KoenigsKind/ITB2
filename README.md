@@ -9,8 +9,10 @@ they provide filter for converting images from basic types to their own type.
 
 The basic image types are:
 * RGB-Image
-* Grayscale-Image
 * HSI-Image
+* HSV-Image
+* Grayscale-Image
+* Binary-Image
 * Grouped-Image
 * "Drawable"-Image
 
@@ -18,20 +20,15 @@ The basic image types are:
 To make the use of different image types easier, ITB² supplies an automatic image
 conversion system: A filter may add an `@RequireImageType` annotation; once the
 filter is called, all incoming images will automatically be converted into the required
-image type. There are some basic image conversions implemented, but any filter can
+image type. There are basic image conversions implemented, but any filter can
 register itself as a converter using `ImageConverter.register(...)`.
-
-The basic image converters are:
-* Grayscale to RGB
-* Grayscale to HSI
-* HSI to Grayscale
 
 If a filter needs to convert an image to another type at runtime, it can use
 `ImageConverter.convert(...)`.
 
 ### Filter
 The basic filter only needs to implement the `Filter` interface, and thus having two
-functions: One to return the `FilterProperties` and the other to execute on an array
+functions: One to return a collection of `FilterProperty` and the other to execute on an array
 of images and returning an array of filtered images.  
 To make the life even easier, there is an `AbstractFilter` that gives the basic
 functionality:
@@ -44,8 +41,8 @@ The `AbstractFilter` gives two options for implementation:
 In most cases the first is sufficient, the second method may only be used, if the filter
 requires multiple images *(e.g. difference between two images)* or returns multiple images
 *(e.g. image pyramid)*.  
-Filter can register properties in there constructor using `getProperties().add...`
-and later read the value using `getProperties().get...`.  
+Filter can register properties in there constructor using `properties.add...`
+and later read the value using `properties.get...`. The property name serves as an ID.  
 
 ### Controller
 The controller gives the filter access to some basic functionality of the ITB². Most
@@ -57,16 +54,21 @@ the filter takes a bit longer.
 **RGB-Image**  
 The most basic image type, containing three channels for red, green and blue.
 
-**Grayscale-Image**  
-Image containing only one channel for intensity.
-
 **HSI-Image**  
 Image containing three channels for hue, saturation and intensity. The last channel is
 equivalent to a grayscale-image.
 
+**HSV-Image**  
+Image containing three channels for hue, saturation and value.
+
+**Grayscale-Image**  
+Image containing only one channel for intensity.
+
+**Binary-Image**  
+Each pixel can only be 0 or 1. Similar to a grouped-image with two groups.
+
 **Grouped-Image**  
-Extension of the HSI-Image, that let's you set the group for each pixel. Pixel of the same
-group will be colored the same.
+Each pixel is assigned to one group. Pixel of the same group will be colored the same.
 
 **"Drawable"-Image**  
 Wraps a BufferedImage and gives the option to draw on a Graphics object.
