@@ -1,5 +1,9 @@
 # ImageToolBox²
 
+The ImageToolBox² lets user write filter classes, which can accept images, do some
+calculations on them and produce new images. Using the ITB², those filters can be
+opened and executed. Filters may provide properties that can be changed inside the ITB².
+
 ## Basic concept
 ### Image
 An image has multiple channels, a width and a height. The coordinate origin is in the
