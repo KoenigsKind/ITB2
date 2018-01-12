@@ -108,8 +108,18 @@ public class DoubleImageFactory extends ImageFactory {
 	}
 
 	@Override
+	public GroupedImage group(int width, int height) {
+		return new GroupedDoubleImage(width, height, GroupedImage.AUTOMATIC_GROUP_COUNT);
+	}
+
+	@Override
 	public GroupedImage group(int width, int height, int groupCount) {
 		return new GroupedDoubleImage(width, height, groupCount);
+	}
+
+	@Override
+	public GroupedImage group(Dimension size) {
+		return new GroupedDoubleImage(size, GroupedImage.AUTOMATIC_GROUP_COUNT);
 	}
 
 	@Override

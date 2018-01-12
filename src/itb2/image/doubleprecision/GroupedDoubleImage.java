@@ -1,8 +1,10 @@
 package itb2.image.doubleprecision;
 
 import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 
 import itb2.image.GroupedImage;
+import itb2.image.ImageUtils;
 
 /**
  * Image, that lets user set group for each pixel.
@@ -16,6 +18,9 @@ class GroupedDoubleImage extends AbstractDoubleImage implements GroupedImage {
 	/** Number of groups */
 	private final int groupCount;
 	
+	/** Maximum value, only used when groupCount == AUTO_GROUP_COUNT */
+	private double maxValue;
+	
 	/**
 	 * Constructs image with given size and number of groups.
 	 * 
@@ -26,8 +31,8 @@ class GroupedDoubleImage extends AbstractDoubleImage implements GroupedImage {
 	GroupedDoubleImage(int width, int height, int groupCount) {
 		super(width, height, 1);
 		
-		if(groupCount < 2)
-			throw new RuntimeException("Group count must be at least 2!");
+		if(groupCount < 2 && groupCount != AUTOMATIC_GROUP_COUNT)
+			throw new RuntimeException("Group count must be at least 2  or " + AUTOMATIC_GROUP_COUNT + " for automatic!");
 		
 		this.groupCount = groupCount;
 	}
@@ -61,6 +66,13 @@ class GroupedDoubleImage extends AbstractDoubleImage implements GroupedImage {
 		
 		super.setValue(column, row, channel, value);
 	}
+	
+	@Override
+	public BufferedImage asBufferedImage() {
+		maxValue = (groupCount != AUTOMATIC_GROUP_COUNT) ? groupCount : ImageUtils.max(this);
+		
+		return super.asBufferedImage();
+	}
 
 	@Override
 	protected double[] getRGB(int column, int row) {
@@ -69,7 +81,7 @@ class GroupedDoubleImage extends AbstractDoubleImage implements GroupedImage {
 		if(groupCount == 2)
 			return hsv2rgb(0, 0, group < .5 ? 0 : 1);
 		
-		return hsv2rgb(360 * group / groupCount, 1, 1);
+		return hsv2rgb(360 * group / maxValue, 1, 1);
 	}
 	
 	/**
@@ -78,16 +90,18 @@ class GroupedDoubleImage extends AbstractDoubleImage implements GroupedImage {
 	 * @param value Value to check
 	 */
 	private void check(double value) {
-		if(value < 0 || value >= groupCount)
-			throw new RuntimeException("Value must be between 0 and " + (groupCount - 1));
+		if(value < 0)
+			throw new RuntimeException("Value must not be negative");
+		if(groupCount != AUTOMATIC_GROUP_COUNT && value >= groupCount)
+			throw new RuntimeException("Value must be less than " + groupCount);
 	}
 	
 	/**
 	 * Converts HSV values to RGB values
 	 * 
-	 * @param h Hue
-	 * @param s Saturation
-	 * @param v Value
+	 * @param h Hue [0..360]
+	 * @param s Saturation [0..1]
+	 * @param v Value [0..1]
 	 * @return Array with RGB-values
 	 */
 	private double[] hsv2rgb(double h, double s, double v) {

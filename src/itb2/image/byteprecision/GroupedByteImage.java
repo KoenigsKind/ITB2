@@ -34,8 +34,8 @@ class GroupedByteImage extends AbstractByteImage implements GroupedImage {
 	GroupedByteImage(int width, int height, int groupCount) {
 		super(width, height, 1);
 		
-		if( (groupCount < 2 && groupCount != 0) || groupCount > 255 )
-			throw new RuntimeException("Group count must be between 2 - 255 or 0 for automatic!");
+		if( (groupCount < 2 && groupCount != AUTOMATIC_GROUP_COUNT) || groupCount > 255 )
+			throw new RuntimeException("Group count must be between 2 - 255 or " + AUTOMATIC_GROUP_COUNT + " for automatic!");
 		
 		this.groupCount = groupCount;
 		this.groups = new TreeMap<>();
@@ -53,16 +53,7 @@ class GroupedByteImage extends AbstractByteImage implements GroupedImage {
 	
 	@Override
 	public int getGroupCount() {
-		if(groupCount != 0)
-			return groupCount;
-		
-		Set<Byte> values = new TreeSet<>();
-		
-		for(byte[] bb : data[GROUP_ID])
-			for(byte b : bb)
-				values.add(b);
-		
-		return values.size();
+		return groupCount;
 	}
 	
 	@Override
@@ -82,7 +73,7 @@ class GroupedByteImage extends AbstractByteImage implements GroupedImage {
 	
 	@Override
 	public BufferedImage asBufferedImage() {
-		if(groups.isEmpty() || groupCount == 0) {
+		if(groups.isEmpty() || groupCount == AUTOMATIC_GROUP_COUNT) {
 			
 			if(groupCount == 2) {
 				setHsv(0, 0, 0, 0);
@@ -128,7 +119,7 @@ class GroupedByteImage extends AbstractByteImage implements GroupedImage {
 	 * @param value Value to check
 	 */
 	private void check(double value) {
-		int maxVal = groupCount == 0 ? 255 : groupCount - 1;
+		int maxVal = groupCount == AUTOMATIC_GROUP_COUNT ? 255 : groupCount - 1;
 		
 		if(value < 0 || value > maxVal)
 			throw new RuntimeException("Value must be between 0 and " + maxVal);

@@ -60,10 +60,8 @@ public abstract class ImageFactory {
 		if(image instanceof AbstractByteImage)
 			return bytePrecision();
 		
-		if(image instanceof DrawableImage)
-			return bytePrecision();
-		
-		if(image instanceof BinaryImage)
+		// Special case: DrawableByteImage does not extends AbstractByteImage
+		if(bytePrecision().drawable().isInstance(image))
 			return bytePrecision();
 		
 		return doublePrecision();
@@ -181,6 +179,16 @@ public abstract class ImageFactory {
 	/**
 	 * Creates a GroupedImage
 	 * 
+	 * @param width  Width of the image
+	 * @param height Height of the image
+	 * 
+	 * @return Created GroupedImage
+	 */
+	public abstract GroupedImage group(int width, int height);
+	
+	/**
+	 * Creates a GroupedImage, with fixed group count
+	 * 
 	 * @param width      Width of the image
 	 * @param height     Height of the image
 	 * @param groupCount Number of groups
@@ -193,6 +201,16 @@ public abstract class ImageFactory {
 	 * Creates a GroupedImage
 	 * 
 	 * @param size Size of the image
+	 * 
+	 * @return Created GroupedImage
+	 */
+	public abstract GroupedImage group(Dimension size);
+
+	/**
+	 * Creates a GroupedImage, with fixed group count
+	 * 
+	 * @param size       Size of the image
+	 * @param groupCount Number of groups
 	 * 
 	 * @return Created GroupedImage
 	 */

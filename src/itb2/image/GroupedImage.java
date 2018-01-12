@@ -10,6 +10,9 @@ public interface GroupedImage extends Image {
 	/** Channel containing group id */
 	public static final int GROUP_ID = 0;
 	
+	/** Whether the image should automatically detect the group count */
+	public static final int AUTOMATIC_GROUP_COUNT = 0;
+	
 	/**
 	 * Number of groups
 	 * 
