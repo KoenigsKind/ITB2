@@ -111,6 +111,6 @@ public interface Image extends Iterable<Channel>, Serializable {
 	 * 
 	 * @return This image as a BufferedImage
 	 */
-	public BufferedImage asBufferedImage(); 
-
+	public BufferedImage asBufferedImage();
+	
 }

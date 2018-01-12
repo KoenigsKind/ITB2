@@ -13,7 +13,6 @@ import itb2.image.Image;
  * have to be overwritten.
  * 
  * @author Micha Strauch
- *
  */
 public abstract class AbstractFilter implements Filter {
 	
