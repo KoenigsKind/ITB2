@@ -60,8 +60,8 @@ public interface CommunicationManager {
 	
 	/**
 	 * Lets the user select a certain amount of pixels on the
-	 * given image. If count is zero or less, the user may select
-	 * any number of pixels.  
+	 * given image. If maxSelections is zero or less, the user
+	 * may select any number of pixels.  
 	 * 
 	 * @param message        Message to display
 	 * @param maxSelections  Number of pixels to select (Optional, set to 0 otherwise)
