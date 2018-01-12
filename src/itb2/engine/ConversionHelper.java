@@ -1,8 +1,6 @@
 package itb2.engine;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+
+import java.io.Serializable;
 
 import itb2.filter.AbstractFilter;
 import itb2.image.BinaryImage;
@@ -52,25 +50,36 @@ final class ConversionHelper extends AbstractFilter {
 	@Override
 	public Image filter(Image input) {
 		ImageFactory factory = getImageFactory(input);
+		Image output = null;
 		
 		switch(type) {
 			case RGB:
-				return toRgb(input, factory);
+				output = toRgb(input, factory);
+				break;
 			case GRAYSCALE:
-				return toGrayscale(input, factory);
+				output = toGrayscale(input, factory);
+				break;
 			case HSI:
-				return toHsi(input, factory);
+				output = toHsi(input, factory);
+				break;
 			case HSV:
-				return toHsv(input, factory);
+				output = toHsv(input, factory);
+				break;
 			case GROUPED:
-				return toGrouped(input, factory);
+				output = toGrouped(input, factory);
+				break;
 			case DRAWABLE:
-				return toDrawable(input, factory);
+				output = toDrawable(input, factory);
+				break;
 			case BINARY:
-				return toBinary(input, factory);
+				output = toBinary(input, factory);
+				break;
 		}
 		
-		throw new UnsupportedOperationException("How could this happen?");
+		if(output != null && output.getName() == null)
+				output.setName((Serializable) input.getName());
+		
+		return output;
 	}
 	
 	/** Returns the correct factory to use, considering the given image */
@@ -235,25 +244,14 @@ final class ConversionHelper extends AbstractFilter {
 		}
 		
 		if( !(input instanceof GrayscaleImage) )
-			input = toGrayscale(input, ImageFactory.bytePrecision());
+			input = toGrayscale(input, factory);
 		
-		Set<Integer> values = new TreeSet<>();
-		for(int col = 0; col < input.getWidth(); col++)
-			for(int row = 0; row < input.getHeight(); row++)
-				values.add((int)input.getValue(col, row, GrayscaleImage.GRAYSCALE));
-		
-		Map<Integer, Integer> groupMap = new TreeMap<>();
-		int group = 0;
-		for(int value : values)
-			groupMap.put(value, group++);
-		
-		GroupedImage output = factory.group(input.getSize(), values.size());
+		GroupedImage output = factory.group(input.getSize());
 		
 		for(int col = 0; col < input.getWidth(); col++) {
 			for(int row = 0; row < input.getHeight(); row++) {
-				int value = (int)input.getValue(col, row, GrayscaleImage.GRAYSCALE);
-				int id = groupMap.get(value);
-				output.setValue(col, row, id);
+				double value = input.getValue(col, row, GrayscaleImage.GRAYSCALE);
+				output.setValue(col, row, value);
 			}
 		}
 		
