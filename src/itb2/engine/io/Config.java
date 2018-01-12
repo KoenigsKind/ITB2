@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,7 +29,7 @@ public class Config implements Serializable {
 	private static final long serialVersionUID = -4106334935531297234L;
 	
 	/** Config file */
-	private static final File DEFAULT_CONFIG = new File("ITB2.bin");
+	public static final File DEFAULT_CONFIG = new File("ITB2.bin");
 	
 	/**
 	 * Saves the current ITB2 state
@@ -59,6 +60,7 @@ public class Config implements Serializable {
 		} catch(FileNotFoundException e) {
 			throw e;
 		} catch(Exception e) {
+			e.printStackTrace();
 			throw new IOException("Could not load config from file '" + DEFAULT_CONFIG.getAbsolutePath() + "'", e);
 		}
 	}
@@ -74,24 +76,23 @@ public class Config implements Serializable {
 		// Collect data
 		List<Image> images = Controller.getImageManager().getImageList();
 		Set<Filter> filters = Controller.getFilterManager().getFilters();
-		Set<File> filterPaths = new HashSet<>();
-		for(Filter filter : filters) {
+		Set<FilterClass> filterClasses = new HashSet<>();
+		for(Filter filter : filters) try {
 			Class<?> clazz = filter.getClass();
 			if(filter instanceof FilterWrapper)
 				clazz = ((FilterWrapper) filter).getWrappedClass();
-			
-			URL path = clazz.getResource(clazz.getSimpleName() + ".class");
-			if(path != null)
-				filterPaths.add(new File(path.getPath()));
+			filterClasses.add(new FilterClass(clazz));
+		} catch(Exception e) {
+			// Skip filter
 		}
 		List<File> lastImages = new ArrayList<>(ImageIO.getLastImages());
 		List<File> lastFilters = new ArrayList<>(FilterIO.getLastFilters());
 		
 		// Write data
-		stream.writeObject(filterPaths);
-		stream.writeObject(images);
 		stream.writeObject(lastImages);
 		stream.writeObject(lastFilters);
+		stream.writeObject(filterClasses);
+		stream.writeObject(images);
 	}
 	
 	/**
@@ -103,12 +104,34 @@ public class Config implements Serializable {
 	 * @throws ClassNotFoundException If something goes wrong
 	 */
 	private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
-		// First read filters, as they might contain image types
+		// First read list of last opened images
+		List<?> lastImages = (List<?>) stream.readObject();
+		List<File> lastImagesList = ImageIO.getLastImages();
+		lastImagesList.clear();
+		for(Object image : lastImages) {
+			if(image instanceof File) {
+				lastImagesList.add((File)image);
+			}
+		}
+		
+		// Then read list of last opened filters
+		List<?> lastFilters = (List<?>) stream.readObject();
+		List<File> lastFiltersList = FilterIO.getLastFilters();
+		lastFiltersList.clear();
+		for(Object filter : lastFilters) {
+			if(filter instanceof File) {
+				lastFiltersList.add((File)filter);
+			}
+		}
+		
+		// Then read filters, as they might contain image types
 		Set<?> filterPaths = (Set<?>) stream.readObject();
 		Controller.getFilterManager().getFilters().clear();
-		for(Object path : filterPaths) {
-			if(path instanceof File) try {
-				Controller.getFilterManager().loadFilter((File)path);
+		for(Object obj : filterPaths) {
+			if(obj instanceof FilterClass) try {
+				FilterClass filterClass = (FilterClass) obj;
+				Filter filter = filterClass.getInstance();
+				Controller.getFilterManager().getFilters().add(filter);
 			} catch(Exception e) {
 				//Ignore filter
 			}
@@ -123,26 +146,34 @@ public class Config implements Serializable {
 				imageList.add((Image)image);
 			}
 		}
+	}
+	
+	/**
+	 * Helper class for storing loaded filters 
+	 *
+	 * @author Micha Strauch
+	 */
+	private class FilterClass implements Serializable {
+		private static final long serialVersionUID = Config.serialVersionUID;
 		
-		// Then read last opened images
-		List<?> lastImages = (List<?>) stream.readObject();
-		List<File> lastImagesList = ImageIO.getLastImages();
-		lastImagesList.clear();
-		for(Object image : lastImages) {
-			if(image instanceof File) {
-				lastImagesList.add((File)image);
-			}
+		/** Location of the filter */
+		private final File file;
+		
+		/** Tries to determine the location of the given class */
+		public FilterClass(Class<?> clazz) throws IOException, URISyntaxException {
+			URL url = clazz.getResource(clazz.getSimpleName() + ".class");
+			
+			if(url == null)
+				throw new IOException("Can't determine location of class " + clazz.getSimpleName());
+			
+			file = new File(url.toURI());
 		}
 		
-		// Then read last opened filters
-		List<?> lastFilters = (List<?>) stream.readObject();
-		List<File> lastFiltersList = FilterIO.getLastFilters();
-		lastFiltersList.clear();
-		for(Object filter : lastFilters) {
-			if(filter instanceof File) {
-				lastFiltersList.add((File)filter);
-			}
+		/** Returns an instance of the stored filter */
+		public Filter getInstance() throws IOException {
+			return FilterIO.loadClass(file);
 		}
+		
 	}
 
 }

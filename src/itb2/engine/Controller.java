@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 import itb2.engine.io.Config;
@@ -107,8 +108,16 @@ public final class Controller {
 			Config.loadState(gui);
 		} catch (FileNotFoundException e) {
 			// Ignore, config might not have been saved yet
-		} catch (IOException e) {
+		} catch (Exception e) {
 			getCommunicationManager().warning("Could not load config file: " + e.getMessage());
+		} catch (Throwable e) {
+			// Severe problem
+			String message = String.format("Broken config file, please delete '%s'!", Config.DEFAULT_CONFIG.getPath());
+			System.err.println(message);
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, message, "Broken config", JOptionPane.ERROR_MESSAGE);
+			// Don't continue, internal values might be set incorrectly
+			System.exit(-1);
 		}
 		
 		gui.setVisible(true);
