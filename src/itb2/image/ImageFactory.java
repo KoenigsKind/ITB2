@@ -187,7 +187,9 @@ public abstract class ImageFactory {
 	public abstract GroupedImage group(int width, int height);
 	
 	/**
-	 * Creates a GroupedImage, with fixed group count
+	 * Creates a GroupedImage, with fixed group count.<p>
+	 * Group count does not contain {@link GroupedImage#BLACK} and
+	 * {@link GroupedImage#WHITE}, those two group IDs are always available.
 	 * 
 	 * @param width      Width of the image
 	 * @param height     Height of the image
@@ -207,7 +209,9 @@ public abstract class ImageFactory {
 	public abstract GroupedImage group(Dimension size);
 
 	/**
-	 * Creates a GroupedImage, with fixed group count
+	 * Creates a GroupedImage, with fixed group count.<p>
+	 * Group count does not contain {@link GroupedImage#BLACK} and
+	 * {@link GroupedImage#WHITE}, those two group IDs are always available.
 	 * 
 	 * @param size       Size of the image
 	 * @param groupCount Number of groups

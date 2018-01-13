@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
 import itb2.image.GroupedImage;
-import itb2.image.ImageUtils;
 
 /**
  * Image, that lets user set group for each pixel.
@@ -14,6 +13,9 @@ import itb2.image.ImageUtils;
  */
 class GroupedDoubleImage extends AbstractDoubleImage implements GroupedImage {
 	private static final long serialVersionUID = -2395222062447381765L;
+	
+	/** RGB values for black and white color */
+	private static final double[] RGB_BLACK = {0, 0, 0}, RGB_WHITE = {255, 255, 255};
 	
 	/** Number of groups */
 	private final int groupCount;
@@ -31,8 +33,8 @@ class GroupedDoubleImage extends AbstractDoubleImage implements GroupedImage {
 	GroupedDoubleImage(int width, int height, int groupCount) {
 		super(width, height, 1);
 		
-		if(groupCount < 2 && groupCount != AUTOMATIC_GROUP_COUNT)
-			throw new RuntimeException("Group count must be at least 2  or " + AUTOMATIC_GROUP_COUNT + " for automatic!");
+		if(groupCount < 1 && groupCount != AUTOMATIC_GROUP_COUNT)
+			throw new RuntimeException("Group count must be at least 1  or " + AUTOMATIC_GROUP_COUNT + " for automatic!");
 		
 		this.groupCount = groupCount;
 	}
@@ -58,6 +60,7 @@ class GroupedDoubleImage extends AbstractDoubleImage implements GroupedImage {
 			check(value);
 		
 		super.setValue(column, row, values);
+		maxValue = 0;
 	}
 	
 	@Override
@@ -65,11 +68,25 @@ class GroupedDoubleImage extends AbstractDoubleImage implements GroupedImage {
 		check(value);
 		
 		super.setValue(column, row, channel, value);
+		maxValue = 0;
 	}
 	
 	@Override
 	public BufferedImage asBufferedImage() {
-		maxValue = (groupCount != AUTOMATIC_GROUP_COUNT) ? groupCount : ImageUtils.max(this);
+		if(maxValue == 0) {
+			if(groupCount != AUTOMATIC_GROUP_COUNT)
+				maxValue = groupCount;
+			else {
+				for(int col = 0; col < size.width; col++) {
+					for(int row = 0; row < size.height; row++) {
+						double value = data[GROUP_ID][col][row];
+						if(value != BLACK && value != WHITE)
+							if(maxValue < value)
+								maxValue = value;
+					}
+				}
+			}
+		}
 		
 		return super.asBufferedImage();
 	}
@@ -78,10 +95,14 @@ class GroupedDoubleImage extends AbstractDoubleImage implements GroupedImage {
 	protected double[] getRGB(int column, int row) {
 		double group = data[GROUP_ID][column][row];
 		
-		if(groupCount == 2)
-			return hsv2rgb(0, 0, group < .5 ? 0 : 1);
+		if(group == BLACK)
+			return RGB_BLACK;
 		
-		return hsv2rgb(360 * group / maxValue, 1, 1);
+		if(group == WHITE)
+			return RGB_WHITE;
+		
+		double hue = 360 * group / maxValue;
+		return getColor(hue % 360);
 	}
 	
 	/**
@@ -92,40 +113,43 @@ class GroupedDoubleImage extends AbstractDoubleImage implements GroupedImage {
 	private void check(double value) {
 		if(value < 0)
 			throw new RuntimeException("Value must not be negative");
-		if(groupCount != AUTOMATIC_GROUP_COUNT && value >= groupCount)
-			throw new RuntimeException("Value must be less than " + groupCount);
+		
+		if(value != BLACK && value != WHITE) {
+			if(groupCount != AUTOMATIC_GROUP_COUNT && value > groupCount) {
+				String message = "Value must not be bigger than " + groupCount;
+				if(groupCount < WHITE)
+					message += " or it must be white (" + WHITE + ")";
+				throw new RuntimeException(message);
+			}
+		}
 	}
 	
 	/**
-	 * Converts HSV values to RGB values
+	 * Returns the RGB value for the given Hue value.
 	 * 
-	 * @param h Hue [0..360]
-	 * @param s Saturation [0..1]
-	 * @param v Value [0..1]
+	 * @param hue Hue [0..360]
 	 * @return Array with RGB-values
 	 */
-	private double[] hsv2rgb(double h, double s, double v) {
-		double c = v * s; // chroma
-		double x = c * (1 - Math.abs(((h/60)%2) - 1));
-		double m = v - c;
+	private double[] getColor(double hue) {
+		double x = 1 - Math.abs( ((hue / 60) % 2) - 1 );
 		
 		double[] rgb;
 		
-		if(h < 60)
-			rgb = new double[] {c, x, 0};
-		else if(h < 120)
-			rgb = new double[] {x, c, 0};
-		else if(h < 180)
-			rgb = new double[] {0, c, x};
-		else if(h < 240)
-			rgb = new double[] {0, x, c};
-		else if(h < 300)
-			rgb = new double[] {x, 0, c};
+		if(hue < 60)
+			rgb = new double[] {1, x, 0};
+		else if(hue < 120)
+			rgb = new double[] {x, 1, 0};
+		else if(hue < 180)
+			rgb = new double[] {0, 1, x};
+		else if(hue < 240)
+			rgb = new double[] {0, x, 1};
+		else if(hue < 300)
+			rgb = new double[] {x, 0, 1};
 		else
-			rgb = new double[] {c, 0, x};
+			rgb = new double[] {1, 0, x};
 		
 		for(int i = 0; i < 3; i++)
-			rgb[i] = 255 * (rgb[i] + m);
+			rgb[i] = 255 * rgb[i];
 		
 		return rgb;
 	}

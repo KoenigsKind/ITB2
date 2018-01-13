@@ -295,20 +295,7 @@ public class ImageUtils {
 	 */
 	public static <T extends Image> T colorPick(int width, int height, int colors, Class<T> returnType) throws ConversionException {
 		Image image;
-		if(colors >= 2) {
-			image = ImageFactory.doublePrecision().group(width, height, colors);
-			int columns = (int)Math.sqrt(colors);
-			int rows = (int)Math.ceil((double) colors / columns);
-			for(int col = 0; col < width; col++) {
-				for(int row = 0; row < height; row++) {
-					int group = (row * rows) / height;
-					group *= columns;
-					group += (col * columns) / width;
-					group %= colors;
-					image.setValue(col, row, group);
-				}
-			}
-		} else {
+		if(colors == 0) {
 			image = ImageFactory.doublePrecision().hsv(width, height);
 			double h = ((HsvImage)image).maxHue();
 			double s = ((HsvImage)image).maxSaturation();
@@ -319,6 +306,19 @@ public class ImageUtils {
 					image.setValue(col, row, col * h / width, s, 2 * row * v / height);
 				for(int row = height/2; row < height; row++)
 					image.setValue(col, row, col * h / width, 2 * (height - row) * s / height, v);
+			}
+		} else {
+			image = ImageFactory.doublePrecision().group(width, height, colors);
+			int columns = (int)Math.sqrt(colors);
+			int rows = (int)Math.ceil((double) colors / columns);
+			for(int col = 0; col < width; col++) {
+				for(int row = 0; row < height; row++) {
+					int group = (row * rows) / height;
+					group *= columns;
+					group += (col * columns) / width;
+					group %= colors;
+					image.setValue(col, row, group + 1);
+				}
 			}
 		}
 		return ImageConverter.convert(image, returnType);
