@@ -39,6 +39,7 @@ public interface Column extends Iterable<Cell> {
 	 * Returns the value of the given pixel
 	 * 	
 	 * @param row Row of the pixel
+	 * 
 	 * @return Value of the pixel
 	 */
 	public double getValue(int row);
@@ -55,6 +56,7 @@ public interface Column extends Iterable<Cell> {
 	 * Returns the cell for the given row
 	 * 
 	 * @param column Row of the cell
+	 * 
 	 * @return cell
 	 */
 	public Cell getCell(int row);

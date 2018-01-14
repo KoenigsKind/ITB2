@@ -48,6 +48,7 @@ public interface Image extends Iterable<Channel>, Serializable {
 	 * 
 	 * @param column Column of the pixel
 	 * @param row    Row of the pixel
+	 * 
 	 * @return Array of values
 	 */
 	public double[] getValue(int column, int row);
@@ -58,6 +59,7 @@ public interface Image extends Iterable<Channel>, Serializable {
 	 * @param column  Column of the pixel
 	 * @param row     Row of the pixel
 	 * @param channel Channel ID
+	 * 
 	 * @return Value
 	 */
 	public double getValue(int column, int row, int channel);

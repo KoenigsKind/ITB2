@@ -49,6 +49,7 @@ public interface Channel {
 	 * 	
 	 * @param column Column of the pixel
 	 * @param row    Row of the pixel
+	 * 
 	 * @return Value of the pixel
 	 */
 	public double getValue(int column, int row);
@@ -66,6 +67,7 @@ public interface Channel {
 	 * Returns the row for the given ID
 	 * 
 	 * @param row ID of the row
+	 * 
 	 * @return row
 	 */
 	public Row getRow(int row);
@@ -74,6 +76,7 @@ public interface Channel {
 	 * Returns the column for the given ID
 	 * 
 	 * @param column ID of the column
+	 * 
 	 * @return column
 	 */
 	public Column getColumn(int column);

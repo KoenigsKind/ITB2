@@ -1,5 +1,11 @@
 package itb2.image;
 
+/**
+ * Image with three channels, for hue, saturation and intensity.
+ * The intensity channel is equal to a grayscale image.
+ *
+ * @author Micha Strauch
+ */
 public interface HsiImage extends Image {
 	
 	/** IDs for each channel */

@@ -21,6 +21,7 @@ public interface FilterProperty {
 	 * For example: FilterProperty.Range or FilterProperty.Option
 	 * 
 	 * @param value Value to set
+	 * 
 	 * @throws UnsupportedOperationException If the value itself should be modified
 	 * @throws ClassCastException If the given value is of the wrong type
 	 */

@@ -2,10 +2,26 @@ package itb2.image;
 
 import java.util.Iterator;
 
+/**
+ * Represents the column of a {@link Channel}
+ * 
+ * @author Micha Strauch
+ */
 class SimpleColumn implements Column {
+
+	/** Image this column belongs to */
 	private final Image image;
+
+	/** Column and channel ID */
 	private final int column, channel;
-	
+
+	/**
+	 * Creates a column accessing the given image with the given column and channel id.
+	 * 
+	 * @param image   Image this column belongs to
+	 * @param column  Column ID of this column
+	 * @param channel Channel ID of this column
+	 */
 	public SimpleColumn(Image image, int column, int channel) {
 		this.image = image;
 		this.column = column;

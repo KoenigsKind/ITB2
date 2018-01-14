@@ -21,7 +21,9 @@ public interface FilterManager {
 	 * and adds it to the filter list
 	 * 
 	 * @param file File to load filter from
+	 * 
 	 * @return Loaded filter
+	 * 
 	 * @throws IOException If the filter can't be loaded successfully
 	 */
 	public Filter loadFilter(File file) throws IOException;
@@ -36,10 +38,11 @@ public interface FilterManager {
 	/**
 	 * Returns the filter with the given class name
 	 * 
-	 * @param clazz Name of filter 
+	 * @param className Name of filter 
+	 * 
 	 * @return Filter or null, if no filter found
 	 */
-	public Filter getFilter(String clazz);
+	public Filter getFilter(String className);
 	
 	/**
 	 * Calls the given filter and returns filtered images. This method
@@ -48,6 +51,7 @@ public interface FilterManager {
 	 * 
 	 * @param filter Filter to call
 	 * @param images Images to filter
+	 * 
 	 * @return Filtered images
 	 */
 	public Image[] callFilter(Filter filter, Image... images);

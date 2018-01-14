@@ -58,9 +58,9 @@ public class DefaultFilterManager implements FilterManager {
 	}
 	
 	@Override
-	public Filter getFilter(String clazz) {
+	public Filter getFilter(String className) {
 		for(Filter filter : filterSet)
-			if(filter.getClass().getSimpleName().equals(clazz))
+			if(filter.getClass().getSimpleName().equals(className))
 				return filter;
 		return null;
 	}

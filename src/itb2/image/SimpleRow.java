@@ -2,10 +2,26 @@ package itb2.image;
 
 import java.util.Iterator;
 
+/**
+ * Represents the row of a {@link Channel}
+ * 
+ * @author Micha Strauch
+ */
 class SimpleRow implements Row {
+
+	/** Image this row belongs to */
 	private final Image image;
+
+	/** Row and channel ID */
 	private final int row, channel;
-	
+
+	/**
+	 * Creates a row accessing the given image with the given row and channel id.
+	 * 
+	 * @param image   Image this row belongs to
+	 * @param row     Row ID of this row
+	 * @param channel Channel ID of this row
+	 */
 	public SimpleRow(Image image, int row, int channel) {
 		this.image = image;
 		this.row = row;

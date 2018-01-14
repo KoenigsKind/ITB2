@@ -17,6 +17,7 @@ public interface Filter {
 	 * any number of newly created images
 	 * 
 	 * @param input Images to be filtered
+	 * 
 	 * @return Filtered images
 	 */
 	public Image[] filter(Image[] input);
