@@ -1,6 +1,9 @@
 # ITB2 Config
 ITB2.bin
 
+# JavaDoc
+/doc/
+
 # Eclipse
 /.classpath
 /.project
