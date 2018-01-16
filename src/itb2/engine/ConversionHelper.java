@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import itb2.filter.AbstractFilter;
 import itb2.image.BinaryImage;
+import itb2.image.Channel;
 import itb2.image.DrawableImage;
 import itb2.image.GrayscaleImage;
 import itb2.image.GroupedImage;
@@ -12,6 +13,7 @@ import itb2.image.HsvImage;
 import itb2.image.Image;
 import itb2.image.ImageConverter;
 import itb2.image.ImageFactory;
+import itb2.image.ImageUtils;
 import itb2.image.RgbImage;
 
 /**
@@ -94,23 +96,17 @@ final class ConversionHelper extends AbstractFilter {
 	private Image toRgb(Image input, ImageFactory factory) {
 		if(input instanceof RgbImage) {
 			Image output = factory.rgb(input.getSize());
-			for(int col = 0; col < output.getWidth(); col++) {
-				for(int row = 0; row < output.getHeight(); row++) {
-					double[] rgb = input.getValue(col, row);
-					output.setValue(col, row, rgb);
-				}
-			}
+			ImageUtils.copy(input, output);
 			return output;
 		}
 		
 		if(input instanceof GrayscaleImage) {
+			Channel grayscale = input.getChannel(GrayscaleImage.GRAYSCALE);
+			
 			Image output = factory.rgb(input.getSize());
-			for(int col = 0; col < output.getWidth(); col++) {
-				for(int row = 0; row < output.getHeight(); row++) {
-					double value = input.getValue(col, row, GrayscaleImage.GRAYSCALE);
-					output.setValue(col, row, value, value, value);
-				}
-			}
+			for(Channel channel : output)
+				ImageUtils.copy(grayscale, channel);
+			
 			return output;
 		}
 		
@@ -204,12 +200,7 @@ final class ConversionHelper extends AbstractFilter {
 		
 		if(input instanceof GrayscaleImage) {
 			HsiImage output = factory.hsi(input.getSize());
-			for(int col = 0; col < output.getWidth(); col++) {
-				for(int row = 0; row < output.getHeight(); row++) {
-					double intensity = input.getValue(col, row, GrayscaleImage.GRAYSCALE);
-					output.setValue(col, row, 0, 0, intensity);
-				}
-			}
+			ImageUtils.copy(input.getChannel(GrayscaleImage.GRAYSCALE), output.getChannel(HsiImage.INTENSITY));
 			return output;
 		}
 		
@@ -232,13 +223,7 @@ final class ConversionHelper extends AbstractFilter {
 		if(input instanceof GroupedImage) {
 			int count = ((GroupedImage)input).getGroupCount();
 			GroupedImage output = factory.group(input.getSize(), count);
-			
-			for(int col = 0; col < input.getWidth(); col++) {
-				for(int row = 0; row < input.getHeight(); row++) {
-					double value = input.getValue(col, row, GroupedImage.GROUP_ID);
-					output.setValue(col, row, value);
-				}
-			}
+			ImageUtils.copy(input, output);
 			
 			return output;
 		}
@@ -248,19 +233,15 @@ final class ConversionHelper extends AbstractFilter {
 		
 		GroupedImage output = factory.group(input.getSize());
 		
-		for(int col = 0; col < input.getWidth(); col++) {
-			for(int row = 0; row < input.getHeight(); row++) {
-				double value = input.getValue(col, row, GrayscaleImage.GRAYSCALE);
-				output.setValue(col, row, value);
-			}
-		}
+		ImageUtils.copy(input.getChannel(GrayscaleImage.GRAYSCALE), output.getChannel(GroupedImage.GROUP_ID));
 		
 		return output;
 	}
 	
 	/** Converts the input image into a binary image using the given factory */
 	private Image toBinary(Image input, ImageFactory factory) {
-		input = toGrayscale(input, factory);
+		if( !(input instanceof GrayscaleImage) )
+			input = toGrayscale(input, factory);
 		Image output = factory.binary(input.getSize());
 		
 		for(int col = 0; col < input.getWidth(); col++) {
