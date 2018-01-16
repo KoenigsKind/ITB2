@@ -55,7 +55,6 @@ public class Config implements Serializable {
 		} catch(FileNotFoundException e) {
 			throw e;
 		} catch(Exception e) {
-			e.printStackTrace();
 			throw new IOException("Could not load config from file '" + DEFAULT_CONFIG.getAbsolutePath() + "'", e);
 		}
 	}
