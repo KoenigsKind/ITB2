@@ -73,7 +73,7 @@ public interface CommunicationManager {
 	
 	/**
 	 * Sets the progress indicator to the given value:
-	 * <table>
+	 * <table summary="">
 	 * 	 <tr>
 	 *     <td align="right">percent &lt; 0</td>
 	 *     <td align="left">&rarr; Unknown progress</td>

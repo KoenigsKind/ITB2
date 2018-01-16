@@ -55,7 +55,7 @@ public interface Column extends Iterable<Cell> {
 	/**
 	 * Returns the cell for the given row
 	 * 
-	 * @param column Row of the cell
+	 * @param row Row of the cell
 	 * 
 	 * @return cell
 	 */

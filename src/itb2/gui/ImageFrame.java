@@ -40,7 +40,7 @@ public class ImageFrame extends JFrame {
 	/**
 	 * Creating the image window in the middle of the given component and displaying the given image.
 	 * Lets the user select pixels on the image and calls the given consumer, once the maximum number
-	 * of pixels are called (if > 0) or the window is closed.
+	 * of pixels are called (if <code>maxSelections &gt; 0</code>) or the window is closed.
 	 * 
 	 * @param comp                Component this ImageFrame belongs to
 	 * @param image               Image to display

@@ -89,9 +89,9 @@ public abstract class AbstractFilter implements Filter {
 	
 	/**
 	 * Auxiliary function. Returns:<br>
-	 *  - val, if min <= val <= max<br>
-	 *  - min, if val < min<br>
-	 *  - max, if val > max<br>
+	 *  - val, if min &le; val &le; max<br>
+	 *  - min, if val &lt; min<br>
+	 *  - max, if val &gt; max<br>
 	 * 
 	 * @param min Minimum value
 	 * @param val Given value
@@ -104,9 +104,9 @@ public abstract class AbstractFilter implements Filter {
 	
 	/**
 	 * Auxiliary function. Returns:<br>
-	 *  - val, if min <= val <= max<br>
-	 *  - min, if val < min<br>
-	 *  - max, if val > max<br>
+	 *  - val, if min &le; val &le; max<br>
+	 *  - min, if val &lt; min<br>
+	 *  - max, if val &gt; max<br>
 	 * 
 	 * @param min Minimum value
 	 * @param val Given value
@@ -134,7 +134,7 @@ public abstract class AbstractFilter implements Filter {
 	 * the given object is null.
 	 * 
 	 * @param message   Message to show if object is null
-	 * @param condition Object that must not be null 
+	 * @param object    Object that must not be null 
 	 */
 	protected static void assertNotNull(String message, Object object) {
 		if(object == null)

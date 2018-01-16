@@ -150,16 +150,14 @@ public class FilterProperties extends LinkedHashMap<String, FilterProperty> {
 	}
 	
 	/**
-	 * Adds a range property to this filter.<p>
-	 * Example: <code>addRangeProperty("Foobar", "Bravo", "Alpha", "Bravo, "Charlie");</code><br>
+	 * Adds an option property to this filter.<p>
+	 * Example: <code>addOptionProperty("Foobar", "Bravo", "Alpha", "Bravo, "Charlie");</code><br>
 	 * Value can either be <i>Alpha</i>, <i>Bravo</i> or <i>Charlie</i>. By default the
 	 * value is set to <i>Bravo</i>.
 	 * 
 	 * @param name         Name of the property
 	 * @param defaultValue Default value of the property
-	 * @param min          Minimum value
-	 * @param step         Step size
-	 * @param max          Maximum value
+	 * @param options      Possible values to select from
 	 */
 	public void addOptionProperty(String name, Object defaultValue, Object... options) {
 		FilterProperty.Option option = new FilterProperty.Option() {

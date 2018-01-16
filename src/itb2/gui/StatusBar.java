@@ -83,10 +83,10 @@ public class StatusBar extends JPanel {
 	}
 	
 	/**
-	 * Adds the given message with the given color
+	 * Adds the given message of the given message type
 	 * 
 	 * @param message Message to display
-	 * @param color   Color of the message
+	 * @param type    Type of the message
 	 */
 	public void addMessage(String message, MessageType type) {
 		if(type == MessageType.DEBUG)

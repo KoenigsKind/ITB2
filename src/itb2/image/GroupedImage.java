@@ -48,7 +48,8 @@ public interface GroupedImage extends Image {
 	 * 
 	 * @param column  Column of the pixel
 	 * @param row     Row of the pixel
-	 * @param groupID Group of the pixel
+	 * 
+	 * @return Group of the pixel
 	 */
 	default public int getGroup(int column, int row) {
 		return (int)getValue(column, row, GROUP_ID);

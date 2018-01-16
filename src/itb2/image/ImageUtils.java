@@ -37,8 +37,8 @@ public class ImageUtils {
 	 * double matrix. If null is given, a double matrix will be created.
 	 * The matrix must be of the size double[width][height]
 	 *  
-	 * @param image  Channel to get values from
-	 * @param values Matrix to write values into (or null)
+	 * @param channel Channel to get values from
+	 * @param values  Matrix to write values into (or null)
 	 * @return Matrix with values
 	 */
 	public static double[][] getValues(Channel channel, double[][] values) {
@@ -68,8 +68,8 @@ public class ImageUtils {
 	 * Fills the channel with the values from the given matrix.
 	 * The matrix must be of the size double[width][height].
 	 * 
-	 * @param image  Channel to set values for
-	 * @param values Values to set
+	 * @param channel Channel to set values for
+	 * @param values  Values to set
 	 */
 	public static void setValues(Channel channel, double[][] values) {
 		for(int col = 0; col < channel.getWidth(); col++)
