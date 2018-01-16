@@ -17,7 +17,6 @@ import java.util.Set;
 
 import itb2.engine.Controller;
 import itb2.filter.Filter;
-import itb2.gui.EditorGui;
 import itb2.image.Image;
 
 /**
@@ -34,11 +33,9 @@ public class Config implements Serializable {
 	/**
 	 * Saves the current ITB2 state
 	 * 
-	 * @param gui EditorGui
-	 * 
 	 * @throws IOException If something goes wrong
 	 */
-	public static void saveState(EditorGui gui) throws IOException {
+	public static void saveState() throws IOException {
 		try(ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(DEFAULT_CONFIG))) {
 			output.writeObject(new Config());
 		} catch(Exception e) {
@@ -49,12 +46,10 @@ public class Config implements Serializable {
 	/**
 	 * Loads the last saved ITB2 state
 	 * 
-	 * @param gui EditorGui
-	 * 
 	 * @throws FileNotFoundException If no config file was found
 	 * @throws IOException If something goes wrong
 	 */
-	public static void loadState(EditorGui gui) throws FileNotFoundException, IOException {
+	public static void loadState() throws FileNotFoundException, IOException {
 		try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(DEFAULT_CONFIG))) {
 			input.readObject();
 		} catch(FileNotFoundException e) {

@@ -1,7 +1,7 @@
 package itb2.engine;
 
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.LogManager;
@@ -87,25 +87,18 @@ public final class Controller {
 		setCommunicationManager(new DefaultCommunicationManager(gui));
 		
 		// Remember state when closing window for next time
-		gui.addWindowListener(new WindowListener() {
-			@Override public void windowOpened(WindowEvent e) {}
-			@Override public void windowIconified(WindowEvent e) {}
-			@Override public void windowDeiconified(WindowEvent e) {}
-			@Override public void windowDeactivated(WindowEvent e) {}
-			@Override public void windowClosed(WindowEvent e) {}
-			@Override public void windowActivated(WindowEvent e) {}
-			
+		gui.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent we) {
 				try {
-					Config.saveState(gui);
+					Config.saveState();
 				} catch (IOException e) {
 					getCommunicationManager().warning("Could not save config: " + e.getMessage());
 				}
 			}
 		});
 		try {
-			Config.loadState(gui);
+			Config.loadState();
 		} catch (FileNotFoundException e) {
 			// Ignore, config might not have been saved yet
 		} catch (Exception e) {

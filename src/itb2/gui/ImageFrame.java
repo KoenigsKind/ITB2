@@ -5,10 +5,10 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,12 +56,7 @@ public class ImageFrame extends JFrame {
 		List<Point> selections = new ArrayList<>();
 		
 		// Handle mouse click
-		imagePainter.addMouseListener(new MouseListener() {
-			@Override public void mouseReleased(MouseEvent e) {}
-			@Override public void mousePressed(MouseEvent e) {}
-			@Override public void mouseExited(MouseEvent e) {}
-			@Override public void mouseEntered(MouseEvent e) {}
-			
+		imagePainter.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				Point p = imagePainter.getMouseOnImage();
@@ -81,20 +76,12 @@ public class ImageFrame extends JFrame {
 		});
 		
 		// Call consumer when closing
-		addWindowListener(new WindowListener() {
-			@Override public void windowOpened(WindowEvent e) {}
-			@Override public void windowIconified(WindowEvent e) {}
-			@Override public void windowDeiconified(WindowEvent e) {}
-			@Override public void windowDeactivated(WindowEvent e) {}
-			@Override public void windowActivated(WindowEvent e) {}
-			@Override public void windowClosing(WindowEvent e) {}
-			
+		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
 				callAfterSelection.accept(selections);
-			}
+			};
 		});
-		
 		setVisible(true);
 	}
 	
