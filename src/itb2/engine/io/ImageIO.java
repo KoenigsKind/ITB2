@@ -32,6 +32,17 @@ public final class ImageIO {
 	}
 	
 	/**
+	 * Utility function, returning the extension of the given file. 
+	 * 
+	 * @param file File to get Extension from.
+	 * 
+	 * @return Extension of the file
+	 */
+	public static String getExtension(String file) {
+		return file.replaceFirst("^.*\\.(.*?)$", "$1");
+	}
+	
+	/**
 	 * Returns an array of accepted formats for saving/loading images
 	 * <p>
 	 * String[*][2+] &rarr; Each format contains the name <i>String[*][0]</i>
@@ -43,12 +54,16 @@ public final class ImageIO {
 		if(acceptedFormats == null) {
 			acceptedFormats = new String[][] {
 				{
-					"JPEG",
-					"jpg", "jpeg", "jpe", "jif", "jfif", "jfi"
+					"Portable Anymap",
+					"ppm", "pgm", "pbm", "pnm"
 				},
 				{
 					"PNG",
 					"png"
+				},
+				{
+					"JPEG",
+					"jpg", "jpeg", "jpe", "jif", "jfif", "jfi"
 				},
 				{
 					"Bitmap",
@@ -57,10 +72,6 @@ public final class ImageIO {
 				{
 					"GIF",
 					"gif"
-				},
-				{
-					"Portable Anymap",
-					"ppm", "pgm", "pbm", "pnm"
 				}
 			};
 		}
@@ -108,7 +119,7 @@ public final class ImageIO {
 	 * @throws IOException If format could not be identified or something else goes wrong
 	 */
 	public static void save(Image image, File file) throws IOException {
-		String format = file.getName().replaceFirst("^.*\\.(.*?)$", "$1");
+		String format = getExtension(file.getName());
 		save(image, format, file);
 	}
 	

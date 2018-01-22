@@ -202,14 +202,28 @@ public class EditorGui extends JFrame {
 		// Request file to save to
 		JFileChooser fileChooser = getImageChooser(SAVE);
 		File file = null;
-		FileFilter filter = null;
 		
 		do {
 			if(fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
 				break;
 			
 			file = fileChooser.getSelectedFile();
-			filter = fileChooser.getFileFilter();
+			FileFilter filter = fileChooser.getFileFilter();
+			
+			// Add extension if no known extension was added manually
+			String extension = ImageIO.getExtension(file.getName());
+			boolean unknownExtension = true;
+			for(String[] format : ImageIO.acceptedFormats())
+				for(int i = 1; unknownExtension && i < format.length; i++)
+					if(format[i].equalsIgnoreCase(extension))
+						unknownExtension = false;
+			if(unknownExtension) {
+				if(filter instanceof FileNameExtensionFilter)
+					extension = ((FileNameExtensionFilter) filter).getExtensions()[0];
+				else
+					extension = "ppm";
+				file = new File(file.getPath() + "." + extension);
+			}
 			
 			if(!file.exists())
 				break;
@@ -237,13 +251,7 @@ public class EditorGui extends JFrame {
 		// Save image
 		try {
 			
-			if(filter instanceof FileNameExtensionFilter) {
-				String format = ((FileNameExtensionFilter) filter).getExtensions()[0];
-				ImageIO.save(image, format, file);
-			} else {
-				// Try to guess format
-				ImageIO.save(image, file);
-			}
+			ImageIO.save(image, file);
 			
 		} catch(IOException e) {
 			Controller.getCommunicationManager().error("Could not save image to:\n%s", file.getAbsolutePath());
