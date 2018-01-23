@@ -1,6 +1,7 @@
 package itb2.image;
 
 import java.awt.Dimension;
+import java.util.function.Function;
 
 /**
  * Represents the channel of an {@link Image}
@@ -94,5 +95,20 @@ public interface Channel {
 	 * @return Iterable for a for-each-loop
 	 */
 	public Iterable<Column> columns();
+	
+	/**
+	 * Modifies the value using the given modifier function.<p>
+	 * For example, increase current value by 3:<br>
+	 * <code>modifyValue(col, row, value -> value + 3);</code>
+	 * 
+	 * @param column   Column of the pixel
+	 * @param row      Row of the pixel
+	 * @param modifier Function providing new value
+	 */
+	default void modifyValue(int column, int row, Function<Double, Double> modifier) {
+		double value = getValue(column, row);
+		value = modifier.apply(value);
+		setValue(column, row, value);
+	}
 	
 }

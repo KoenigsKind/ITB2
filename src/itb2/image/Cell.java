@@ -1,5 +1,7 @@
 package itb2.image;
 
+import java.util.function.Function;
+
 /**
  * Represents the cell of a {@link Row} or a {@link Column}
  * 
@@ -48,5 +50,18 @@ public interface Cell {
 	 * @param value  Value of this cell
 	 */
 	public void setValue(double value);
+	
+	/**
+	 * Modifies the value using the given modifier function.<p>
+	 * For example, increase current value by 3:<br>
+	 * <code>modifyValue(value -> value + 3);</code>
+	 * 
+	 * @param modifier Function providing new value
+	 */
+	default void modifyValue(Function<Double, Double> modifier) {
+		double value = getValue();
+		value = modifier.apply(value);
+		setValue(value);
+	}
 
 }

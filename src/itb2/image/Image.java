@@ -3,6 +3,7 @@ package itb2.image;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
+import java.util.function.Function;
 
 /**
  * Interface for images.<br>
@@ -114,5 +115,21 @@ public interface Image extends Iterable<Channel>, Serializable {
 	 * @return This image as a BufferedImage
 	 */
 	public BufferedImage asBufferedImage();
+	
+	/**
+	 * Modifies the value using the given modifier function.<p>
+	 * For example, increase current value by 3:<br>
+	 * <code>modifyValue(col, row, chan, value -> value + 3);</code>
+	 * 
+	 * @param column   Column of the pixel
+	 * @param row      Row of the pixel
+	 * @param channel  Channel to modify value for
+	 * @param modifier Function providing new value
+	 */
+	default void modifyValue(int column, int row, int channel, Function<Double, Double> modifier) {
+		double value = getValue(column, row, channel);
+		value = modifier.apply(value);
+		setValue(column, row, channel, value);
+	}
 	
 }

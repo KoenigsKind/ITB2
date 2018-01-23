@@ -198,13 +198,9 @@ public class ImageUtils {
 	 * @param replacer Replacer returning the new value for each given value
 	 */
 	public static void replace(Channel channel, Function<Double, Double> replacer) {
-		for(Row row : channel.rows()) {
-			for(Cell cell : row) {
-				double value = cell.getValue();
-				value = replacer.apply(value);
-				cell.setValue(value);
-			}
-		}
+		for(Row row : channel.rows())
+			for(Cell cell : row)
+				cell.modifyValue(replacer);
 	}
 	
 	/**

@@ -1,5 +1,7 @@
 package itb2.image;
 
+import java.util.function.Function;
+
 /**
  * Represents the column of a {@link Channel}
  * 
@@ -60,5 +62,19 @@ public interface Column extends Iterable<Cell> {
 	 * @return cell
 	 */
 	public Cell getCell(int row);
+	
+	/**
+	 * Modifies the value using the given modifier function.<p>
+	 * For example, increase current value by 3:<br>
+	 * <code>modifyValue(row, value -> value + 3);</code>
+	 * 
+	 * @param row      Row of the pixel
+	 * @param modifier Function providing new value
+	 */
+	default void modifyValue(int row, Function<Double, Double> modifier) {
+		double value = getValue(row);
+		value = modifier.apply(value);
+		setValue(row, value);
+	}
 
 }
