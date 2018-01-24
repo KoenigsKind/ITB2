@@ -27,8 +27,8 @@ public class StatusBar extends JPanel {
 	/** Progress bar */
 	private final JProgressBar progressbar;
 	
-	/** ScrollingText displaying messages */
-	private final ScrollingText messages;
+	/** Label displaying messages for a certain duration. */
+	private final TimedMessageLabel messages;
 	
 	/** EditorGui to check if debug output is enabled */
 	private final EditorGui gui;
@@ -41,7 +41,7 @@ public class StatusBar extends JPanel {
 		progressbar = new JProgressBar();
 		progressbar.setVisible(false);
 		
-		messages = new ScrollingText();
+		messages = new TimedMessageLabel();
 		
 		// Create constraints for layout
 		GridBagConstraints constraintProgressbar = new GridBagConstraints();
