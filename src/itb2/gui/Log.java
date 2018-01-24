@@ -14,6 +14,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
@@ -38,6 +39,9 @@ public class Log extends JDialog {
 	
 	/** Label displaying log */
 	private final JLabel log;
+	
+	/** Scrollpane containing log */
+	private final JScrollPane scrollLog;
 	
 	/** Format for displaying timestamp next to log */
 	private final SimpleDateFormat dateFormat;
@@ -89,7 +93,7 @@ public class Log extends JDialog {
 		log.setOpaque(true);
 		log.setText(String.format(pageTemplate, messages));
 		
-		JScrollPane scrollLog = new JScrollPane(log);
+		scrollLog = new JScrollPane(log);
 		scrollLog.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		scrollLog.getVerticalScrollBar().setUnitIncrement(16);
 		
@@ -117,9 +121,15 @@ public class Log extends JDialog {
 	
 	/** Updates the log with messages */
 	private void update() {
+		JScrollBar bar = scrollLog.getVerticalScrollBar();
+		boolean onBottom = bar.getValue() + bar.getVisibleAmount() == bar.getMaximum();
+		
 		synchronized(sync) {
 			log.setText(String.format(pageTemplate, messages));
 		}
+		
+		if(onBottom)
+			SwingUtilities.invokeLater(() -> bar.setValue(bar.getMaximum()));
 	}
 	
 	/**
