@@ -1,6 +1,9 @@
 package itb2.engine;
 
+import java.awt.image.BufferedImage;
 import java.io.Serializable;
+import java.util.Map;
+import java.util.TreeMap;
 
 import itb2.filter.AbstractFilter;
 import itb2.image.BinaryImage;
@@ -228,14 +231,43 @@ final class ConversionHelper extends AbstractFilter {
 			return output;
 		}
 		
-		if( !(input instanceof GrayscaleImage) )
-			input = toGrayscale(input, factory);
+		BufferedImage image = input.asBufferedImage();
+		int groupCount = 0;
+		Map<Integer, Integer> groupMap = new TreeMap<>();
+		groupMap.put(0x000000, GroupedImage.BLACK);
+		groupMap.put(0xFFFFFF, GroupedImage.WHITE);
 		
-		GroupedImage output = factory.group(input.getSize());
+		for(int col = 0; col < image.getWidth(); col++) {
+			for(int row = 0; row < image.getHeight(); row++) {
+				int rgb = image.getRGB(col, row) & 0xFFFFFF;
+				
+				if(!groupMap.containsKey(rgb))
+					groupMap.put(rgb, ++groupCount);
+			}
+		}
 		
-		ImageUtils.copy(input.getChannel(GrayscaleImage.GRAYSCALE), output.getChannel(GroupedImage.GROUP_ID));
+		if(groupCount > 254 && factory == ImageFactory.bytePrecision()) {
+			// Too many colors, just use grayscale value
+			if( !(input instanceof GrayscaleImage) )
+				input = toGrayscale(input, factory);
+			
+			GroupedImage output = factory.group(input.getSize());
+			ImageUtils.copy(input.getChannel(GrayscaleImage.GRAYSCALE), output.getChannel(GroupedImage.GROUP_ID));
+			return output;
+		}
+		
+		GroupedImage output = factory.group(input.getSize(), groupCount);
+		
+		for(int col = 0; col < image.getWidth(); col++) {
+			for(int row = 0; row < image.getHeight(); row++) {
+				int rgb = image.getRGB(col, row) & 0xFFFFFF;
+				int group = groupMap.get(rgb);
+				output.setGroup(col, row, group);
+			}
+		}
 		
 		return output;
+		
 	}
 	
 	/** Converts the input image into a binary image using the given factory */
