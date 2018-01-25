@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
@@ -42,6 +43,7 @@ public class StatusBar extends JPanel {
 		progressbar.setVisible(false);
 		
 		messages = new TimedMessageLabel();
+		messages.setHorizontalAlignment(SwingConstants.RIGHT);
 		
 		// Create constraints for layout
 		GridBagConstraints constraintProgressbar = new GridBagConstraints();
