@@ -1,11 +1,19 @@
 package itb2.gui;
 
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
+import javax.swing.Box;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -95,7 +103,13 @@ public class EditorMenuBar extends JMenuBar {
 		converterMenu.add(converterDoubleMenu);
 		add(converterMenu);
 		
-		
+		// Add version
+		JLabel version = createVersionLabel();
+		if(version != null) {
+			add(Box.createHorizontalGlue());
+			add(version);
+			add(Box.createHorizontalStrut(5));
+		}
 	}
 	
 	private JMenuItem getConverter(String text, Class<? extends Image> destination) {
@@ -117,6 +131,49 @@ public class EditorMenuBar extends JMenuBar {
 		});
 		
 		return item;
+	}
+	
+	private JLabel createVersionLabel() {
+		try(InputStream stream = getClass().getResourceAsStream("/info.txt")) {
+			Properties props = new Properties();
+			props.load(stream);
+			
+			String version = props.getProperty("version");
+			if(version == null || version.isEmpty())
+				return null;
+			
+			JLabel label = new JLabel(version);
+			
+			String url = props.getProperty("url");
+			if(url != null && !url.isEmpty()) {
+				label.setToolTipText(url);
+				label.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						// Ignore double click
+						if(e.getClickCount() > 1)
+							return;
+						
+						// If desktop is supported open GitHub project 
+						if(Desktop.isDesktopSupported()) try {
+							Desktop.getDesktop().browse(new URI(url));
+							return;
+						} catch(Exception ex) {
+							// Ignore
+						}
+						
+						// Otherwise print URL to log
+						Controller.getCommunicationManager().info(url);
+					}
+				});
+			}
+			
+			return label;
+			
+		} catch(Exception e) {
+			// Don't display version. It's not mandatory.
+			return null;
+		}
 	}
 	
 	private class Listener implements ListDataListener {
