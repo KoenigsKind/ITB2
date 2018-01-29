@@ -186,18 +186,10 @@ public class EditorGui extends JFrame {
 		}
 	}
 	
-	/** Let's the user save the currently selected image */
+	/** Let's the user save the currently selected images */
 	public void saveImage() {
 		// Get selected image
 		List<Image> images = imageList.getSelectedImages();
-		
-		if(images.size() != 1) {
-			if(images.size() > 1)
-				Controller.getCommunicationManager().warning("Please select only one image for saving!");
-			return;
-		}
-		
-		Image image = images.get(0);
 		
 		// Request file to save to
 		JFileChooser fileChooser = getImageChooser(SAVE);
@@ -225,7 +217,7 @@ public class EditorGui extends JFrame {
 				file = new File(file.getPath() + "." + extension);
 			}
 			
-			if(!file.exists())
+			if(!file.exists() || images.size() > 1)
 				break;
 			
 			// If file exists > overwrite? 
@@ -248,11 +240,24 @@ public class EditorGui extends JFrame {
 		if(file == null)
 			return;
 		
-		// Save image
 		try {
+			// Save single image
+			if(images.size() == 1) {
+				ImageIO.save(images.get(0), file);
 			
-			ImageIO.save(image, file);
-			
+			// Save multiple images
+			} else {
+				File template = file;
+				for(int i = 0, counter = 0; i < images.size(); counter++) {
+					// Add counter to filename: 'foobar.png' -> 'foobar (3).png'
+					file = new File(template.getPath().replaceFirst("^(.*)(\\..*?)$", "$1 (" + counter + ")$2"));
+					
+					if(!file.exists()) {
+						ImageIO.save(images.get(i), file);
+						i++;
+					}
+				}
+			}
 		} catch(IOException e) {
 			Controller.getCommunicationManager().error("Could not save image to:\n%s", file.getAbsolutePath());
 		}
