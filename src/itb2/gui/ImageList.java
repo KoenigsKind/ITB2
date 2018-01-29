@@ -152,6 +152,12 @@ public class ImageList extends JPanel {
 			image = value;
 			setBorder(isSelected ? selected : nonselected);
 			setOpaque(cellHasFocus);
+			
+			String toolTip = value.getName() != null ? "<tr><th align='left'>Name</th><td>" + value.getName() + "</td></tr>" : "";
+			toolTip += String.format("<tr><th align='left'>Type</th><td>%s</td></tr><tr><th align='left'>Size</th><td>%d x %d</td></tr>",
+					value.getClass().getSimpleName(), value.getWidth(), value.getHeight());
+			setToolTipText("<html><table>" + toolTip + "<table></html>");
+			
 			return this;
 		}
 		
