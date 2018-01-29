@@ -2,6 +2,7 @@ package itb2.engine.io;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
@@ -146,7 +147,19 @@ public final class FilterIO {
 	private static ClassLoader getLoader(File folder) throws IOException {
 		if(!loaders.containsKey(folder)) {
 			URL url = folder.toURI().toURL();
-			ClassLoader loader = new URLClassLoader(new URL[]{url});
+			
+			URLClassLoader loader;
+			try {
+				// Try using the system class loader
+				loader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+				Method addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+				addURL.setAccessible(true);
+				addURL.invoke(loader, url);
+			} catch(Exception e) {
+				// Use a custom loader instead
+				loader = new URLClassLoader(new URL[]{url});
+			}
+			
 			loaders.put(folder, loader);
 		}
 		return loaders.get(folder);
