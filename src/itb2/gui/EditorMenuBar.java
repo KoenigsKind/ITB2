@@ -1,5 +1,6 @@
 package itb2.gui;
 
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -147,6 +148,7 @@ public class EditorMenuBar extends JMenuBar {
 			String url = props.getProperty("url");
 			if(url != null && !url.isEmpty()) {
 				label.setToolTipText(url);
+				label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				label.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
