@@ -77,6 +77,11 @@ public class DefaultFilterManager implements FilterManager {
 		
 		Image[] output = filter.filter(images);
 		
+		for(Image image : output) {
+			if(image.getName() == null)
+				image.setName(filter.getClass().getSimpleName());
+		}
+		
 		double duration = (System.currentTimeMillis() - startTime) / 1000.;
 		Controller.getCommunicationManager().info("Filter '%s' finished after %.2f seconds.",
 				filter.getClass().getSimpleName(), duration);
