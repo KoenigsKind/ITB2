@@ -27,35 +27,36 @@ import itb2.image.Image;
 public class Config implements Serializable {
 	private static final long serialVersionUID = -4106334935531297234L;
 	
-	/** Config file */
-	public static final File DEFAULT_CONFIG = new File("ITB2.bin");
-	
 	/**
 	 * Saves the current ITB2 state
 	 * 
+	 * @param file File to save state in
+	 * 
 	 * @throws IOException If something goes wrong
 	 */
-	public static void saveState() throws IOException {
-		try(ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(DEFAULT_CONFIG))) {
+	public static void saveState(File file) throws IOException {
+		try(ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(file))) {
 			output.writeObject(new Config());
 		} catch(Exception e) {
-			throw new IOException("Could not save config to file '" + DEFAULT_CONFIG.getAbsolutePath() + "'", e);
+			throw new IOException("Could not save config to file '" + file.getAbsolutePath() + "'", e);
 		}
 	}
 	
 	/**
 	 * Loads the last saved ITB2 state
 	 * 
+	 * @param file File to load state from
+	 * 
 	 * @throws FileNotFoundException If no config file was found
 	 * @throws IOException If something goes wrong
 	 */
-	public static void loadState() throws FileNotFoundException, IOException {
-		try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(DEFAULT_CONFIG))) {
+	public static void loadState(File file) throws FileNotFoundException, IOException {
+		try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(file))) {
 			input.readObject();
 		} catch(FileNotFoundException e) {
 			throw e;
 		} catch(Exception e) {
-			throw new IOException("Could not load config from file '" + DEFAULT_CONFIG.getAbsolutePath() + "'", e);
+			throw new IOException("Could not load config from file '" + file.getAbsolutePath() + "'", e);
 		}
 	}
 	

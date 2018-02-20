@@ -4,7 +4,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
@@ -64,16 +63,21 @@ public final class Controller {
 	}
 	
 	/** Starts the application */
-	public static void startApplication() {
+	public static void startApplication(String... args) {
 		if(gui != null)
 			throw new RuntimeException("Application already running!");
 		
+		// Parse arguments
+		ArgumentParser parser = ArgumentParser.parse(args);
+		if(parser == null)
+			return;
+		
 		// Initialize logger; do not print to System.out
-		LogManager.getLogManager().reset();
 		logger = Logger.getLogger("ITB2");
 		logger.setLevel(MessageType.INFO.level);
 		logger.setUseParentHandlers(false);
 		
+		// Setup GUI
 		try {
 			String systemLookAndFeel = UIManager.getSystemLookAndFeelClassName();
 			UIManager.setLookAndFeel(systemLookAndFeel);
@@ -86,31 +90,37 @@ public final class Controller {
 		
 		setCommunicationManager(new DefaultCommunicationManager(gui));
 		
+		// Register image conversions for all basic image types
+		if(parser.useConversionHelper())
+			ConversionHelper.registerImageConversions();
+		
 		// Remember state when closing window for next time
-		gui.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent we) {
-				try {
-					Config.saveState();
-				} catch (IOException e) {
-					getCommunicationManager().warning("Could not save config: " + e.getMessage());
+		if(parser.getConfigFile() != null) {
+			gui.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosing(WindowEvent we) {
+					try {
+						Config.saveState(parser.getConfigFile());
+					} catch (IOException e) {
+						getCommunicationManager().warning("Could not save config: " + e.getMessage());
+					}
 				}
+			});
+			try {
+				Config.loadState(parser.getConfigFile());
+			} catch (FileNotFoundException e) {
+				// Ignore, config might not have been saved yet
+			} catch (Exception e) {
+				getCommunicationManager().warning("Could not load config file: " + e.getMessage());
+			} catch (Throwable e) {
+				// Severe problem
+				String message = String.format("Broken config file, please delete '%s'!", parser.getConfigFile().getPath());
+				System.err.println(message);
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(null, message, "Broken config", JOptionPane.ERROR_MESSAGE);
+				// Don't continue, internal values might be set incorrectly
+				System.exit(-1);
 			}
-		});
-		try {
-			Config.loadState();
-		} catch (FileNotFoundException e) {
-			// Ignore, config might not have been saved yet
-		} catch (Exception e) {
-			getCommunicationManager().warning("Could not load config file: " + e.getMessage());
-		} catch (Throwable e) {
-			// Severe problem
-			String message = String.format("Broken config file, please delete '%s'!", Config.DEFAULT_CONFIG.getPath());
-			System.err.println(message);
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, message, "Broken config", JOptionPane.ERROR_MESSAGE);
-			// Don't continue, internal values might be set incorrectly
-			System.exit(-1);
 		}
 		
 		gui.setVisible(true);
@@ -119,10 +129,7 @@ public final class Controller {
 	/** Starts application */
 	public static void main(String[] args) {
 		// Start application
-		startApplication();
-		
-		// Register image conversions for all basic image types
-		ConversionHelper.registerImageConversions();
+		startApplication(args);
 	}
 	
 	/** Should not be instantiated */
