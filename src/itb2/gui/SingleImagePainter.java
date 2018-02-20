@@ -14,12 +14,25 @@ import javax.swing.SwingUtilities;
 
 import itb2.image.Image;
 
+/**
+ * Panel to display a single image.
+ * Use the mouse wheel to zoom in/out.
+ *
+ * @author Micha Strauch
+ */
 class SingleImagePainter extends JPanel {
 	private static final long serialVersionUID = 642660245893976850L;
+	
+	/** Preferred size of this JPanel */
 	private final Dimension dimension;
+	
+	/** Image to display */
 	private Image image;
+	
+	/** Current zoom */
 	private double zoom;
 	
+	/** Constructor */
 	SingleImagePainter() {
 		dimension = new Dimension();
 		zoom = 1;
@@ -46,32 +59,42 @@ class SingleImagePainter extends JPanel {
 		});
 	}
 	
+	/** Returns the mouse position relative to the image. */
 	Point getMouseOnImage() {
 		Point p = MouseInfo.getPointerInfo().getLocation();
 		SwingUtilities.convertPointFromScreen(p, this);
 		p.x /= zoom;
 		p.y /= zoom;
+		
+		Point origin = getImageOrigin();
+		p.translate(-origin.x, -origin.y);
+		
 		return p;
 	}
 	
+	/** Sets the current zoom. */
 	void setZoom(double zoom) {
 		this.zoom = zoom;
 		updateSize();
 	}
 	
+	/** Returns the current zoom. */
 	double getZoom() {
 		return zoom;
 	}
 	
+	/** Sets the image to display. */
 	void setImage(Image image) {
 		this.image = image;
 		updateSize();
 	}
 	
+	/** Returns the displayed image. */
 	Image getImage() {
 		return image;
 	}
 	
+	/** Updates the size of this panel and repaints the image. */
 	void updateSize() {
 		dimension.height = (int)(image == null ? 0 : image.getHeight() * zoom);
 		dimension.width = (int)(image == null ? 0 : image.getWidth() * zoom);
@@ -90,6 +113,19 @@ class SingleImagePainter extends JPanel {
 		
 		Graphics2D g2d = g instanceof Graphics2D ? (Graphics2D) g : null;
 		
+		Point origin = getImageOrigin();
+		
+		if(g2d != null)
+			g2d.scale(zoom, zoom);
+		
+		g.drawImage(image.asBufferedImage(), origin.x, origin.y, null);
+		
+		if(g2d != null)
+			g2d.scale(1/zoom, 1/zoom);
+	}
+	
+	/** Returns the location of the image's top left corner. */
+	private Point getImageOrigin() {
 		int paneWidth = getWidth();
 		int paneHeight = getHeight();
 		
@@ -102,12 +138,6 @@ class SingleImagePainter extends JPanel {
 		x /= zoom;
 		y /= zoom;
 		
-		if(g2d != null)
-			g2d.scale(zoom, zoom);
-		
-		g.drawImage(image.asBufferedImage(), (int)x, (int)y, null);
-		
-		if(g2d != null)
-			g2d.scale(1/zoom, 1/zoom);
+		return new Point((int)x, (int)y);
 	}
 }

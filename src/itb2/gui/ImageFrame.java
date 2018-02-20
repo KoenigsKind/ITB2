@@ -60,6 +60,11 @@ public class ImageFrame extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				Point p = imagePainter.getMouseOnImage();
+				
+				Image image = imagePainter.getImage();
+				if(p.x < 0 || p.y < 0 || p.x >= image.getWidth() || p.y >= image.getHeight())
+					return;
+				
 				selections.add(p);
 				
 				if(maxSelections > 0 && maxSelections == selections.size())
