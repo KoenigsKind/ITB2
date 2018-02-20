@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -156,10 +157,21 @@ public class EditorGui extends JFrame {
 			filterChooser.setDialogTitle("Open Filter");
 			filterChooser.setMultiSelectionEnabled(true);
 			
-			if(FilterIO.isCompilerAvailable())
-				filterChooser.setFileFilter(new FileNameExtensionFilter("Filter", "class", "java"));
-			else
-				filterChooser.setFileFilter(new FileNameExtensionFilter("Filter", "class"));
+			filterChooser.setFileFilter(new FileFilter() {
+				final Pattern pattern = FilterIO.isCompilerAvailable()
+						? Pattern.compile("(?i)^[^$]*\\.(class|java)$")
+						: Pattern.compile("(?i)^[^$]*\\.(class)$");
+				
+				@Override
+				public String getDescription() {
+					return "Filter";
+				}
+				
+				@Override
+				public boolean accept(File f) {
+					return f.isDirectory() || pattern.matcher(f.getName()).matches();
+				}
+			});
 		}
 		return filterChooser;
 	}
