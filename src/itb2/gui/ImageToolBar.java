@@ -17,6 +17,9 @@ public class ImageToolBar extends JToolBar {
 	
 	/** Buttons for zoom actions */
 	private final JButton resetZoom, fitToScreen;
+	
+	/** Buttons for switching content */
+	private final JButton image, histogram;
 
 	/** Constructs toolbar for given {@link EditorGui} */
 	public ImageToolBar(ImageFrame imageFrame) {
@@ -28,7 +31,15 @@ public class ImageToolBar extends JToolBar {
 		
 		fitToScreen = getButton(IconLoader.FIT_TO_SCREEN, "Fit to screen", KeyController.Shortcut.FIT_TO_SCREEN);
 		fitToScreen.addActionListener(e -> imageFrame.fitToScreen());
-
+		
+		image = getButton(IconLoader.IMAGE, "Show image", KeyController.Shortcut.SHOW_IMAGE);
+		image.addActionListener(e -> imageFrame.showImage());
+		
+		histogram = getButton(IconLoader.HISTOGRAM, "Show histogram", KeyController.Shortcut.SHOW_HISTOGRAM);
+		histogram.addActionListener(e -> imageFrame.showHistogram());
+		
+		add(image);
+		add(histogram);
 		add(Box.createHorizontalGlue());
 		add(resetZoom);
 		add(fitToScreen);

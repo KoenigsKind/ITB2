@@ -40,6 +40,18 @@ class KeyController {
 	}
 	
 	/**
+	 * Registers all shortcuts for the given image frame
+	 * @param frame ImageFrame to register shortcuts for
+	 */
+	public static void registerShortcuts(ImageFrame frame) {
+		register(frame.getRootPane(), Shortcut.SHOW_IMAGE.key, e -> frame.showImage());
+		register(frame.getRootPane(), Shortcut.SHOW_HISTOGRAM.key, e -> frame.showHistogram());
+		
+		register(frame.getRootPane(), Shortcut.RESET_ZOOM.key, e -> frame.resetZoom());
+		register(frame.getRootPane(), Shortcut.FIT_TO_SCREEN.key, e -> frame.fitToScreen());
+	}
+	
+	/**
 	 * Registers shortcut at given component
 	 * 
 	 * @param comp      Component to register shortcut at
@@ -73,8 +85,10 @@ class KeyController {
 		FILTER_OPEN(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK, "Ctrl + Shift + O"),
 		FILTER_CLOSE(KeyEvent.VK_D, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK, "Ctrl + Shift + D"),
 		FILTER_RUN(KeyEvent.VK_ENTER, KeyEvent.CTRL_DOWN_MASK, "Ctrl + Enter"),
-		RESET_ZOOM(KeyEvent.VK_F2, 0, "F2"),
-		FIT_TO_SCREEN(KeyEvent.VK_F3, 0, "F3");
+		RESET_ZOOM(KeyEvent.VK_F4, 0, "F4"),
+		FIT_TO_SCREEN(KeyEvent.VK_F5, 0, "F5"),
+		SHOW_IMAGE(KeyEvent.VK_F2, 0, "F2"),
+		SHOW_HISTOGRAM(KeyEvent.VK_F3, 0, "F3");
 		
 		/** Shortcut */
 		public final KeyStroke key;

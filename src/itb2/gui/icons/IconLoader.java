@@ -5,6 +5,8 @@ import java.net.URL;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import itb2.gui.ImageFrame;
+
 /**
  * Class for loading icons
  * 
@@ -20,6 +22,9 @@ public class IconLoader {
 	
 	/** Icons for zooming actions */
 	public static final String RESET_ZOOM = "resetZoom.png", FIT_TO_SCREEN = "fitToScreen.png";
+	
+	/** Icons for {@link ImageFrame} */
+	public static  final String IMAGE = "image.png", HISTOGRAM = "histogram.png";
 	
 	/** Icon for log */
 	public static final String LOG = "log.png";

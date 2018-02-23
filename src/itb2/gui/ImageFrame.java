@@ -1,6 +1,7 @@
 package itb2.gui;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import itb2.image.DrawableImage;
 import itb2.image.Image;
@@ -32,6 +34,9 @@ public class ImageFrame extends JFrame {
 	/** Max size the content pane will have when creating the window */ 
 	private static final int DEFAULT_WIDTH = 600, DEFAULT_HEIGHT = 450;
 	
+	/** IDs for {@link #layout CardLayout} */
+	private static final String IMAGE_PAINTER = "ImagePainter", HISTOGRAM = "Histogram";
+	
 	/** Prefix title */
 	private static final String TITLE = "Image Viewer";
 	
@@ -40,6 +45,15 @@ public class ImageFrame extends JFrame {
 	
 	/** ScrollPane containing imagePainter */
 	private final DraggableScrollPane scrollPane;
+	
+	/** Panel displaying the histogram of an image */
+	private final Histogram histogram;
+	
+	/** Main content containing {@link #histogram} and {@link #imagePainter} */
+	private final JPanel mainContent;
+	
+	/** CardLayout for {@link #mainContent} */
+	private final CardLayout layout;
 	
 	/**
 	 * Creating the image window in the middle of the given component and displaying the given image.
@@ -117,21 +131,36 @@ public class ImageFrame extends JFrame {
 		// Display image
 		imagePainter = new SingleImagePainter();
 		imagePainter.setImage(image);
-		
-		ImageToolBar toolBar = new ImageToolBar(this);
 		scrollPane = new DraggableScrollPane(imagePainter);
 		
+		// Histogram
+		histogram = new Histogram();
+		histogram.setImage(image);
+		
+		// Main content pane
+		layout = new CardLayout();
+		mainContent = new JPanel();
+		mainContent.setLayout(layout);
+		mainContent.add(scrollPane, IMAGE_PAINTER);
+		mainContent.add(histogram, HISTOGRAM);
+		layout.show(mainContent, IMAGE_PAINTER);
+		
+		// Frame content
+		ImageToolBar toolBar = new ImageToolBar(this);
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(toolBar, BorderLayout.NORTH);
-		getContentPane().add(scrollPane, BorderLayout.CENTER);
+		getContentPane().add(mainContent, BorderLayout.CENTER);
 		
 		// Set size
 		int width = DEFAULT_WIDTH < image.getWidth() ? DEFAULT_WIDTH : image.getWidth();
 		int height = DEFAULT_HEIGHT < image.getHeight() ? DEFAULT_HEIGHT : image.getHeight();
-		scrollPane.setPreferredSize(new Dimension(width + 10, height + 10));
+		mainContent.setPreferredSize(new Dimension(width + 10, height + 10));
 		
 		// Set title
 		setTitle(title);
+		
+		// Register shortcuts
+		KeyController.registerShortcuts(this);
 		
 		// Closure
 		pack();
@@ -185,6 +214,17 @@ public class ImageFrame extends JFrame {
 	/** Sets the image to display */
 	public void setImage(Image image) {
 		imagePainter.setImage(image);
+		histogram.setImage(image);
+	}
+	
+	/** Switches to the histogram view */
+	void showHistogram() {
+		layout.show(mainContent, HISTOGRAM);
+	}
+	
+	/** Switches to the image view */
+	void showImage() {
+		layout.show(mainContent, IMAGE_PAINTER);
 	}
 
 }
