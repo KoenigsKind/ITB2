@@ -3,14 +3,12 @@ package itb2.gui;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import itb2.image.Image;
 
@@ -41,13 +39,13 @@ class SingleImagePainter extends JPanel {
 		addMouseWheelListener(new MouseWheelListener() {
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
-				Point preZoom = getMouseOnImage();
+				Point preZoom = getMouseOnPainter();
 				
 				double factor = Math.pow(0.9, e.getWheelRotation());
 				zoom *= factor;
 				updateSize();
 				
-				Point postZoom = getMouseOnImage();
+				Point postZoom = getMouseOnPainter();
 				
 				double dx = (preZoom.x - postZoom.x) * zoom;
 				double dy = (preZoom.y - postZoom.y) * zoom;
@@ -59,12 +57,18 @@ class SingleImagePainter extends JPanel {
 		});
 	}
 	
-	/** Returns the mouse position relative to the image. */
-	Point getMouseOnImage() {
-		Point p = MouseInfo.getPointerInfo().getLocation();
-		SwingUtilities.convertPointFromScreen(p, this);
+	/** Returns the mouse position relative to this image painter. */
+	Point getMouseOnPainter() {
+		Point p = getMousePosition();
 		p.x /= zoom;
 		p.y /= zoom;
+		
+		return p;
+	}
+	
+	/** Returns the mouse position relative to the image. */
+	Point getMouseOnImage() {
+		Point p = getMouseOnPainter();
 		
 		Point origin = getImageOrigin();
 		p.translate(-origin.x, -origin.y);
