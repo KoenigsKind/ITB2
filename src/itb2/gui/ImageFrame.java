@@ -1,5 +1,6 @@
 package itb2.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -36,6 +37,9 @@ public class ImageFrame extends JFrame {
 	
 	/** Image painter, displaying the image */
 	private final SingleImagePainter imagePainter;
+	
+	/** ScrollPane containing imagePainter */
+	private final DraggableScrollPane scrollPane;
 	
 	/**
 	 * Creating the image window in the middle of the given component and displaying the given image.
@@ -114,8 +118,12 @@ public class ImageFrame extends JFrame {
 		imagePainter = new SingleImagePainter();
 		imagePainter.setImage(image);
 		
-		DraggableScrollPane scrollPane = new DraggableScrollPane(imagePainter);
-		add(scrollPane);
+		ImageToolBar toolBar = new ImageToolBar(this);
+		scrollPane = new DraggableScrollPane(imagePainter);
+		
+		getContentPane().setLayout(new BorderLayout());
+		getContentPane().add(toolBar, BorderLayout.NORTH);
+		getContentPane().add(scrollPane, BorderLayout.CENTER);
 		
 		// Set size
 		int width = DEFAULT_WIDTH < image.getWidth() ? DEFAULT_WIDTH : image.getWidth();
@@ -133,8 +141,19 @@ public class ImageFrame extends JFrame {
 	
 	/** Zoom the image to fit the screen */
 	public void fitToScreen() {
-		//TODO Add fit to screen
-		throw new UnsupportedOperationException("Not yet implemented!");
+		Image image = imagePainter.getImage();
+		if(image != null) {
+			int imgWidth = image.getWidth();
+			int imgHeight = image.getHeight();
+			
+			double border = scrollPane.getVerticalScrollBar().getWidth();
+
+			double zoomHor = (scrollPane.getWidth() - border) / imgWidth;
+			double zoomVert = (scrollPane.getHeight() - border) / imgHeight;
+			double zoom = zoomHor < zoomVert ? zoomHor : zoomVert;
+			imagePainter.setZoom(zoom);
+		} else
+			imagePainter.setZoom(1);
 	}
 	
 	/** Reset zoom to original size */
