@@ -237,8 +237,8 @@ public class Histogram extends JPanel {
 			g.setColor(Color.BLACK);
 			g.setFont(Font.decode("monospaced-plain-12"));
 			
-			String left = valueType == RATIONAL ? String.format("%.2f", min) : "0";
-			String right = valueType == RATIONAL ? String.format("%.2f", max) : valueType == INTEGER ? "255" : "1";
+			String left = valueType == RATIONAL ? String.format("%,.2f", min) : "0";
+			String right = valueType == RATIONAL ? String.format("%,.2f", max) : valueType == INTEGER ? "255" : "1";
 			int rightWidth = g.getFontMetrics().stringWidth(right);
 			
 			g.drawString(left, deltaX, height + 13);
