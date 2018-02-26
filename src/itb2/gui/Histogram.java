@@ -106,6 +106,9 @@ public class Histogram extends JPanel {
 	private class Painter extends JPanel {
 		private static final long serialVersionUID = 6004160219508478853L;
 		
+		/** Possible value type:<br>Binary (0 & 1), Integer (0 - 255), Rational */
+		private static final int BINARY = 2, INTEGER = 256, RATIONAL = 0;
+		
 		/** Mapping number of pixels to each existing pixel value. */
 		private final TreeMap<Double, Integer> values;
 		
@@ -118,6 +121,9 @@ public class Histogram extends JPanel {
 		/** Minimum and maximum pixel value. */
 		private double min, max;
 		
+		/** Of what type the values are.<p>{@link #BINARY} / {@link #INTEGER} / {@link #RATIONAL} */
+		private int valueType;
+		
 		/** Array containing currently displayed histogram data. */
 		private int[] data;
 		
@@ -127,7 +133,6 @@ public class Histogram extends JPanel {
 		/** Constructor for this histogram painter. */
 		Painter() {
 			values = new TreeMap<>();
-			setBackground(Color.WHITE);
 			
 			// Register this JPanel for displaying tooltips
 			ToolTipManager.sharedInstance().registerComponent(this);
@@ -144,6 +149,7 @@ public class Histogram extends JPanel {
 				// Build values
 				min = Double.MAX_VALUE;
 				max = Double.MIN_VALUE;
+				valueType = BINARY;
 				values.clear();
 				
 				if(lastImage != null) {
@@ -155,10 +161,17 @@ public class Histogram extends JPanel {
 							max = value > max ? value : max;
 							
 							Integer count = values.get(value);
-							if(count == null)
-								values.put(value, 1);
-							else
+							if(count != null)
 								values.put(value, count + 1);
+							else {
+								values.put(value, 1);
+								
+								// Check if value matches the current value type
+								if(valueType != RATIONAL && (value < 0 || value > 255 || value != (int) value))
+									valueType = RATIONAL;
+								if(valueType == BINARY && value != 0 && value != 1)
+									valueType = INTEGER;
+							}
 						}
 					}
 				}
@@ -176,30 +189,41 @@ public class Histogram extends JPanel {
 			if(values.isEmpty())
 				return;
 			
-			// Set histogram color to black
-			g.setColor(Color.BLACK);
-			
 			// Choose type of histogram
 			boolean cumulative = CUMULATIVE == method.getSelectedItem();
 			
+			// Width of each bar
+			int barCount = valueType == RATIONAL ? getWidth() : valueType;
+			int barWidth = getWidth() / barCount;
+			
 			// Value range each bar contains
-			double step = (max - min) / getWidth();
+			double step = valueType == RATIONAL ? (max - min) / barCount : 1;
 			data = new int[getWidth()];
 			maxData = Integer.MIN_VALUE;
 			
-			// Collect data for each bar
-			for(int x = 0; x < getWidth(); x++) {
-				int value = getValue(x * step, (x + 1) * step);
+			// Set border, so histogram stays in center
+			int deltaX = (getWidth() - barCount * barWidth) / 2;
+			
+			// Calculate bar heights and fill data array
+			int previous = 0;
+			for(int i = 0; i < barCount; i++) {
+				int value = previous + getValue(i * step, (i + 1) * step);
 				
-				if(cumulative && x > 0)
-					data[x] = data[x-1] + value;
-				else
-					data[x] = value;
+				if(cumulative)
+					previous = value;
 				
-				maxData = data[x] > maxData ? data[x] : maxData;
+				maxData = value > maxData ? value : maxData;
+				
+				for(int x = 0; x < barWidth; x++)
+					data[i * barWidth + x + deltaX] = value;
 			}
 			
-			// Display data
+			// Draw background
+			g.setColor(Color.WHITE);
+			g.fillRect(deltaX, 0, barWidth * barCount, getHeight());
+			
+			// Draw histogram
+			g.setColor(Color.BLACK);
 			step = (double) getHeight() / maxData;
 			for(int x = 0; x < data.length; x++) {
 				int y = (int)(data[x] * step);
@@ -246,8 +270,11 @@ public class Histogram extends JPanel {
 		
 		@Override
 		public Point getToolTipLocation(MouseEvent event) {
-			// Show tooltip below histogram
-			return new Point(event.getX(), getHeight());
+			// Show tooltip at the top of the current bar
+			double step = (double) getHeight() / maxData;
+			int x = event.getX();
+			int y = (int)(data[x] * step);
+			return new Point(x, getHeight() - y);
 		}
 		
 	}
