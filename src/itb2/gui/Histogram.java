@@ -1,6 +1,7 @@
 package itb2.gui;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -219,16 +220,29 @@ public class Histogram extends JPanel {
 			}
 			
 			// Draw background
+			int height = getHeight() - 15;
 			g.setColor(Color.WHITE);
-			g.fillRect(deltaX, 0, barWidth * barCount, getHeight());
+			g.fillRect(deltaX, 0, barWidth * barCount, height);
 			
 			// Draw histogram
 			g.setColor(Color.BLACK);
-			step = (double) getHeight() / maxData;
+			step = (double) height / maxData;
 			for(int x = 0; x < data.length; x++) {
 				int y = (int)(data[x] * step);
-				g.drawLine(x, getHeight() - y, x, getHeight());
+				if(y > 0)
+					g.drawLine(x, height - y, x, height);
 			}
+			
+			// Draw min and max values
+			g.setColor(Color.BLACK);
+			g.setFont(Font.decode("monospaced-plain-12"));
+			
+			String left = valueType == RATIONAL ? String.format("%.2f", min) : "0";
+			String right = valueType == RATIONAL ? String.format("%.2f", max) : valueType == INTEGER ? "255" : "1";
+			int rightWidth = g.getFontMetrics().stringWidth(right);
+			
+			g.drawString(left, deltaX, height + 13);
+			g.drawString(right, getWidth() - deltaX - rightWidth, height + 13);
 		}
 		
 		/**
