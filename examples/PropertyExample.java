@@ -24,7 +24,7 @@ public class PropertyExample extends AbstractFilter {
 		properties.addDoubleProperty(DOUBLE, Math.PI);
 		properties.addIntegerProperty(INTEGER, 1337);
 		properties.addOptionProperty(OPTION, "Charlie", "Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot");
-		properties.addRangeProperty(RANGE, 42, 0, 7, 98);
+		properties.addRangeProperty(RANGE, 40, 0, 10, 100);
 		properties.addStringProperty(STRING, "Hello World!");
 	}
 	
