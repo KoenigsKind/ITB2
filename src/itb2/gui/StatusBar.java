@@ -3,6 +3,8 @@ package itb2.gui;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -12,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -34,13 +37,32 @@ public class StatusBar extends JPanel {
 	/** EditorGui to check if debug output is enabled */
 	private final EditorGui gui;
 	
+	/** Current progress */
+	private double progress = 2;
+	
+	/** {@link System#currentTimeMillis()} when progress bar was displayed last time. */
+	private long start;
+	
 	/** Constructs a status bar for showing progress and displaying messages */
 	public StatusBar(EditorGui gui) {
 		this.gui = gui;
 		
 		// Instantiate objects
-		progressbar = new JProgressBar();
+		progressbar = new JProgressBar() {
+			private static final long serialVersionUID = 3436620317253444312L;
+
+			@Override
+			public String getToolTipText() {
+				double estimated = estimateRemainingTime();
+				
+				if(estimated < 0)
+					return "Calculating...";
+				
+				return "<html>Estimated time remaining:<br>" + formatTime(estimated) + "</html>";
+			}
+		};
 		progressbar.setVisible(false);
+		ToolTipManager.sharedInstance().registerComponent(progressbar);
 		
 		messages = new TimedMessageLabel();
 		messages.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -82,6 +104,11 @@ public class StatusBar extends JPanel {
 		progressbar.setIndeterminate(progress < 0);
 		progressbar.setStringPainted(progress >= 0);
 		progressbar.setVisible(progress <= 1);
+		
+		if(this.progress > 1)
+			start = System.currentTimeMillis();
+		
+		this.progress = progress;
 	}
 	
 	/**
@@ -98,6 +125,41 @@ public class StatusBar extends JPanel {
 			return; // Nothing to show
 		
 		messages.addMessage(message, type.foreground);
+	}
+	
+	/**
+	 * Estimates the remaining time in seconds.
+	 * 
+	 * @return Estimated remaining time or -1 if no estimation possible.
+	 */
+	public double estimateRemainingTime() {
+		if(progress <= 0 || progress > 1)
+			return -1;
+		
+		long elapsed = System.currentTimeMillis() - start;
+		long estimated = (long)(elapsed / progress) - elapsed;
+		
+		return estimated / 1e3;
+	}
+	
+	/**
+	 * Returns the time as a nice formatted string.
+	 * 
+	 * @param seconds Seconds to format
+	 * 
+	 * @return Formatted string
+	 */
+	private String formatTime(double seconds) {
+		if(seconds < 60)
+			return String.format("%.1f seconds", seconds);
+		
+		if(seconds < 3600)
+			return String.format("%.1f minutes", seconds / 60);
+		
+		if(seconds < 86400)
+			return String.format("%.1f hours", seconds / 3600);
+		
+		return String.format("%,.1f days", seconds / 86400);
 	}
 	
 	/**
